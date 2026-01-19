@@ -1,0 +1,8 @@
+# Project exclude paths
+/.dart_tool/
+/build/
+build/app/generated/source/buildConfig/release/com/breffni/student/BuildConfig.java
+build/app/intermediates/assets/release/flutter_assets/assets/lottie/record.json
+build/app/intermediates/flutter/release/flutter_assets/assets/lottie/record.json
+
+.env

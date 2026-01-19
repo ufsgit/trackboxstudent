@@ -1,0 +1,99 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run --machine --start-paused -d f86dd5bd --devtools-server-address http://127.0.0.1:9100/ --target D:\ufs\projects\briffini_app\lib\main.dart
+
+## exception
+
+OutOfMemoryError: Out of Memory
+
+```
+#0      new Uint8List (dart:typed_data-patch/typed_data_patch.dart:2305:3)
+#1      _File.readAsBytesSync (dart:io/file_impl.dart:589:16)
+#2      ForwardingFile.readAsBytesSync (package:file/src/forwarding/forwarding_file.dart:91:43)
+#3      ForwardingFile.readAsBytesSync (package:file/src/forwarding/forwarding_file.dart:91:43)
+#4      _calculateSha (package:flutter_tools/src/android/gradle.dart:927:32)
+#5      AndroidGradleBuilder.buildGradleApp (package:flutter_tools/src/android/gradle.dart:586:36)
+#6      _rootRunUnary (dart:async/zone.dart:1407:47)
+#7      _FutureListener.handleValue (dart:async/future_impl.dart:163:18)
+#8      Future._propagateToListeners.handleValueCallback (dart:async/future_impl.dart:847:45)
+#9      Future._propagateToListeners (dart:async/future_impl.dart:876:13)
+#10     Future._completeWithValue (dart:async/future_impl.dart:652:5)
+#11     Future._asyncCompleteWithValue.<anonymous closure> (dart:async/future_impl.dart:722:7)
+#12     _rootRun (dart:async/zone.dart:1399:13)
+#13     _CustomZone.run (dart:async/zone.dart:1301:19)
+#14     _CustomZone.runGuarded (dart:async/zone.dart:1209:7)
+#15     _CustomZone.bindCallbackGuarded.<anonymous closure> (dart:async/zone.dart:1249:23)
+#16     _microtaskLoop (dart:async/schedule_microtask.dart:40:21)
+#17     _startMicrotaskLoop (dart:async/schedule_microtask.dart:49:5)
+#18     _runPendingImmediateCallback (dart:isolate-patch/isolate_patch.dart:118:13)
+#19     _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:185:5)
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.22.3, on Microsoft Windows [Version 10.0.22631.3880], locale en-US)
+    • Flutter version 3.22.3 on channel stable at D:\flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision b0850beeb2 (3 weeks ago), 2024-07-16 21:43:41 -0700
+    • Engine revision 235db911ba
+    • Dart version 3.4.4
+    • DevTools version 2.34.3
+
+[✓] Windows Version (Installed version of Windows is version 10 or higher)
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+    • Android SDK at C:\Users\USER\AppData\Local\Android\sdk
+    • Platform android-34-ext11, build-tools 34.0.0
+    • Java binary at: C:\Program Files\Java\jdk-17\bin\java
+    • Java version Java(TM) SE Runtime Environment (build 17.0.11+7-LTS-207)
+    • All Android licenses accepted.
+
+[✓] Chrome - develop for the web
+    • Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[✗] Visual Studio - develop Windows apps
+    ✗ Visual Studio not installed; this is necessary to develop Windows apps.
+      Download at https://visualstudio.microsoft.com/downloads/.
+      Please install the "Desktop development with C++" workload, including all of its default components
+
+[✓] Android Studio (version 2024.1)
+    • Android Studio at C:\Program Files\Android\Android Studio
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    • Java version OpenJDK Runtime Environment (build 17.0.11+0--11852314)
+
+[!] Android Studio (version unknown)
+    • Android Studio at C:\Program Files\Android\Android Studio\bin
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    ✗ Unable to determine Android Studio version.
+    ✗ android-studio-dir = C:\Program Files\Android\Android Studio\bin
+    ✗ Unable to find bundled Java version.
+    • Try updating or re-installing Android Studio.
+    • Consider removing your android-studio-dir setting by running:
+      flutter config --android-studio-dir=
+
+[✓] VS Code (version 1.92.0)
+    • VS Code at C:\Users\USER\AppData\Local\Programs\Microsoft VS Code
+    • Flutter extension version 3.94.0
+
+[✓] Connected device (4 available)
+    • CPH1803 (mobile)  • f86dd5bd • android-arm64  • Android 8.1.0 (API 27)
+    • Windows (desktop) • windows  • windows-x64    • Microsoft Windows [Version 10.0.22631.3880]
+    • Chrome (web)      • chrome   • web-javascript • Google Chrome 127.0.6533.89
+    • Edge (web)        • edge     • web-javascript • Microsoft Edge 127.0.2651.86
+    ! Device emulator-5554 is offline.
+
+[✓] Network resources
+    • All expected network resources are available.
+
+! Doctor found issues in 2 categories.
+```

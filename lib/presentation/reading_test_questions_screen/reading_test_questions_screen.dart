@@ -1,0 +1,163 @@
+import 'package:flutter/material.dart';
+import '../../core/app_export.dart';
+import '../../theme/custom_button_style.dart';
+import '../../widgets/app_bar/appbar_leading_image_one.dart';
+import '../../widgets/app_bar/appbar_subtitle_one.dart';
+import '../../widgets/app_bar/appbar_title.dart';
+import '../../widgets/app_bar/appbar_trailing_image.dart';
+import '../../widgets/app_bar/custom_app_bar.dart';
+import '../../widgets/custom_outlined_button.dart';
+import 'controller/reading_test_questions_controller.dart'; // ignore_for_file: must_be_immutable
+
+class ReadingTestQuestionsScreen
+    extends GetWidget<ReadingTestQuestionsController> {
+  const ReadingTestQuestionsScreen({Key? key})
+      : super(
+          key: key,
+        );
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            children: [
+              SizedBox(height: 22.v),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 5.v),
+                    padding: EdgeInsets.symmetric(horizontal: 16.h),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 9.v),
+                              child: Text(
+                                "lbl_question".tr,
+                                style: CustomTextStyles.labelLargeOnError,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 24.h),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "lbl_answer".tr,
+                                    style: theme.textTheme.labelLarge,
+                                  ),
+                                  SizedBox(height: 8.v),
+                                  CustomImageView(
+                                    imagePath: ImageConstant.imgLine266,
+                                    height: 1.v,
+                                    width: 24.h,
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 18.v),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "msg_type_your_essay".tr,
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ),
+                        SizedBox(height: 22.v),
+                        Container(
+                          width: 328.h,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 19.h,
+                            vertical: 12.v,
+                          ),
+                          decoration:
+                              AppDecoration.outlineOnErrorContainer.copyWith(
+                            borderRadius: BorderRadiusStyle.roundedBorder12,
+                          ),
+                          child: Text(
+                            "lbl_enter_here".tr,
+                            style: CustomTextStyles.bodyMediumOnErrorContainer,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        bottomNavigationBar: _buildFinishButtonSection(),
+      ),
+    );
+  }
+
+  /// Section Widget
+  PreferredSizeWidget _buildAppBar() {
+    return CustomAppBar(
+      height: 21.v,
+      leadingWidth: 36.h,
+      leading: AppbarLeadingImageOne(
+        imagePath: ImageConstant.imgArrowLeftBlack900,
+        margin: EdgeInsets.only(
+          left: 16.h,
+          bottom: 1.v,
+        ),
+        onTap: () {
+          onTapArrowleftone();
+        },
+      ),
+      title: AppbarSubtitleOne(
+        text: "lbl_writing_test".tr,
+        margin: EdgeInsets.only(left: 16.h),
+      ),
+      actions: [
+        AppbarTrailingImage(
+          imagePath: ImageConstant.imgClockBlack900,
+          margin: EdgeInsets.only(
+            left: 16.h,
+            top: 1.v,
+            right: 1.h,
+          ),
+        ),
+        AppbarTitle(
+          text: "lbl_29_00".tr,
+          margin: EdgeInsets.only(
+            left: 4.h,
+            top: 1.v,
+            right: 17.h,
+          ),
+        )
+      ],
+    );
+  }
+
+  /// Section Widget
+  Widget _buildFinishButtonSection() {
+    return Container(
+      margin: EdgeInsets.only(
+        left: 16.h,
+        right: 16.h,
+        bottom: 48.v,
+      ),
+      decoration: AppDecoration.gradientGrayToGray,
+      child: CustomOutlinedButton(
+        text: "lbl_finish".tr,
+        buttonStyle: CustomButtonStyles.outlineBlueTL12,
+      ),
+    );
+  }
+
+  /// Navigates to the previous screen.
+  onTapArrowleftone() {
+    Get.back();
+  }
+}

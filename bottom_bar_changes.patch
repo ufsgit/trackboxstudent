@@ -1,0 +1,610 @@
+Subject: [PATCH] bottom bar changes
+---
+Index: lib/presentation/course_details_page1_screen/course_module_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/presentation/course_details_page1_screen/course_module_page.dart b/lib/presentation/course_details_page1_screen/course_module_page.dart
+--- a/lib/presentation/course_details_page1_screen/course_module_page.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/presentation/course_details_page1_screen/course_module_page.dart	(date 1727083655448)
+@@ -146,9 +146,18 @@
+     setState(() {
+       selectedIndex = index;
+     });
+-
+-    if (index < controller.courseModulesList.length) {
+-      final module = controller.courseModulesList[index];
++    final filteredModules = !widget.isLibrary
++        ? controller.courseModulesList
++            .where((module) => module.moduleName != 'Running Material')
++            .toList()
++        : controller.courseModulesList
++            .where((module) =>
++                module.moduleName != 'Advance' &&
++                module.moduleName != 'Exam' &&
++                module.moduleName != 'Mock Exam')
++            .toList();
++    if (index < filteredModules.length) {
++      final module = filteredModules[index];
+       final isLocked =
+           widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
+ 
+@@ -176,7 +185,7 @@
+               isLibrary: widget.isLibrary,
+             ));
+       }
+-    } else if (index == controller.courseModulesList.length) {
++    } else if (index == filteredModules.length) {
+       if (widget.indexx == 1) {
+         if (widget.IsEnrollCourse == 0) {
+           ScaffoldMessenger.of(context).showSnackBar(
+@@ -209,77 +218,85 @@
+     }
+   }
+ 
+-  @override
+   Widget build(BuildContext context) {
+-    return Obx(
+-      () {
+-        if (controller.courseModulesList.isEmpty) {
+-          return Center(child: CircularProgressIndicator());
+-        }
++    return Obx(() {
++      if (controller.courseModulesList.isEmpty) {
++        return Center(child: CircularProgressIndicator());
++      }
++      final filteredModules = !widget.isLibrary
++          ? controller.courseModulesList
++              .where((module) => module.moduleName != 'Running Material')
++              .toList()
++          : controller.courseModulesList
++              .where((module) =>
++                  module.moduleName != 'Advance' &&
++                  module.moduleName != 'Exam' &&
++                  module.moduleName != 'Mock Exam')
++              .toList();
+ 
+-        final totalItemCount = controller.courseModulesList.length + 1;
++      final totalItemCount = filteredModules.length + 1;
+ 
+-        return GridView.builder(
+-          physics: NeverScrollableScrollPhysics(),
+-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+-            crossAxisCount: 2,
+-            crossAxisSpacing: 8.0,
+-            mainAxisSpacing: 8.0,
+-            mainAxisExtent: 120,
+-          ),
+-          itemCount: totalItemCount,
+-          itemBuilder: (context, index) {
+-            if (index < controller.courseModulesList.length) {
+-              final badgeIcon = index < widget.badgeIcons.length
+-                  ? widget.badgeIcons[index]
+-                  : 'assets/images/Bronze.png';
++      return GridView.builder(
++        physics: NeverScrollableScrollPhysics(),
++        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
++          crossAxisCount: 2,
++          crossAxisSpacing: 8.0,
++          mainAxisSpacing: 8.0,
++          mainAxisExtent: 120,
++        ),
++        itemCount: totalItemCount,
++        itemBuilder: (context, index) {
++          if (index < filteredModules.length) {
++            final badgeIcon = index < widget.badgeIcons.length
++                ? widget.badgeIcons[index]
++                : 'assets/images/Bronze.png';
+ 
+-              final module = controller.courseModulesList[index];
+-              final isLocked = widget.IsEnrollCourse == 0 ||
+-                  module.isStudentModuleLocked == 1;
+-              final isSelected = selectedIndex == index;
++            final module = filteredModules[index];
++            final isLocked =
++                widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
++            final isSelected = selectedIndex == index;
+ 
+-              return ModuleWidget(
+-                isLocked: isLocked,
+-                isSelected: isSelected,
+-                onTap: () => _onModuleTap(context, index,
+-                    moduleId: module.moduleId.toString(),
+-                    courseId: widget.courseId.toString(),
+-                    title: module.moduleName),
+-                badgeIcon: badgeIcon,
+-                moduleName: module.moduleName,
+-              );
+-            } else if (index == controller.courseModulesList.length) {
+-              final isSelected = selectedIndex == index;
+-              final isLocked = widget.IsEnrollCourse == 0;
+-              if (widget.indexx == 1) {
+-                return ModuleWidget(
+-                  isLocked: isLocked,
+-                  isSelected: isSelected,
+-                  onTap: () => _onModuleTap(context, index,
+-                      moduleId: '',
+-                      courseId: widget.courseId.toString(),
+-                      title: 'Recordings'),
+-                  badgeIcon: 'assets/images/time_loader.png',
+-                  moduleName: 'Recordings',
+-                );
+-              } else if (widget.indexx == 0) {
+-                return ModuleWidget(
+-                  isLocked: isLocked,
+-                  isSelected: isSelected,
+-                  onTap: () => _onModuleTap(context, index,
+-                      moduleId: '',
+-                      courseId: widget.courseId.toString(),
+-                      title: 'Mock Test'),
+-                  badgeIcon: 'assets/images/EmptyState (1).png',
+-                  moduleName: 'Mock Test',
+-                );
+-              }
+-            }
+-            return null;
+-          },
+-        );
+-      },
+-    );
++            return ModuleWidget(
++              isLocked: isLocked,
++              isSelected: isSelected,
++              onTap: () => _onModuleTap(context, index,
++                  moduleId: module.moduleId.toString(),
++                  courseId: widget.courseId.toString(),
++                  title: module.moduleName),
++              badgeIcon: badgeIcon,
++              moduleName: module.moduleName,
++            );
++          } else if (index == filteredModules.length) {
++            final isSelected = selectedIndex == index;
++            final isLocked = widget.IsEnrollCourse == 0;
++
++            if (widget.indexx == 1) {
++              return ModuleWidget(
++                isLocked: isLocked,
++                isSelected: isSelected,
++                onTap: () => _onModuleTap(context, index,
++                    moduleId: '',
++                    courseId: widget.courseId.toString(),
++                    title: 'Recordings'),
++                badgeIcon: 'assets/images/time_loader.png',
++                moduleName: 'Recordings',
++              );
++            } else if (widget.indexx == 0) {
++              return ModuleWidget(
++                isLocked: isLocked,
++                isSelected: isSelected,
++                onTap: () => _onModuleTap(context, index,
++                    moduleId: '',
++                    courseId: widget.courseId.toString(),
++                    title: 'Mock Test'),
++                badgeIcon: 'assets/images/EmptyState (1).png',
++                moduleName: 'Mock Test',
++              );
++            }
++          }
++          return SizedBox.shrink();
++        },
++      );
++    });
+   }
+ }
+Index: lib/presentation/home_page/teacher_list_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/presentation/home_page/teacher_list_page.dart b/lib/presentation/home_page/teacher_list_page.dart
+--- a/lib/presentation/home_page/teacher_list_page.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/presentation/home_page/teacher_list_page.dart	(date 1727083658124)
+@@ -13,6 +13,7 @@
+ import 'package:anandhu_s_application4/presentation/home_page/widgets/teacher_widget.dart';
+ import 'package:anandhu_s_application4/presentation/profile/controller/profile_controller.dart';
+ import 'package:flutter/material.dart';
++import 'package:google_fonts/google_fonts.dart';
+ import 'package:shared_preferences/shared_preferences.dart';
+ 
+ class TeacherScreen extends StatefulWidget {
+@@ -90,98 +91,110 @@
+             ),
+ 
+             Container(
+-              child: Obx(
+-                () => ListView.builder(
+-                  itemCount: controller.teacherList.length,
+-                  shrinkWrap: true,
+-                  physics: const ClampingScrollPhysics(),
+-                  itemBuilder: (context, index) {
+-                    log(controller.teacherList[index].profilePhotoPath);
+-                    return Column(
+-                      children: [
+-                        teacherWidegt(
+-                            name: controller.teacherList[index].firstName,
+-                            content: controller.teacherList[index].email,
+-                            image: controller
+-                                        .teacherList[index].profilePhotoPath !=
+-                                    ""
+-                                ? '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath}'
+-                                : 'https://media.istockphoto.com/vectors/default-profile-picture-avatar-photo-placeholder-vector-illustration-vector-id1223671392?k=20&m=1223671392&s=612x612&w=0&h=lGpj2vWAI3WUT1JeJWm1PRoHT3V15_1pdcTn2szdwQ0=',
+-                            onTap: () {
+-                              Get.to(() => VideoIndividualScreen(
+-                                    teacherId:
+-                                        controller.teacherList[index].userId,
+-                                  ));
+-                              // Get.to(() => CustomLivePage(
+-                              //       studentName: profileController
+-                              //           .profileData!.firstName,
+-                              //       teacherName: controller
+-                              //           .teacherList[index].firstName
+-                              //           .toString(),
+-                              //       profileURL:
+-                              //           '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath.toString()}',
+-                              //       teacherId: controller
+-                              //           .teacherList[index].userId
+-                              //           .toString(),
+-                              //       outgoingCall: true,
+-                              //     ));
+-                            },
+-                            onTapAudio: () {
+-                              Get.to(() => AudioCallPage(
+-                                    teacherId:
+-                                        controller.teacherList[index].userId,
+-                                  ));
+-                              // Get.to(() => CustomLivePage(
+-                              //       studentName: profileController
+-                              //           .profileData!.firstName,
+-                              //       teacherName: controller
+-                              //           .teacherList[index].firstName
+-                              //           .toString(),
+-                              //       profileURL:
+-                              //           '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath.toString()}',
+-                              //       teacherId: controller
+-                              //           .teacherList[index].userId
+-                              //           .toString(),
+-                              //       outgoingCall: true,
+-                              //     ));
+-                            },
+-                            tileOnTap: () async {
+-                              print(controller
+-                                  .teacherList[index].profilePhotoPath);
+-                              SharedPreferences preferences =
+-                                  await SharedPreferences.getInstance();
+-                              String studentId = preferences
+-                                      .getString('breffini_student_id') ??
+-                                  '';
+-                              ChatbotSocket.joinConversationRoom(
+-                                  studentId,
+-                                  controller.teacherList[index].userId,
+-                                  'teacher_student');
+-                              Get.to(() => ChatFireBaseScreen(
+-                                  courseId: 0,
+-                                  isHod: false,
+-                                  teacherName:
+-                                      '${controller.teacherList[index].firstName} ${controller.teacherList[index].lastName}',
+-                                  profileUrl:
+-                                      '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath}',
+-                                  teacherId:
+-                                      controller.teacherList[index].userId));
+-                            }),
+-                        SizedBox(
+-                          height: 4.h,
+-                        ),
+-                        Divider(
+-                          height: 8.h,
+-                          color: ColorResources.colorgrey300,
+-                        ),
+-                        SizedBox(
+-                          height: 4.h,
+-                        ),
+-                      ],
+-                    );
+-                  },
+-                ),
+-              ),
++              child: Obx(() {
++                return controller.teacherList.isNotEmpty
++                    ? ListView.builder(
++                        itemCount: controller.teacherList.length,
++                        shrinkWrap: true,
++                        physics: const ClampingScrollPhysics(),
++                        itemBuilder: (context, index) {
++                          log(controller.teacherList[index].profilePhotoPath);
++                          return Column(
++                            children: [
++                              teacherWidegt(
++                                  name: controller.teacherList[index].firstName,
++                                  content: controller.teacherList[index].email,
++                                  image: controller.teacherList[index]
++                                              .profilePhotoPath !=
++                                          ""
++                                      ? '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath}'
++                                      : 'https://media.istockphoto.com/vectors/default-profile-picture-avatar-photo-placeholder-vector-illustration-vector-id1223671392?k=20&m=1223671392&s=612x612&w=0&h=lGpj2vWAI3WUT1JeJWm1PRoHT3V15_1pdcTn2szdwQ0=',
++                                  onTap: () {
++                                    Get.to(() => VideoIndividualScreen(
++                                          teacherId: controller
++                                              .teacherList[index].userId,
++                                        ));
++                                    // Get.to(() => CustomLivePage(
++                                    //       studentName: profileController
++                                    //           .profileData!.firstName,
++                                    //       teacherName: controller
++                                    //           .teacherList[index].firstName
++                                    //           .toString(),
++                                    //       profileURL:
++                                    //           '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath.toString()}',
++                                    //       teacherId: controller
++                                    //           .teacherList[index].userId
++                                    //           .toString(),
++                                    //       outgoingCall: true,
++                                    //     ));
++                                  },
++                                  onTapAudio: () {
++                                    Get.to(() => AudioCallPage(
++                                          teacherId: controller
++                                              .teacherList[index].userId,
++                                        ));
++                                    // Get.to(() => CustomLivePage(
++                                    //       studentName: profileController
++                                    //           .profileData!.firstName,
++                                    //       teacherName: controller
++                                    //           .teacherList[index].firstName
++                                    //           .toString(),
++                                    //       profileURL:
++                                    //           '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath.toString()}',
++                                    //       teacherId: controller
++                                    //           .teacherList[index].userId
++                                    //           .toString(),
++                                    //       outgoingCall: true,
++                                    //     ));
++                                  },
++                                  tileOnTap: () async {
++                                    print(controller
++                                        .teacherList[index].profilePhotoPath);
++                                    SharedPreferences preferences =
++                                        await SharedPreferences.getInstance();
++                                    String studentId = preferences
++                                            .getString('breffini_student_id') ??
++                                        '';
++                                    ChatbotSocket.joinConversationRoom(
++                                        studentId,
++                                        controller.teacherList[index].userId,
++                                        'teacher_student');
++                                    Get.to(() => ChatFireBaseScreen(
++                                        courseId: 0,
++                                        isHod: false,
++                                        teacherName:
++                                            '${controller.teacherList[index].firstName} ${controller.teacherList[index].lastName}',
++                                        profileUrl:
++                                            '${HttpUrls.imgBaseUrl}${controller.teacherList[index].profilePhotoPath}',
++                                        teacherId: controller
++                                            .teacherList[index].userId));
++                                  }),
++                              SizedBox(
++                                height: 4.h,
++                              ),
++                              Divider(
++                                height: 8.h,
++                                color: ColorResources.colorgrey300,
++                              ),
++                              SizedBox(
++                                height: 4.h,
++                              ),
++                            ],
++                          );
++                        },
++                      )
++                    : SizedBox(
++                        height: Get.height / 1.5,
++                        child: Center(
++                            child: Text(
++                          'No mentors available',
++                          style: GoogleFonts.plusJakartaSans(
++                            color: ColorResources.colorgrey600,
++                            fontSize: 15,
++                            fontWeight: FontWeight.w500,
++                          ),
++                        )));
++              }),
+             )
+             // : Center(
+             //     child: Column(
+Index: lib/presentation/login/login_controller.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/presentation/login/login_controller.dart b/lib/presentation/login/login_controller.dart
+--- a/lib/presentation/login/login_controller.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/presentation/login/login_controller.dart	(date 1727083658924)
+@@ -65,17 +65,17 @@
+       log('ID: $id');
+       log('Photo URL: $photoUrl');
+ 
+-      final GoogleSignInAuthentication googleAuth =
+-          await googleUser.authentication;
+-      log('Google Access Token: ${googleAuth.accessToken}');
++      // final GoogleSignInAuthentication googleAuth =
++      //     await googleUser.authentication;
++      // log('Google Access Token: ${googleAuth.accessToken}');
+ 
+-      final AuthCredential credential = GoogleAuthProvider.credential(
+-        accessToken: googleAuth.accessToken,
+-        idToken: googleAuth.idToken,
+-      );
++      // final AuthCredential credential = GoogleAuthProvider.credential(
++      //   accessToken: googleAuth.accessToken,
++      //   idToken: googleAuth.idToken,
++      // );
+ 
+-      await _auth.signInWithCredential(credential);
+-      log('Google ID Token: ${googleAuth.idToken}');
++      // await _auth.signInWithCredential(credential);
++      // log('Google ID Token: ${googleAuth.idToken}');
+ 
+       if (googleUser.displayName != null) {
+         List<String> nameParts = googleUser.displayName!.split(' ');
+@@ -296,7 +296,7 @@
+             value: data,
+             isEmail: isEmail,
+           ));
+-        });
++    });
+   }
+ 
+   verifyOtp(
+Index: lib/presentation/android_large_5_page/android_large_5_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/presentation/android_large_5_page/android_large_5_page.dart b/lib/presentation/android_large_5_page/android_large_5_page.dart
+--- a/lib/presentation/android_large_5_page/android_large_5_page.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/presentation/android_large_5_page/android_large_5_page.dart	(date 1727087525316)
+@@ -26,6 +26,8 @@
+ import 'package:outline_gradient_button/outline_gradient_button.dart';
+ import 'package:shared_preferences/shared_preferences.dart';
+ 
++import '../home_page_container_screen/controller/home_page_container_controller.dart';
++
+ // Other imports...
+ 
+ class AndroidLarge5Page extends StatefulWidget {
+@@ -58,6 +60,8 @@
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+         _tabController.index = widget.initialTabIndex!;
+       });
++    }else{
++      _tabController.index= Get.find<HomePageContainerController>().mentorChildIndex.value;
+     }
+     super.initState();
+   }
+@@ -171,8 +175,9 @@
+                           profileUrl:
+                               '${HttpUrls.imgBaseUrl}${hodController.hodList[0].profilePhotoPath}',
+                           teacherId: hodController.hodList[0].userId,
+-                          teacherName:
+-                              "${hodController.hodList[0].firstName} ${hodController.hodList[0].lastName}",
++                          teacherName: 'HOD',
++                          // teacherName:
++                          //     "${hodController.hodList[0].firstName} ${hodController.hodList[0].lastName}",
+                         ));
+                   },
+                 ),
+Index: lib/http/http_urls.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/http/http_urls.dart b/lib/http/http_urls.dart
+--- a/lib/http/http_urls.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/http/http_urls.dart	(date 1727084256113)
+@@ -1,7 +1,7 @@
+ class HttpUrls {
+   // static String baseUrl = 'http://DESKTOP-IK6ME8M:3520';
+-  static String baseUrl = 'https://f92c-103-141-56-69.ngrok-free.app';
+-  // static String baseUrl = 'http://13.232.244.184:3520';
++  // static String baseUrl = 'https://3394-103-141-56-69.ngrok-free.app';
++  static String baseUrl = 'http://13.232.244.184:3520';
+   static String imgBaseUrl =
+       'https://ufsnabeelphotoalbum.s3.us-east-2.amazonaws.com/';
+ 
+Index: lib/presentation/home_page_container_screen/controller/home_page_container_controller.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/presentation/home_page_container_screen/controller/home_page_container_controller.dart b/lib/presentation/home_page_container_screen/controller/home_page_container_controller.dart
+--- a/lib/presentation/home_page_container_screen/controller/home_page_container_controller.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/presentation/home_page_container_screen/controller/home_page_container_controller.dart	(date 1727087525303)
+@@ -20,14 +20,16 @@
+ 
+   // Observable for the selected index in navigation
+   var selectedIndex = 0.obs;
++  var mentorChildIndex = 0.obs;
+ 
+   // Observable for the selected tab index
+   var selectedTabIndex = 0.obs;
+ 
+   // Method to temporarily set the page (e.g., for notifications)
+-  void setTemporaryPage(String route) {
++  void setTemporaryPage(String route,{int mentorIndex=0}) {
+     currentPage.value = route;
+     selectedIndex.value = getIndexForPage(route);
++    mentorChildIndex.value = mentorIndex;
+   }
+ 
+   // Method to update the selected tab index
+Index: lib/core/utils/notification_controller.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/core/utils/notification_controller.dart b/lib/core/utils/notification_controller.dart
+--- a/lib/core/utils/notification_controller.dart	(revision e77bac1d2668a3e430b41e6c72fa2f4102d629f0)
++++ b/lib/core/utils/notification_controller.dart	(date 1727087525294)
+@@ -2,6 +2,8 @@
+ import 'package:anandhu_s_application4/presentation/android_large_5_page/android_large_5_page.dart';
+ import 'package:awesome_notifications/awesome_notifications.dart';
+ 
++import '../../presentation/home_page_container_screen/controller/home_page_container_controller.dart';
++
+ class NotificationController {
+   /// Use this method to detect when a new notification or a schedule is created
+   @pragma("vm:entry-point")
+@@ -31,15 +33,21 @@
+     String? payloadType = receivedAction.payload?['type'];
+     switch (payloadType) {
+       case 'new_call':
+-        print('notification initiated');
+-        // navigatorKey.currentState?.pushNamed(AppRoutes.homeContainer,
++
++
++        final HomePageContainerController controller =
++        Get.find<HomePageContainerController>();
++        controller.setTemporaryPage(AppRoutes.androidLarge5Page,mentorIndex: 1);
++
++        // print('notification initiated');
++        // // navigatorKey.currentState?.pushNamed(AppRoutes.homeContainer,
++        // //     arguments: {'showSpecialPage': true, 'selectedTabIndex': 1});
++        // Get.to(
++        //     () => AndroidLarge5Page(
++        //           initialTabIndex: 1,
++        //           isNotificationClick: true,
++        //         ),
+         //     arguments: {'showSpecialPage': true, 'selectedTabIndex': 1});
+-        Get.to(
+-            () => AndroidLarge5Page(
+-                  initialTabIndex: 1,
+-                  isNotificationClick: true,
+-                ),
+-            arguments: {'showSpecialPage': true, 'selectedTabIndex': 1});
+         print('notification clicked');
+         break;
+       case 'new_message':
+@@ -50,13 +58,16 @@
+         // });
+         // Get.toNamed(AppRoutes.homeContainer,
+         //     arguments: {'showSpecialPage': true});
+-        Get.to(
+-            () => AndroidLarge5Page(
+-                  initialTabIndex: 0,
+-                  isNotificationClick: true,
+-                ),
+-            arguments: {'showSpecialPage': true});
+-        print('notification clicked');
++        final HomePageContainerController controller =
++        Get.find<HomePageContainerController>();
++        controller.setTemporaryPage(AppRoutes.androidLarge5Page,mentorIndex: 0);
++        // Get.to(
++        //     () => AndroidLarge5Page(
++        //           initialTabIndex: 0,
++        //           isNotificationClick: true,
++        //         ),
++        //     arguments: {'showSpecialPage': true});
++        // print('notification clicked');
+         break;
+       default:
+         Get.toNamed(AppRoutes.homePage);
