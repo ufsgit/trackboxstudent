@@ -46,12 +46,12 @@ class EnrolItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        // await courseInfoController.getCourseInfo(
-        //     courseId: viewhierarchyItemModelObj.courseId ?? 0);
-        // await enrolController
-        //     .checkCourseEnrolled(viewhierarchyItemModelObj.courseId.toString());
-        // Get.to(() => CourseCategoryDetailsScreen(
-        //     courseId: viewhierarchyItemModelObj.courseId ?? 0));
+        await courseInfoController.getCourseInfo(
+            courseId: viewhierarchyItemModelObj.courseId ?? 0);
+        await enrolController
+            .checkCourseEnrolled(viewhierarchyItemModelObj.courseId.toString());
+        Get.to(() => CourseCategoryDetailsScreen(
+            courseId: viewhierarchyItemModelObj.courseId ?? 0));
 
         final CourseAccessController accessController =
             Get.find<CourseAccessController>();
@@ -158,36 +158,36 @@ class EnrolItemWidget extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                   ),
-                  // CustomImageView(
-                  //   imagePath: ImageConstant.imgClock,
-                  //   height: 12.adaptSize,
-                  //   width: 12.adaptSize,
-                  //   margin: EdgeInsets.only(
-                  //     left: 18.h,
-                  //     top: 1.v,
-                  //     bottom: 2.v,
-                  //   ),
-                  // ),
-                  // Padding(
-                  //   padding: EdgeInsets.only(left: 2.h),
-                  //   child: RichText(
-                  //     text: TextSpan(
-                  //       children: [
-                  //         TextSpan(
-                  //           text:
-                  //               "${formatDateTime(viewhierarchyItemModelObj.expiryDate)}"
-                  //                   .tr,
-                  //           style: CustomTextStyles.labelLargeBluegray500,
-                  //         ),
-                  //         // TextSpan(
-                  //         //   text: "lbl_hrs".tr,
-                  //         //   style: CustomTextStyles.bodySmallBluegray50012,
-                  //         // )
-                  //       ],
-                  //     ),
-                  //     textAlign: TextAlign.left,
-                  //   ),
-                  // )
+                  CustomImageView(
+                    imagePath: ImageConstant.imgClock,
+                    height: 12.adaptSize,
+                    width: 12.adaptSize,
+                    margin: EdgeInsets.only(
+                      left: 18.h,
+                      top: 1.v,
+                      bottom: 2.v,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 2.h),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                                "${formatDateTime(viewhierarchyItemModelObj.expiryDate)}"
+                                    .tr,
+                            style: CustomTextStyles.labelLargeBluegray500,
+                          ),
+                          // TextSpan(
+                          //   text: "lbl_hrs".tr,
+                          //   style: CustomTextStyles.bodySmallBluegray50012,
+                          // )
+                        ],
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  )
                 ],
               ),
             ),
