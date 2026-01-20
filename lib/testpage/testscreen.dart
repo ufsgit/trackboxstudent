@@ -6,7 +6,7 @@ import 'resultscreen.dart';
 import 'examservieses.dart';
 
 class TestScreen extends StatefulWidget {
-  final int courseExamId;
+  final int courseExamId; // ✅ FIXED (INT)
   final int duration; // in minutes
 
   const TestScreen({
@@ -59,8 +59,9 @@ class _TestScreenState extends State<TestScreen> {
   Future<void> _fetchQuestions() async {
     try {
       final service = ExamService(PrefUtils().getAuthToken());
-      final fetchedQuestions = await service.fetchQuestionsByExam(
-        widget.courseExamId.toString(),
+
+      final fetchedQuestions = await service.fetchQuestionsByCourseExam(
+        widget.courseExamId, // ✅ INT
       );
 
       if (fetchedQuestions.isEmpty) {
@@ -71,6 +72,7 @@ class _TestScreenState extends State<TestScreen> {
         questions = fetchedQuestions;
         isLoading = false;
       });
+
       _startTimer();
     } catch (e) {
       setState(() {
@@ -82,11 +84,10 @@ class _TestScreenState extends State<TestScreen> {
 
   void _submitExam() {
     _timer?.cancel();
-    // Check last question answer if selected
-    if (selectedAnswer != -1) {
-      if (selectedAnswer == questions[currentIndex].correctAnswerIndex) {
-        score++;
-      }
+
+    if (selectedAnswer != -1 &&
+        selectedAnswer == questions[currentIndex].correctAnswerIndex) {
+      score++;
     }
 
     Navigator.pushReplacement(
@@ -187,7 +188,7 @@ class _TestScreenState extends State<TestScreen> {
     if (errorMessage != null) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.v),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -219,7 +220,6 @@ class _TestScreenState extends State<TestScreen> {
 
     return Column(
       children: [
-        /// 🔹 PROGRESS BAR
         Padding(
           padding: EdgeInsets.all(16.v),
           child: Column(
@@ -239,15 +239,12 @@ class _TestScreenState extends State<TestScreen> {
             ],
           ),
         ),
-
-        /// 🔹 QUESTION + OPTIONS
         Expanded(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.v),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// QUESTION CARD
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16.v),
@@ -267,15 +264,10 @@ class _TestScreenState extends State<TestScreen> {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
-
                 SizedBox(height: 20.v),
-
-                /// OPTIONS
                 ...List.generate(question.options.length, (index) {
                   final isSelected = selectedAnswer == index;
-
                   return InkWell(
-                    borderRadius: BorderRadius.circular(12.v),
                     onTap: () {
                       setState(() {
                         selectedAnswer = index;
@@ -298,7 +290,6 @@ class _TestScreenState extends State<TestScreen> {
                           Radio<int>(
                             value: index,
                             groupValue: selectedAnswer,
-                            activeColor: appTheme.blue800,
                             onChanged: (value) {
                               setState(() {
                                 selectedAnswer = value!;
@@ -308,12 +299,7 @@ class _TestScreenState extends State<TestScreen> {
                           Expanded(
                             child: Text(
                               question.options[index],
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? appTheme.blue800
-                                    : appTheme.blueGray80003,
-                              ),
+                              style: theme.textTheme.bodyMedium,
                             ),
                           ),
                         ],
@@ -323,44 +309,6 @@ class _TestScreenState extends State<TestScreen> {
                 }),
               ],
             ),
-          ),
-        ),
-
-        /// 🔹 ACTION BUTTONS
-        Container(
-          padding: EdgeInsets.all(16.v),
-          decoration: BoxDecoration(
-            color: appTheme.whiteA700,
-            boxShadow: [
-              BoxShadow(
-                color: appTheme.gray5005e,
-                blurRadius: 8,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: skipQuestion,
-                  child: Text(
-                    "Skip",
-                    style: theme.textTheme.labelLarge,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12.v),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: selectedAnswer == -1 ? null : nextQuestion,
-                  child: Text(
-                    currentIndex == questions.length - 1 ? "Submit" : "Next",
-                    style: theme.textTheme.labelMedium,
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ],

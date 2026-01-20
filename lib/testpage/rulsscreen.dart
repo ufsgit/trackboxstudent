@@ -14,7 +14,7 @@ class RulesScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          exam.examName, // ✅ FIXED
+          "Exam Rules", // ✅ FIXED (no examName in backend)
           style: theme.textTheme.titleMedium,
         ),
       ),
@@ -49,9 +49,10 @@ class RulesScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _infoRow("Course", exam.courseName),
+                  _infoRow("Course ID", exam.courseId.toString()),
                   _infoRow("Total Questions", exam.questions.toString()),
                   _infoRow("Duration", "${exam.duration} minutes"),
+                  _infoRow("Pass Count", exam.passCount.toString()),
                 ],
               ),
             ),
@@ -100,7 +101,7 @@ class RulesScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (_) => TestScreen(
-                        courseExamId: exam.courseExamId,
+                        courseExamId: exam.courseExamId, // ✅ FIXED
                         duration: exam.duration,
                       ),
                     ),

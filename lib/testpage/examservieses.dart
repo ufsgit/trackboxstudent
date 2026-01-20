@@ -14,37 +14,37 @@ class ExamService {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        connectTimeout: const Duration(seconds: 20),
-        receiveTimeout: const Duration(seconds: 20),
       ),
     );
   }
 
-  /// 🔹 Fetch exams by course ID
-  Future<List<ExamModel>> fetchExamsByCourse(int courseId) async {
+  /// Fetch exams by course ID
+  Future<List<ExamModel>> fetchExamsByCourse(String courseId) async {
     try {
       final response = await _dio.get(
-        HttpUrls.getStudentExamsByCourse(courseId.toString()),
+        HttpUrls.getStudentExamsByCourse(courseId),
       );
 
       if (response.statusCode == 200 &&
           response.data is Map &&
           response.data['status'] == true) {
-        final List list = response.data['data'] ?? [];
-        return list.map((e) => ExamModel.fromJson(e)).toList();
+        final List data = response.data['data'] ?? [];
+        return data.map((e) => ExamModel.fromJson(e)).toList();
       }
-
       return [];
-    } catch (e) {
+    } catch (_) {
       return [];
     }
   }
 
-  /// 🔹 Fetch questions by exam
-  Future<List<QuestionModel>> fetchQuestionsByExam(String courseExamId) async {
+  /// Fetch questions by courseExamId (INT → STRING)
+  Future<List<QuestionModel>> fetchQuestionsByCourseExam(
+      int courseExamId) async {
     try {
       final response = await _dio.get(
-        HttpUrls.getStudentQuestionsByCourseExam(courseExamId),
+        HttpUrls.getStudentQuestionsByCourseExam(
+          courseExamId.toString(), // ✅ convert here
+        ),
       );
 
       if (response.statusCode == 200 &&
@@ -53,14 +53,13 @@ class ExamService {
         final List data = response.data['data'] ?? [];
         return data.map((e) => QuestionModel.fromJson(e)).toList();
       }
-
       return [];
-    } catch (e) {
+    } catch (_) {
       return [];
     }
   }
 
-  /// 🔹 Fetch exams grouped by course (NO FILTERING)
+  /// Fetch exams grouped by course
   Future<Map<String, List<ExamModel>>> fetchExamsGroupedByCourse(
       String studentId) async {
     try {
@@ -79,17 +78,15 @@ class ExamService {
       Map<String, List<ExamModel>> groupedExams = {};
 
       for (var course in courseData) {
-        int courseId = course['Course_ID'];
-        String courseName = course['Course_Name'] ?? 'Unknown Course';
+        final String courseId = course['Course_ID'].toString();
+        final String courseName = course['Course_Name'] ?? 'Unknown Course';
 
         final exams = await fetchExamsByCourse(courseId);
-
-        // ✅ ALWAYS ADD COURSE (even if exams empty)
         groupedExams[courseName] = exams;
       }
 
       return groupedExams;
-    } catch (e) {
+    } catch (_) {
       return {};
     }
   }

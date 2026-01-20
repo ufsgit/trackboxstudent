@@ -18,17 +18,17 @@ class ExamsHomeScreen extends StatefulWidget {
 }
 
 class _ExamsHomeScreenState extends State<ExamsHomeScreen> {
-  late Future<Map<String, List<ExamModel>>> _groupedExamFuture;
+  late Future<Map<String, List<ExamModel>>> _examFuture;
 
   @override
   void initState() {
     super.initState();
-    _groupedExamFuture = _loadExams();
+    _examFuture = _loadData();
   }
 
-  Future<Map<String, List<ExamModel>>> _loadExams() {
-    final service = ExamService(widget.token);
-    return service.fetchExamsGroupedByCourse(widget.studentId);
+  Future<Map<String, List<ExamModel>>> _loadData() {
+    return ExamService(widget.token)
+        .fetchExamsGroupedByCourse(widget.studentId);
   }
 
   @override
@@ -36,30 +36,24 @@ class _ExamsHomeScreenState extends State<ExamsHomeScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Available Exams")),
       body: FutureBuilder<Map<String, List<ExamModel>>>(
-        future: _groupedExamFuture,
+        future: _examFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }
-
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No courses found'));
+            return const Center(child: Text("No courses found"));
           }
 
-          final groupedExams = snapshot.data!;
+          final data = snapshot.data!;
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: groupedExams.length,
+            itemCount: data.length,
             itemBuilder: (context, index) {
-              final courseName = groupedExams.keys.elementAt(index);
-              final exams = groupedExams[courseName]!;
+              final courseName = data.keys.elementAt(index);
+              final exams = data[courseName]!;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,24 +63,21 @@ class _ExamsHomeScreenState extends State<ExamsHomeScreen> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
+                      color: Colors.blue,
                     ),
                   ),
                   const SizedBox(height: 8),
-
-                  // ✅ Show empty exams message per course
                   if (exams.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(12),
                       child: Text(
-                        'No exams available for this course',
+                        "No exams for this course",
                         style: TextStyle(color: Colors.grey),
                       ),
                     )
                   else
-                    ...exams.map(_buildExamCard).toList(),
-
-                  const Divider(height: 24),
+                    ...exams.map(_examCard).toList(),
+                  const Divider(height: 32),
                 ],
               );
             },
@@ -96,12 +87,19 @@ class _ExamsHomeScreenState extends State<ExamsHomeScreen> {
     );
   }
 
-  Widget _buildExamCard(ExamModel exam) {
+  Widget _examCard(ExamModel exam) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        title: Text(exam.examName),
-        subtitle: Text("Duration: ${exam.duration} mins"),
+        title: Text("Course Exam ID: ${exam.courseExamId}"), // ✅ INT ID
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Duration: ${exam.duration} mins"),
+            Text("Questions: ${exam.questions}"),
+            Text("Pass Count: ${exam.passCount}"),
+          ],
+        ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: () {
           Navigator.push(
