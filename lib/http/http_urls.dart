@@ -1,7 +1,7 @@
 class HttpUrls {
   // static String baseUrl = 'http://DESKTOP-IK6ME8M:3520';
   // static String baseUrl = 'https://2766-103-141-56-75.ngrok-free.app';
-  static String baseUrl = 'https://rw4vb3zj-3520.inc1.devtunnels.ms'; //og
+  static String baseUrl = 'https://rw4vb3zj-3520.inc1.devtunnels.ms/'; //og
 //   static String baseUrl = 'https://igmapi.ufstech.co.in'; //og
   // static String baseUrl = 'https://funny-nicely-rodent.ngrok-free.app';
   static String chatBaseUrl = baseUrl + "/chatbot";

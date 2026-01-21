@@ -35,7 +35,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -70,13 +69,12 @@ void main() async {
   }
   //--Initialize Notification Services
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  // NotificationService().initializeLocalNotifications();
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  // AwesomeNotifications().initialize(
+  await NotificationService().initialize();
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // ); // Moved to NotificationService
   //   'resource://drawable/res_app_icon',
   //   [
   //     NotificationChannel(

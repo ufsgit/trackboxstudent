@@ -15,6 +15,7 @@ import 'package:anandhu_s_application4/presentation/my_courses_page/models/live_
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:anandhu_s_application4/core/utils/notification_service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatSocket {
@@ -110,13 +111,46 @@ class ChatSocket {
       print('chat log lis: ${chtLogController.searchableChatList.value}');
       print(
           'chat log list after received: ${chtLogController.searchableChatList}');
+
+      // Attempt to show notification for the latest message
+      try {
+        if (chatLogHistory.isNotEmpty) {
+          var latest = chatLogHistory[0];
+          // Construct details for notification
+          String name =
+              "${latest['First_Name'] ?? ''} ${latest['Last_Name'] ?? ''}"
+                  .trim();
+          if (name.isEmpty) name = "Teacher";
+
+          // Check if it's a valid message to notify
+          // You might want to check 'unread_count' > 0 or similar if available
+          // For now, triggering to ensure visibility as requested
+
+          Map<String, dynamic> notificationData =
+              Map<String, dynamic>.from(latest);
+          // Ensure keys match what NotificationService looks for
+          notificationData['teacherId'] = latest['teacher_id'];
+          notificationData['type'] = 'new_message';
+
+          // Only show if we are not actively looking at this chat?
+          // For now, show always to verify functionality.
+          NotificationService().showNotification(
+            title: name,
+            body: latest['message'] ?? "New Message",
+            data: notificationData,
+          );
+        }
+      } catch (e) {
+        print("Error showing notification from chat list: $e");
+      }
+
       chtLogController.update();
       LoaderChat.stopLoader();
     });
 
     socket?.on(
       'new message',
-      (data) {
+      (data) async {
         StudentChatHistoryModel newChat = StudentChatHistoryModel(
             messageId: null,
             teacherId: data['teacherId'],
@@ -152,6 +186,18 @@ class ChatSocket {
 
         chtLogController.getStudentChatLog();
         chtLogController.update();
+
+        // Show Notification if we are NOT in the active chat with this teacher
+        // TODO: specific check if Get.currentRoute == ChatScreen && teacherId matches.
+        // For now, allow notification to show.
+        if (data['isStudent'] == false) {
+          // Only notify if message is from Teacher
+          await NotificationService().showNotification(
+            title: data['senderName'] ?? "Teacher", // Try to find sender name
+            body: data['message'] ?? "New Message",
+            data: Map<String, dynamic>.from(data),
+          );
+        }
       },
     );
 
