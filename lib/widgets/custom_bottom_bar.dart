@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/app_export.dart';
 
-enum BottomBarEnum { Home, Mycourses, Connect, Mentors, Test, Profile }
+enum BottomBarEnum { Home, Connect, Mentors, Test, Profile, Mycourses }
 
 class CustomBottomBar extends StatelessWidget {
   CustomBottomBar({Key? key, this.onChanged}) : super(key: key);
@@ -18,12 +18,12 @@ class CustomBottomBar extends StatelessWidget {
       title: "lbl_home".tr,
       type: BottomBarEnum.Home,
     ),
-    BottomMenuModel(
-      icon: ImageConstant.imgbottomcourse,
-      activeIcon: ImageConstant.imgbottomcourseFilled,
-      title: "Course".tr,
-      type: BottomBarEnum.Mycourses,
-    ),
+    // BottomMenuModel(
+    //   icon: ImageConstant.imgbottomcourse,
+    //   activeIcon: ImageConstant.imgbottomcourseFilled,
+    //   title: "Course".tr,
+    //   type: BottomBarEnum.Mycourses,
+    // ),
     BottomMenuModel(
       icon: ImageConstant.imgBottomConnect,
       activeIcon: ImageConstant.imgBottomConnectFilled,

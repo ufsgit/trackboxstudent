@@ -211,11 +211,11 @@ class Viewhierarchy4ItemWidget extends StatelessWidget {
                 viewhierarchy4ItemModelObj.certificateIssue == 1
                     ? InkWell(
                         onTap: () {
-                          Get.to(() => CertificateDownloadPage(
-                                profileController.profileData!.firstName +
-                                    profileController.profileData!.lastName,
-                                viewhierarchy4ItemModelObj.courseName,
-                              ));
+                          // Get.to(() => CertificateDownloadPage(
+                          //       profileController.profileData!.firstName +
+                          //           profileController.profileData!.lastName,
+                          //       viewhierarchy4ItemModelObj.courseName,
+                          //     ));
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),

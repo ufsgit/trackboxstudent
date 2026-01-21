@@ -42,15 +42,13 @@ class HomePageContainerController extends GetxController {
     switch (page) {
       case AppRoutes.homePage:
         return 0;
-      case AppRoutes.myCoursesPage:
-        return 1;
       case AppRoutes.connectMentorsPage:
-        return 2;
+        return 1;
       case AppRoutes.androidLarge5Page:
+        return 2;
+      case AppRoutes.testTab:
         return 3;
       case AppRoutes.profileScreen:
-        return 5;
-      case AppRoutes.testTab:
         return 4;
       default:
         return 0;

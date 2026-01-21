@@ -1,3 +1,4 @@
+import 'package:anandhu_s_application4/testpage/mainexamstapbar.dart';
 import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 import '../../widgets/app_bar/appbar_leading_iconbutton.dart';
@@ -116,12 +117,14 @@ class SearchPageScreen extends GetWidget<SearchPageController> {
     switch (type) {
       case BottomBarEnum.Home:
         return AppRoutes.homePage;
-      case BottomBarEnum.Mycourses:
-        return AppRoutes.myCoursesPage;
+      case BottomBarEnum.Connect:
+        return AppRoutes.connectMentorsPage;
       case BottomBarEnum.Mentors:
         return AppRoutes.androidLarge5Page;
+      case BottomBarEnum.Test:
+        return AppRoutes.testTab;
       case BottomBarEnum.Profile:
-        return "/";
+        return AppRoutes.profileScreen;
       default:
         return "/";
     }

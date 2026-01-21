@@ -6,7 +6,7 @@ class HttpUrls {
   // static String baseUrl = 'https://funny-nicely-rodent.ngrok-free.app';
   static String chatBaseUrl = baseUrl + "/chatbot";
   static String imgBaseUrl =
-      'https://ufsnabeelphotoalbum.s3.us-east-2.amazonaws.com/';
+      'https://pub-11714a99f3bd420ca95f23dda2af714b.r2.dev/';
 
   // static String imgUploadBaseUrl =
   //     'https://darlsco-files.s3.ap-south-1.amazonaws.com';
@@ -25,7 +25,7 @@ class HttpUrls {
 
   static String googleSignIn = '/Login/Google_SignIn';
 
-  static String checkOtp = '/Login/Check_OTP';
+  // static String checkOtp = '/Login/Check_OTP';
 
   static String saveProfile = '/student/Save_student';
 
@@ -103,9 +103,11 @@ class HttpUrls {
 // GET exams by course ID
 // ================= EXAMS =================
 
+  /// 🔹 Get exams by Course_ID (course_exam table)
   static String getStudentExamsByCourse(String courseId) =>
       '/course/Student_GetExams/$courseId';
 
+  /// 🔹 Get questions by course_exam_id (questions table)
   static String getStudentQuestionsByCourseExam(String courseExamId) =>
       '/course/Student_GetQuestions/$courseExamId';
 }

@@ -842,10 +842,10 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
         return HomePage();
       case AppRoutes.myCoursesPage:
         return MyCoursesPage();
-      // case AppRoutes.connectMentorsPage:
-      //   return TeacherScreen(
-      //     isBottomBar: true,
-      //   );
+      case AppRoutes.connectMentorsPage:
+        return TeacherScreen(
+          isBottomBar: true,
+        );
       case AppRoutes.androidLarge5Page:
         return AndroidLarge5Screen(
           isNotificationClick: false,
