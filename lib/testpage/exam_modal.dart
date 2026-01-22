@@ -1,6 +1,6 @@
 class ExamModel {
-  final int courseExamId; // ✅ INT (FIXED)
-  final String examDataId; // exam master id (string or int → string)
+  final int courseExamId;
+  final String examDataId;
   final int courseId;
   final int duration;
   final int questions;
@@ -17,7 +17,7 @@ class ExamModel {
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
     return ExamModel(
-      courseExamId: int.parse(json['course_exam_id'].toString()), // ✅ INT
+      courseExamId: int.parse(json['course_exam_id'].toString()),
       examDataId: json['exam_data_id'].toString(),
       courseId: int.parse(json['Course_ID'].toString()),
       duration: int.parse(json['duration'].toString()),

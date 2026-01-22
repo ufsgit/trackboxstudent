@@ -254,7 +254,7 @@ class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen>
         controller: _tabController,
         children: [
           ChatLogScreen(),
-          // CallLogScreen(),
+          CallLogScreen(),
         ],
       ),
     );

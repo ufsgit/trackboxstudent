@@ -593,12 +593,14 @@ class AndroidLarge7Screen extends GetWidget<AndroidLarge7Controller> {
     switch (type) {
       case BottomBarEnum.Home:
         return AppRoutes.homePage;
-      case BottomBarEnum.Mycourses:
-        return AppRoutes.myCoursesPage;
+      case BottomBarEnum.Connect:
+        return AppRoutes.connectMentorsPage;
       case BottomBarEnum.Mentors:
         return AppRoutes.androidLarge5Page;
+      case BottomBarEnum.Test:
+        return AppRoutes.testTab;
       case BottomBarEnum.Profile:
-        return "/";
+        return AppRoutes.profileScreen;
       default:
         return "/";
     }

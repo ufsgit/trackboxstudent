@@ -11,7 +11,7 @@ class AnimatedPhoneCallContainer extends StatefulWidget {
 
 class AnimatedPhoneCallContainerState extends State<AnimatedPhoneCallContainer>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  AnimationController? _controller;
   late Animation<double> _animation;
 
   @override
@@ -21,12 +21,12 @@ class AnimatedPhoneCallContainerState extends State<AnimatedPhoneCallContainer>
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller!);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 

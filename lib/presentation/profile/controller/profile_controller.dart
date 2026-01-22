@@ -48,6 +48,7 @@ class ProfileController extends GetxController {
       );
 
       if (response != null) {
+        print('response.data  ' + response.data.toString());
         List<dynamic> data;
         if (response.data is String) {
           try {
@@ -61,10 +62,13 @@ class ProfileController extends GetxController {
         } else {
           throw Exception('Unexpected response data format');
         }
+        print('datalocals1 ' + data.toString());
 
-        if (data.isNotEmpty) {
+        if (data.length > 0) {
+          print('datalocals ' + data[0][0].toString());
           // Update profile data
           profileData = ProfileDetailsModel.fromJson(data[0][0]);
+
           await preferences.setString('First_Name', profileData!.firstName);
           await preferences.setString(
               'profile_url', profileData!.profilePhotoPath);

@@ -22,20 +22,23 @@ class ThreeDotLoading extends StatefulWidget {
   State<ThreeDotLoading> createState() => _ThreeDotLoadingState();
 }
 
-class _ThreeDotLoadingState extends State<ThreeDotLoading> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _ThreeDotLoadingState extends State<ThreeDotLoading>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _controller;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = (widget.controller ?? AnimationController(vsync: this, duration: widget.duration))..repeat();
+    _controller = (widget.controller ??
+        AnimationController(vsync: this, duration: widget.duration))
+      ..repeat();
   }
 
   @override
   void dispose() {
     if (widget.controller == null) {
-      _controller.dispose();
+      _controller?.dispose();
     }
     super.dispose();
   }
@@ -53,7 +56,7 @@ class _ThreeDotLoadingState extends State<ThreeDotLoading> with SingleTickerProv
                 begin: 0.0,
                 end: 1.0,
                 delay: i * .2,
-              ).animate(_controller),
+              ).animate(_controller!),
               child: SizedBox.fromSize(
                 size: Size.square(widget.size * 0.2),
                 child: _itemBuilder(i),
@@ -68,9 +71,9 @@ class _ThreeDotLoadingState extends State<ThreeDotLoading> with SingleTickerProv
   Widget _itemBuilder(int index) => widget.itemBuilder != null
       ? widget.itemBuilder!(context, index)
       : DecoratedBox(
-    decoration: BoxDecoration(
-      color: widget.color??Colors.black38,
-      shape: BoxShape.circle,
-    ),
-  );
+          decoration: BoxDecoration(
+            color: widget.color ?? Colors.black38,
+            shape: BoxShape.circle,
+          ),
+        );
 }

@@ -352,7 +352,7 @@ class LoginController extends GetxController {
     try {
       isOtpVerify.value = true;
       final value = await HttpRequest.httpPostBodyRequest(
-        endPoint: HttpUrls.checkOtp,
+        // endPoint: HttpUrls.checkOtp,
         bodyData: {
           'student_id': studentId,
           "otp": otp,
