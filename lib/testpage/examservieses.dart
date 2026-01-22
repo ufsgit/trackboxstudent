@@ -23,14 +23,25 @@ class ExamService {
       final res = await _dio.get(
         HttpUrls.getStudentExamsByCourse(courseId),
       );
+      print("API Status: ${res.statusCode}");
+      print("API Response: ${res.data}");
 
-      if (res.statusCode == 200 && res.data['status'] == true) {
-        return (res.data['data'] as List)
-            .map((e) => ExamModel.fromJson(e))
-            .toList();
+      if (res.statusCode == 200) {
+        if (res.data is List) {
+          return (res.data as List).map((e) => ExamModel.fromJson(e)).toList();
+        } else if (res.data is Map && res.data['status'] == true) {
+          return (res.data['data'] as List)
+              .map((e) => ExamModel.fromJson(e))
+              .toList();
+        }
       }
       return [];
-    } catch (_) {
+    } catch (e) {
+      print("API Error: $e");
+      if (e is DioException) {
+        print("API Error Status: ${e.response?.statusCode}");
+        print("API Error Response: ${e.response?.data}");
+      }
       return [];
     }
   }
@@ -43,14 +54,27 @@ class ExamService {
           courseExamId.toString(),
         ),
       );
+      print("Questions API Status: ${res.statusCode}");
+      print("Questions API Response: ${res.data}");
 
-      if (res.statusCode == 200 && res.data['status'] == true) {
-        return (res.data['data'] as List)
-            .map((e) => QuestionModel.fromJson(e))
-            .toList();
+      if (res.statusCode == 200) {
+        if (res.data is List) {
+          return (res.data as List)
+              .map((e) => QuestionModel.fromJson(e))
+              .toList();
+        } else if (res.data is Map && res.data['status'] == true) {
+          return (res.data['data'] as List)
+              .map((e) => QuestionModel.fromJson(e))
+              .toList();
+        }
       }
       return [];
-    } catch (_) {
+    } catch (e) {
+      print("Questions API Error: $e");
+      if (e is DioException) {
+        print("Questions API Error Status: ${e.response?.statusCode}");
+        print("Questions API Error Response: ${e.response?.data}");
+      }
       return [];
     }
   }

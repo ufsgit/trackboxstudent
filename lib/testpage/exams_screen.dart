@@ -4,54 +4,58 @@ import 'examservieses.dart';
 import 'rulsscreen.dart';
 
 class ExamsHomeScreen extends StatefulWidget {
-  final String studentId;
+  // final String studentId;
+  final String courseId;
   final String token;
 
   const ExamsHomeScreen(
-      {super.key, required this.studentId, required this.token});
+      {super.key, required this.courseId, required this.token});
 
   @override
   State<ExamsHomeScreen> createState() => _ExamsHomeScreenState();
 }
 
 class _ExamsHomeScreenState extends State<ExamsHomeScreen> {
-  late Future<Map<String, List<ExamModel>>> future;
+  late Future<List<ExamModel>> future;
 
   @override
   void initState() {
     super.initState();
-    future =
-        ExamService(widget.token).fetchExamsGroupedByCourse(widget.studentId);
+    future = ExamService(widget.token).fetchExamsByCourse(widget.courseId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Available Exams")),
-      body: FutureBuilder(
+      // appBar: AppBar(title: const Text("Available Exams")),
+      body: FutureBuilder<List<ExamModel>>(
         future: future,
         builder: (_, s) {
           if (!s.hasData)
             return const Center(child: CircularProgressIndicator());
           final data = s.data!;
-          return ListView(
-            children: data.entries.map((e) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: e.value.map((exam) {
-                  return ListTile(
-                    title: Text("Course Exam ID: ${exam.courseExamId}"),
-                    subtitle: Text("Duration: ${exam.duration} mins"),
+          if (data.isEmpty) {
+            return const Center(child: Text("No exams found for this course."));
+          }
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final exam = data[index];
+              return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ListTile(
+                    title: Text(exam.examName),
+                    subtitle: Text(
+                        "Duration: ${exam.duration} mins | Qs: ${exam.questions}"),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => RulesScreen(exam: exam),
                       ),
                     ),
-                  );
-                }).toList(),
-              );
-            }).toList(),
+                  ));
+            },
           );
         },
       ),

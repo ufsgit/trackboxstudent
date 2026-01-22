@@ -90,7 +90,7 @@ class RulesScreen extends StatelessWidget {
               ),
             ),
 
-            const Spacer(),
+            // const Spacer(),
 
             /// ================= START BUTTON =================
             SizedBox(

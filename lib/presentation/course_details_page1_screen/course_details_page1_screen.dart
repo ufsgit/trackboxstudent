@@ -28,6 +28,10 @@ import 'models/course_review_model.dart';
 import 'models/viewhierarchy2_item_model.dart';
 import 'widgets/viewhierarchy2_item_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../../testpage/examservieses.dart';
+import '../../testpage/exam_modal.dart';
+import '../../testpage/rulsscreen.dart';
+import '../../core/utils/pref_utils.dart';
 
 class CourseDetailsPage1Screen extends StatefulWidget {
   CourseDetailsPage1Screen({
@@ -78,6 +82,8 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
   late Animation<double> animation;
   late AnimationController controller;
   bool _isAnimating = false;
+  int _selectedTabIndex = 0; // Tab index
+  late Future<List<ExamModel>> examsFuture; // Future for exams
 
   @override
   void initState() {
@@ -91,6 +97,12 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
         duration: const Duration(milliseconds: 800),
       );
       animation = Tween<double>(begin: 0.0, end: 1.0).animate(controller);
+
+      // Initialize exams future
+      final token = PrefUtils().getAuthToken();
+      // examsFuture =
+      //     ExamService(token).fetchExamsByCourse(widget.courseId.toString());
+
       getData();
     });
 
@@ -324,6 +336,69 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
       _playbackSpeed = speed;
       flickManager.flickControlManager?.setPlaybackSpeed(speed);
     });
+  }
+
+  Widget _buildExamsTab() {
+    return FutureBuilder<List<ExamModel>>(
+      future: examsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text("No exams found for this course."),
+          ));
+        }
+        final exams = snapshot.data!;
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: exams.length,
+          padding: EdgeInsets.zero,
+          itemBuilder: (context, index) {
+            final exam = exams[index];
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200)),
+              child: ListTile(
+                leading: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: ColorResources.colorBlue500.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.assignment_outlined,
+                      color: ColorResources.colorBlue500),
+                ),
+                title: Text("Course Exam ID: ${exam.courseExamId}",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: Text(
+                    "Duration: ${exam.duration} mins | Qs: ${exam.questions}",
+                    style: TextStyle(fontSize: 12)),
+                trailing:
+                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RulesScreen(exam: exam),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -672,18 +747,115 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                               ),
                                             ),
                                           ),
-                                          //<<<<<<<<<<<<<<<<<<<<<NEW DESIGN>>>>>>>>>>>>>>>>>>>>>>
+//<<<<<<<<<<<<<<<<<<<<<NEW DESIGN>>>>>>>>>>>>>>>>>>>>>>
                                           SizedBox(height: 16),
                                           Divider(),
                                           SizedBox(height: 16),
-                                          CourseCurriculamWidget(
-                                              toggleVideo: showVideo,
-                                              modules: courseContentController
-                                                  .courseContent.value.contents,
-                                              scrollController:
-                                                  _scrollController,
-                                              controllerCourseDetailsController:
-                                                  homeController),
+
+                                          // Custom Tab Bar
+                                          Container(
+                                            height: 45,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _selectedTabIndex = 0;
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            _selectedTabIndex ==
+                                                                    0
+                                                                ? ColorResources
+                                                                    .colorBlue500
+                                                                : Colors
+                                                                    .transparent,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                      ),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text(
+                                                        "Curriculum",
+                                                        style: TextStyle(
+                                                          color:
+                                                              _selectedTabIndex ==
+                                                                      0
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _selectedTabIndex = 1;
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            _selectedTabIndex ==
+                                                                    1
+                                                                ? ColorResources
+                                                                    .colorBlue500
+                                                                : Colors
+                                                                    .transparent,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                      ),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text(
+                                                        "Exams",
+                                                        style: TextStyle(
+                                                          color:
+                                                              _selectedTabIndex ==
+                                                                      1
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 16),
+
+                                          _selectedTabIndex == 0
+                                              ? CourseCurriculamWidget(
+                                                  toggleVideo: showVideo,
+                                                  modules:
+                                                      courseContentController
+                                                          .courseContent
+                                                          .value
+                                                          .contents,
+                                                  scrollController:
+                                                      _scrollController,
+                                                  controllerCourseDetailsController:
+                                                      homeController)
+                                              : _buildExamsTab(),
                                           //<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>
 
                                           // SizedBox(height: 3.v),

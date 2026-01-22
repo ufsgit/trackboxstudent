@@ -2,6 +2,7 @@ import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/exam_result_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/day_category_screen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/result_viewing_screen.dart';
+import 'package:anandhu_s_application4/testpage/examcompletedpage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,14 @@ import 'package:anandhu_s_application4/presentation/course_details_page1_screen/
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/course_enrol_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/tab_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/bottom_sheet_guidance.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/course_overview_page.dart';
+
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/read_more_widget.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/final_test_widget.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/course_module_page.dart';
 import 'package:anandhu_s_application4/widgets/custom_elevated_button.dart';
 import 'package:lottie/lottie.dart';
+import '../../../core/utils/pref_utils.dart';
+import '../../../testpage/exams_screen.dart';
 
 class CourseCategoryDetailsScreen extends StatefulWidget {
   final int courseId;
@@ -219,7 +222,7 @@ class _CourseCategoryDetailsScreenState
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    'Overview',
+                                    'Exams',
                                     style: GoogleFonts.plusJakartaSans(
                                       color: ColorResources.colorgrey700,
                                       fontSize: 14,
@@ -291,17 +294,15 @@ class _CourseCategoryDetailsScreenState
                                 Padding(
                                   padding: const EdgeInsets.only(
                                       top: 8, left: 18, right: 16, bottom: 24),
-                                  child: CourseOverviewPage(
-                                    description:
-                                        controller.courseInfo[0].thingsToLearn,
+                                  child: ExamsHomeScreen(
+                                    courseId: widget.courseId.toString(),
+                                    token: PrefUtils().getAuthToken(),
                                   ),
                                 ),
                                 if (enrolController
                                         .courseEnrollist[0].studentCourseId !=
                                     0)
-                                  ResultViewingScreen(
-                                      // courseId: widget.courseId.toString(),
-                                      ),
+                                  ExamResultsScreen(),
                               ],
                             ),
                           ),

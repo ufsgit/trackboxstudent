@@ -198,30 +198,30 @@ class AppRoutes {
       ),
       bindings: [PlayingCourseBinding()],
     ),
-    GetPage(
-      name: testTab,
-      page: () {
-        final args = Get.arguments as Map<String, dynamic>?;
+    // GetPage(
+    //   name: testTab,
+    //   page: () {
+    //     final args = Get.arguments as Map<String, dynamic>?;
 
-        if (args == null ||
-            args['studentId'] == null ||
-            args['token'] == null) {
-          return const Scaffold(
-            body: Center(
-              child: Text(
-                "Missing student data",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          );
-        }
+    //     if (args == null ||
+    //         args['studentId'] == null ||
+    //         args['token'] == null) {
+    //       return const Scaffold(
+    //         body: Center(
+    //           child: Text(
+    //             "Missing student data",
+    //             style: TextStyle(fontSize: 16),
+    //           ),
+    //         ),
+    //       );
+    //     }
 
-        return ExamsTabScreen(
-          studentId: args['studentId'],
-          token: args['token'],
-        );
-      },
-    ),
+    //     return ExamsTabScreen(
+    //       studentId: args['studentId'],
+    //       token: args['token'],
+    //     );
+    //   },
+    // ),
 
     // GetPage(
     //   name: courseDetailsPage1Screen,
@@ -341,9 +341,9 @@ class AppRoutes {
       page: () => SplashScreen(),
       bindings: [HomePageAfterJoiningACourseBinding()],
     ),
-    GetPage(
-      name: exploreCoursesPage,
-      page: () => ExploreCourses(),
-    )
+    // GetPage(
+    //   name: exploreCoursesPage,
+    //   page: () => ExploreCourses(),
+    // )
   ];
 }

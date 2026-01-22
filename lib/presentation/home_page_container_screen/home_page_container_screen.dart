@@ -853,17 +853,17 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
       case AppRoutes.profileScreen:
         return StudentProfileScreen();
 
-      case AppRoutes.testTab:
-        return Navigator(
-          onGenerateRoute: (settings) {
-            return MaterialPageRoute(
-              builder: (context) => ExamsTabScreen(
-                studentId: PrefUtils().getStudentId(),
-                token: PrefUtils().getAuthToken(),
-              ),
-            );
-          },
-        );
+      // case AppRoutes.testTab:
+      //   return Navigator(
+      //     onGenerateRoute: (settings) {
+      //       return MaterialPageRoute(
+      //         builder: (context) => ExamsTabScreen(
+      //           studentId: PrefUtils().getStudentId(),
+      //           token: PrefUtils().getAuthToken(),
+      //         ),
+      //       );
+      //     },
+      //   );
       default:
         return DefaultWidget();
     }

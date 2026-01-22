@@ -21,8 +21,9 @@ class TestScreen extends StatefulWidget {
 
 class _TestScreenState extends State<TestScreen> {
   int currentIndex = 0;
-  int selectedAnswer = -1;
-  int score = 0;
+  // int selectedAnswer = -1; // Removed in favor of userAnswers
+  Map<int, int> userAnswers = {}; // {questionIndex: selectedOptionIndex}
+  // int score = 0; // Calculated on submit
 
   List<QuestionModel> questions = [];
   bool isLoading = true;
@@ -85,9 +86,12 @@ class _TestScreenState extends State<TestScreen> {
   void _submitExam() {
     _timer?.cancel();
 
-    if (selectedAnswer != -1 &&
-        selectedAnswer == questions[currentIndex].correctAnswerIndex) {
-      score++;
+    int score = 0;
+    for (int i = 0; i < questions.length; i++) {
+      if (userAnswers.containsKey(i) &&
+          userAnswers[i] == questions[i].correctAnswerIndex) {
+        score++;
+      }
     }
 
     Navigator.pushReplacement(
@@ -101,28 +105,38 @@ class _TestScreenState extends State<TestScreen> {
     );
   }
 
-  void nextQuestion() {
-    if (selectedAnswer == questions[currentIndex].correctAnswerIndex) {
-      score++;
+  void previousQuestion() {
+    print("Previous Button Clicked. Current Index: $currentIndex");
+    if (currentIndex > 0) {
+      setState(() {
+        currentIndex--;
+        print("Moved to Previous Question. New Index: $currentIndex");
+      });
     }
+  }
 
+  void nextQuestion() {
+    print("Next Button Clicked. Current Index: $currentIndex");
     if (currentIndex < questions.length - 1) {
       setState(() {
         currentIndex++;
-        selectedAnswer = -1;
+        print("Moved to Next Question. New Index: $currentIndex");
       });
     } else {
+      print("Last Question reached. Submitting Exam.");
       _submitExam();
     }
   }
 
   void skipQuestion() {
+    print("Skip Button Clicked. Current Index: $currentIndex");
     if (currentIndex < questions.length - 1) {
       setState(() {
         currentIndex++;
-        selectedAnswer = -1;
+        print("Question Skipped. New Index: $currentIndex");
       });
     } else {
+      print("Last Question reached on Skip. Submitting Exam.");
       _submitExam();
     }
   }
@@ -217,6 +231,7 @@ class _TestScreenState extends State<TestScreen> {
     }
 
     final question = questions[currentIndex];
+    final selectedAnswer = userAnswers[currentIndex] ?? -1;
 
     return Column(
       children: [
@@ -270,7 +285,7 @@ class _TestScreenState extends State<TestScreen> {
                   return InkWell(
                     onTap: () {
                       setState(() {
-                        selectedAnswer = index;
+                        userAnswers[currentIndex] = index;
                       });
                     },
                     child: Container(
@@ -292,7 +307,7 @@ class _TestScreenState extends State<TestScreen> {
                             groupValue: selectedAnswer,
                             onChanged: (value) {
                               setState(() {
-                                selectedAnswer = value!;
+                                userAnswers[currentIndex] = value!;
                               });
                             },
                           ),
@@ -309,6 +324,87 @@ class _TestScreenState extends State<TestScreen> {
                 }),
               ],
             ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(16.v),
+          child: Row(
+            children: [
+              // Previous Button
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: currentIndex > 0 ? previousQuestion : null,
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 80.v),
+                    side: BorderSide(
+                        color: currentIndex > 0
+                            ? appTheme.blue800
+                            : appTheme.gray200),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    "Previous",
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: currentIndex > 0
+                          ? appTheme.blue800
+                          : appTheme.gray600,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 120.h),
+              // Skip Button
+              Expanded(
+                child: OutlinedButton(
+                  onPressed:
+                      currentIndex < questions.length - 1 ? skipQuestion : null,
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 12.v),
+                    side: BorderSide(
+                        color: currentIndex < questions.length - 1
+                            ? appTheme.gray600
+                            : appTheme.gray200),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    "Skip",
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: currentIndex < questions.length - 1
+                          ? appTheme.gray600
+                          : appTheme.gray200,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.h),
+              // Next or Submit Button
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: currentIndex < questions.length - 1
+                      ? nextQuestion
+                      : _submitExam,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: currentIndex == questions.length - 1
+                        ? Colors.green[700]
+                        : appTheme.blue800,
+                    padding: EdgeInsets.symmetric(vertical: 12.v),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    currentIndex == questions.length - 1 ? "Submit" : "Next",
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],

@@ -266,34 +266,34 @@ class _HomePageState extends State<HomePage> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            CustomOutlinedButton(
-                              onPressed: () {
-                                // Loader.showLoader();
-                                // await exController.getAllExploreCourses();
-                                // Loader.stopLoader();
+                            // CustomOutlinedButton(
+                            //   onPressed: () {
+                            //     // Loader.showLoader();
+                            //     // await exController.getAllExploreCourses();
+                            //     // Loader.stopLoader();
 
-                                // Get.to(() => CertificateDownloadPage(
-                                //       'Sanjay Vkp',
-                                //       'Oet course',
-                                //     ));
-                                Get.toNamed(AppRoutes.exploreCoursesPage);
-                              },
-                              text: "lbl_explore_courses".tr,
-                              margin: EdgeInsets.symmetric(horizontal: 16.h),
-                              rightIcon: Container(
-                                margin: EdgeInsets.only(left: 4.h),
-                                child: CustomImageView(
-                                  imagePath: ImageConstant.imgArrowright,
-                                  height: 15.v,
-                                  width: 20.h,
-                                ),
-                              ),
-                              buttonStyle: CustomButtonStyles.none,
-                              decoration: CustomButtonStyles
-                                  .gradientBlueToBlueDecoration,
-                              buttonTextStyle:
-                                  CustomTextStyles.titleSmallWhiteA700,
-                            ),
+                            //     // Get.to(() => CertificateDownloadPage(
+                            //     //       'Sanjay Vkp',
+                            //     //       'Oet course',
+                            //     //     ));
+                            //     Get.toNamed(AppRoutes.exploreCoursesPage);
+                            //   },
+                            //   text: "lbl_explore_courses".tr,
+                            //   margin: EdgeInsets.symmetric(horizontal: 16.h),
+                            //   rightIcon: Container(
+                            //     margin: EdgeInsets.only(left: 4.h),
+                            //     child: CustomImageView(
+                            //       imagePath: ImageConstant.imgArrowright,
+                            //       height: 15.v,
+                            //       width: 20.h,
+                            //     ),
+                            //   ),
+                            //   buttonStyle: CustomButtonStyles.none,
+                            //   decoration: CustomButtonStyles
+                            //       .gradientBlueToBlueDecoration,
+                            //   buttonTextStyle:
+                            //       CustomTextStyles.titleSmallWhiteA700,
+                            // ),
                             SizedBox(height: 16.v),
                             // _buildExploreCoursesStack(),
                             CaroselWidget(
@@ -717,80 +717,80 @@ class _HomePageState extends State<HomePage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              PrefUtils().getBreffGenderData() ==
-                                                      "Male"
-                                                  ? "Hello, i'm AI".tr
-                                                  : "Hello, i'm AI".tr,
-                                              // "Your study partner in\ngame",
-                                              // : (profileController
-                                              //                 .profileData
-                                              //                 ?.avatar ==
-                                              //             'Male' ||
-                                              //         profileController
-                                              //                 .profileData
-                                              //                 ?.avatar ==
-                                              //             'male')
-                                              //     ? "msg_hello_i_m_breff".tr
-                                              //     : "Hello, I'm Breffini",
-                                              style: CustomTextStyles
-                                                  .titleSmallWhiteA700,
-                                            ),
-                                            SizedBox(height: 1.v),
-                                            SizedBox(
-                                              width: 120.h,
-                                              child: Text(
-                                                'Your study partner in game',
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: CustomTextStyles
-                                                    .bodySmallWhiteA700
-                                                    .copyWith(
-                                                  height: 1.60,
-                                                ),
-                                              ),
-                                            )
+                                            // Text(
+                                            //   PrefUtils().getBreffGenderData() ==
+                                            //           "Male"
+                                            //       ? "Hello, i'm AI".tr
+                                            //       : "Hello, i'm AI".tr,
+                                            //   // "Your study partner in\ngame",
+                                            //   // : (profileController
+                                            //   //                 .profileData
+                                            //   //                 ?.avatar ==
+                                            //   //             'Male' ||
+                                            //   //         profileController
+                                            //   //                 .profileData
+                                            //   //                 ?.avatar ==
+                                            //   //             'male')
+                                            //   //     ? "msg_hello_i_m_breff".tr
+                                            //   //     : "Hello, I'm Breffini",
+                                            //   style: CustomTextStyles
+                                            //       .titleSmallWhiteA700,
+                                            // ),
+                                            // SizedBox(height: 1.v),
+                                            // SizedBox(
+                                            //   width: 120.h,
+                                            //   child: Text(
+                                            //     'Your study partner in game',
+                                            //     maxLines: 2,
+                                            //     overflow: TextOverflow.ellipsis,
+                                            //     style: CustomTextStyles
+                                            //         .bodySmallWhiteA700
+                                            //         .copyWith(
+                                            //       height: 1.60,
+                                            //     ),
+                                            //   ),
+                                            // )
                                           ],
                                         ),
-                                        OutlineGradientButton(
-                                          padding: EdgeInsets.only(
-                                            left: 1.h,
-                                            top: 1.v,
-                                            right: 1.h,
-                                            bottom: 1.v,
-                                          ),
-                                          strokeWidth: 1.h,
-                                          gradient: LinearGradient(
-                                            begin: Alignment(0.5, 0),
-                                            end: Alignment(0.5, 1),
-                                            colors: [
-                                              appTheme.whiteA700,
-                                              appTheme.gray50
-                                            ],
-                                          ),
-                                          corners: Corners(
-                                            topLeft: Radius.circular(18.v),
-                                            topRight: Radius.circular(18.v),
-                                            bottomLeft: Radius.circular(18.v),
-                                            bottomRight: Radius.circular(18.v),
-                                          ),
-                                          child: CustomOutlinedButton(
-                                            onPressed: () {
-                                              // Get.to(()=> GeminiChatScreen());
-                                              Get.to(() => BreffScreen(
-                                                  isLoginButton: false));
-                                            },
-                                            height: 28.v,
-                                            width: 59.h,
-                                            text: "lbl_ask".tr,
-                                            buttonStyle:
-                                                CustomButtonStyles.none,
-                                            decoration: CustomButtonStyles
-                                                .gradientBlueToSecondaryContainerDecoration,
-                                            buttonTextStyle: CustomTextStyles
-                                                .labelLargePrimaryContainer,
-                                          ),
-                                        )
+                                        // OutlineGradientButton(
+                                        //   padding: EdgeInsets.only(
+                                        //     left: 1.h,
+                                        //     top: 1.v,
+                                        //     right: 1.h,
+                                        //     bottom: 1.v,
+                                        //   ),
+                                        //   strokeWidth: 1.h,
+                                        //   gradient: LinearGradient(
+                                        //     begin: Alignment(0.5, 0),
+                                        //     end: Alignment(0.5, 1),
+                                        //     colors: [
+                                        //       appTheme.whiteA700,
+                                        //       appTheme.gray50
+                                        //     ],
+                                        //   ),
+                                        // corners: Corners(
+                                        //   topLeft: Radius.circular(18.v),
+                                        //   topRight: Radius.circular(18.v),
+                                        //   bottomLeft: Radius.circular(18.v),
+                                        //   bottomRight: Radius.circular(18.v),
+                                        // ),
+                                        // child: CustomOutlinedButton(
+                                        //   onPressed: () {
+                                        //     // Get.to(()=> GeminiChatScreen());
+                                        //     Get.to(() => BreffScreen(
+                                        //         isLoginButton: false));
+                                        //   },
+                                        //   height: 28.v,
+                                        //   width: 59.h,
+                                        //   text: "lbl_ask".tr,
+                                        //   buttonStyle:
+                                        //       CustomButtonStyles.none,
+                                        //   decoration: CustomButtonStyles
+                                        //       .gradientBlueToSecondaryContainerDecoration,
+                                        //   buttonTextStyle: CustomTextStyles
+                                        //       .labelLargePrimaryContainer,
+                                        // ),
+                                        // )
                                       ],
                                     ),
                                   ),

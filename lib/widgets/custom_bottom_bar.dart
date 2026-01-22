@@ -36,12 +36,12 @@ class CustomBottomBar extends StatelessWidget {
       title: "Chats",
       type: BottomBarEnum.Mentors,
     ),
-    BottomMenuModel(
-      icon: ImageConstant.imgPen,
-      activeIcon: ImageConstant.imgPen,
-      title: "Test",
-      type: BottomBarEnum.Test,
-    ),
+    // BottomMenuModel(
+    //   icon: ImageConstant.imgPen,
+    //   activeIcon: ImageConstant.imgPen,
+    //   title: "Test",
+    //   type: BottomBarEnum.Test,
+    // ),
     BottomMenuModel(
       icon: ImageConstant.imgBottomProfile,
       activeIcon: ImageConstant.imgBottomProfileFilled,

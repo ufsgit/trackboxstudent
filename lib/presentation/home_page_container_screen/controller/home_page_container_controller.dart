@@ -46,10 +46,8 @@ class HomePageContainerController extends GetxController {
         return 1;
       case AppRoutes.androidLarge5Page:
         return 2;
-      case AppRoutes.testTab:
-        return 3;
       case AppRoutes.profileScreen:
-        return 4;
+        return 3;
       default:
         return 0;
     }
