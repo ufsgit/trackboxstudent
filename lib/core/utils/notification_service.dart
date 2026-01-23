@@ -98,6 +98,18 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print("Firebase is already initialized");
   }
 
+  // If the message contains a notification payload, the system handles it automatically
+  // when in background/terminated. We should NOT show a local notification here
+  // to avoid duplicates.
+  if (message.notification != null) {
+    print(
+        "Notification payload present, system handles display. Processing data only.");
+    // We might still want to handle call-kit logic if it's a call
+    if (type != "new_call" && type != "new_live") {
+      return;
+    }
+  }
+
   if (type == "new_call" || type == "new_live") {
     String callId = message.data.containsKey("id") ? message.data['id'] : "";
     FirebaseUtils.listenCalls();
@@ -123,10 +135,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       // _showNotification(message);
     }
   } else if (type == "new_message" || type == "chat") {
-    // Handle background/terminated chat messages (data-only)
-    // Initialize strictly for background (channels logic)
-    await NotificationService().initializeForBackground();
-    await NotificationService().showLocalNotification(message);
+    // Only show local notification if system didn't show one (no notification payload)
+    if (message.notification == null) {
+      // Handle background/terminated chat messages (data-only)
+      // Initialize strictly for background (channels logic)
+      await NotificationService().initializeForBackground();
+      await NotificationService().showLocalNotification(message);
+    }
   }
 
   return;
@@ -292,6 +307,13 @@ class NotificationService {
       sound: true,
     );
     log('User granted permission: ${settings.authorizationStatus}');
+
+    if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await androidImplementation?.requestNotificationsPermission();
+    }
   }
 
   Future<void> _initializeLocalNotifications() async {

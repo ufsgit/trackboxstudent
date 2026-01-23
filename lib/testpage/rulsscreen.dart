@@ -103,6 +103,8 @@ class RulesScreen extends StatelessWidget {
                       builder: (_) => TestScreen(
                         courseExamId: exam.courseExamId, // ✅ FIXED
                         duration: exam.duration,
+                        courseId: exam.courseId,
+                        passMark: exam.passCount,
                       ),
                     ),
                   );

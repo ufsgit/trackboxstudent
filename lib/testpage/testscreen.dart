@@ -8,11 +8,15 @@ import 'examservieses.dart';
 class TestScreen extends StatefulWidget {
   final int courseExamId; // ✅ FIXED (INT)
   final int duration; // in minutes
+  final int courseId;
+  final int passMark;
 
   const TestScreen({
     super.key,
     required this.courseExamId,
     required this.duration,
+    required this.courseId,
+    required this.passMark,
   });
 
   @override
@@ -100,6 +104,9 @@ class _TestScreenState extends State<TestScreen> {
         builder: (_) => ResultScreen(
           score: score,
           total: questions.length,
+          courseId: widget.courseId,
+          examDataId: widget.courseExamId,
+          passMark: widget.passMark,
         ),
       ),
     );
@@ -282,12 +289,19 @@ class _TestScreenState extends State<TestScreen> {
                 SizedBox(height: 20.v),
                 ...List.generate(question.options.length, (index) {
                   final isSelected = selectedAnswer == index;
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
+
+                  void toggleSelection() {
+                    setState(() {
+                      if (isSelected) {
+                        userAnswers.remove(currentIndex);
+                      } else {
                         userAnswers[currentIndex] = index;
-                      });
-                    },
+                      }
+                    });
+                  }
+
+                  return InkWell(
+                    onTap: toggleSelection,
                     child: Container(
                       margin: EdgeInsets.only(bottom: 12.v),
                       padding: EdgeInsets.all(14.v),
@@ -302,14 +316,11 @@ class _TestScreenState extends State<TestScreen> {
                       ),
                       child: Row(
                         children: [
-                          Radio<int>(
-                            value: index,
-                            groupValue: selectedAnswer,
-                            onChanged: (value) {
-                              setState(() {
-                                userAnswers[currentIndex] = value!;
-                              });
-                            },
+                          Checkbox(
+                            value: isSelected,
+                            activeColor: appTheme.blue800,
+                            shape: const CircleBorder(),
+                            onChanged: (value) => toggleSelection(),
                           ),
                           Expanded(
                             child: Text(

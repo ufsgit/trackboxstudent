@@ -39,4 +39,42 @@ class ExamResultController extends GetxController {
 
     update();
   }
+
+  Future<bool> saveExamResult({
+    required int courseId,
+    required int examDataId,
+    required String totalMark,
+    required String passMark,
+    required String obtainedMark,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String studentId = prefs.getString('breffini_student_id') ?? "0";
+
+    try {
+      final response = await HttpRequest.httpPostBodyRequest(
+        endPoint: HttpUrls.saveExamResult,
+        bodyData: {
+          "student_id": studentId,
+          "course_id": courseId,
+          "exam_data_id": examDataId,
+          "total_mark": totalMark,
+          "pass_mark": passMark,
+          "obtained_mark": obtainedMark,
+        },
+      );
+
+      if (response != null && response.statusCode == 200) {
+        // You might want to parse the response here if needed,
+        // but for now checking 200 OK is sufficient for the boolean return.
+        print("Exam saved successfully: ${response.data}");
+        return true;
+      } else {
+        print("Failed to save exam: ${response?.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Error saving exam result: $e");
+      return false;
+    }
+  }
 }

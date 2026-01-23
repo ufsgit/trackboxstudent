@@ -110,4 +110,6 @@ class HttpUrls {
   /// 🔹 Get questions by course_exam_id (questions table)
   static String getStudentQuestionsByCourseExam(String courseExamId) =>
       '/course/Student_GetQuestions/$courseExamId';
+
+  static String saveExamResult = '/student/Save_Exam_Result';
 }

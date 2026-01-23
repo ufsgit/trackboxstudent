@@ -1,19 +1,71 @@
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
+import '../presentation/course_details_page1_screen/controller/exam_result_controller.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   final int score;
   final int total;
+  final int courseId;
+  final int examDataId;
+  final int passMark;
 
   const ResultScreen({
     super.key,
     required this.score,
     required this.total,
+    required this.courseId,
+    required this.examDataId,
+    required this.passMark,
   });
 
   @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  final ExamResultController _controller = Get.find<ExamResultController>();
+  bool _isSaving = false;
+
+  Future<void> _handleSaveAndExit() async {
+    setState(() {
+      _isSaving = true;
+    });
+
+    final success = await _controller.saveExamResult(
+      courseId: widget.courseId,
+      examDataId: widget.examDataId,
+      totalMark: widget.total
+          .toString(), // Assuming 100 for now, or derive from questions
+      passMark: widget.passMark.toString(),
+      obtainedMark: widget.score.toString(),
+    );
+
+    setState(() {
+      _isSaving = false;
+    });
+
+    if (success) {
+      Get.snackbar(
+        "Success",
+        "Exam result saved successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      // Determine where to go back to. usually home or exams list.
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else {
+      Get.snackbar(
+        "Error",
+        "Failed to save exam result. Please try again.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final double percentage = (score / total) * 100;
+    final double percentage = (widget.score / widget.total) * 100;
     final bool isPassed = percentage >= 50;
 
     return Scaffold(
@@ -83,19 +135,19 @@ class ResultScreen extends StatelessWidget {
                 children: [
                   _resultRow(
                     title: "Total Questions",
-                    value: total.toString(),
+                    value: widget.total.toString(),
                   ),
                   SizedBox(height: 10.v),
                   _resultRow(
                     title: "Correct Answers",
-                    value: score.toString(),
+                    value: widget.score.toString(),
                   ),
                   SizedBox(height: 10.v),
                   Divider(color: appTheme.indigo50),
                   SizedBox(height: 10.v),
                   _resultRow(
                     title: "Score",
-                    value: "$score / $total",
+                    value: "${widget.score} / ${widget.total}",
                     isBold: true,
                   ),
                   SizedBox(height: 10.v),
@@ -115,13 +167,20 @@ class ResultScreen extends StatelessWidget {
               width: double.infinity,
               height: 48.v,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
-                child: Text(
-                  "Back to Home",
-                  style: theme.textTheme.labelMedium,
-                ),
+                onPressed: _isSaving ? null : _handleSaveAndExit,
+                child: _isSaving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        "Back to Home",
+                        style: theme.textTheme.labelMedium,
+                      ),
               ),
             ),
           ],
