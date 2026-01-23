@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:anandhu_s_application4/core/colors_res.dart';
 import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/http/loader.dart';
@@ -8,10 +7,12 @@ import 'package:anandhu_s_application4/presentation/course_details_page1_screen/
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/listening_test_screen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/pdf_viewer_screen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/course_curriculam_widget.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page_screen/models/course_content_model.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/models/course_content_model.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page_screen/models/course_content_model.dart'
+    as CoursePageModel;
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/course_overview_page.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
@@ -28,10 +29,6 @@ import 'models/course_review_model.dart';
 import 'models/viewhierarchy2_item_model.dart';
 import 'widgets/viewhierarchy2_item_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../../testpage/examservieses.dart';
-import '../../testpage/exam_modal.dart';
-import '../../testpage/rulsscreen.dart';
-import '../../core/utils/pref_utils.dart';
 
 class CourseDetailsPage1Screen extends StatefulWidget {
   CourseDetailsPage1Screen({
@@ -82,8 +79,6 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
   late Animation<double> animation;
   late AnimationController controller;
   bool _isAnimating = false;
-  int _selectedTabIndex = 0; // Tab index
-  late Future<List<ExamModel>> examsFuture; // Future for exams
 
   @override
   void initState() {
@@ -97,11 +92,6 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
         duration: const Duration(milliseconds: 800),
       );
       animation = Tween<double>(begin: 0.0, end: 1.0).animate(controller);
-
-      // Initialize exams future
-      final token = PrefUtils().getAuthToken();
-      // examsFuture =
-      //     ExamService(token).fetchExamsByCourse(widget.courseId.toString());
 
       getData();
     });
@@ -338,68 +328,68 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
     });
   }
 
-  Widget _buildExamsTab() {
-    return FutureBuilder<List<ExamModel>>(
-      future: examsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(
-              child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text("No exams found for this course."),
-          ));
-        }
-        final exams = snapshot.data!;
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: exams.length,
-          padding: EdgeInsets.zero,
-          itemBuilder: (context, index) {
-            final exam = exams[index];
-            return Container(
-              margin: EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200)),
-              child: ListTile(
-                leading: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: ColorResources.colorBlue500.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(Icons.assignment_outlined,
-                      color: ColorResources.colorBlue500),
-                ),
-                title: Text("Course Exam ID: ${exam.courseExamId}",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                subtitle: Text(
-                    "Duration: ${exam.duration} mins | Qs: ${exam.questions}",
-                    style: TextStyle(fontSize: 12)),
-                trailing:
-                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RulesScreen(exam: exam),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+  // Widget _buildExamsTab() {
+  //   return FutureBuilder<List<ExamModel>>(
+  //     future: examsFuture,
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return Center(child: CircularProgressIndicator());
+  //       } else if (snapshot.hasError) {
+  //         return Center(child: Text("Error: ${snapshot.error}"));
+  //       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+  //         return Center(
+  //             child: Padding(
+  //           padding: const EdgeInsets.all(20.0),
+  //           child: Text("No exams found for this course."),
+  //         ));
+  //       }
+  //       final exams = snapshot.data!;
+  //       return ListView.builder(
+  //         shrinkWrap: true,
+  //         physics: NeverScrollableScrollPhysics(),
+  //         itemCount: exams.length,
+  //         padding: EdgeInsets.zero,
+  //         itemBuilder: (context, index) {
+  //           final exam = exams[index];
+  //           return Container(
+  //             margin: EdgeInsets.symmetric(vertical: 5),
+  //             decoration: BoxDecoration(
+  //                 color: Colors.white,
+  //                 borderRadius: BorderRadius.circular(12),
+  //                 border: Border.all(color: Colors.grey.shade200)),
+  //             child: ListTile(
+  //               leading: Container(
+  //                 padding: EdgeInsets.all(8),
+  //                 decoration: BoxDecoration(
+  //                   color: ColorResources.colorBlue500.withOpacity(0.1),
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //                 child: Icon(Icons.assignment_outlined,
+  //                     color: ColorResources.colorBlue500),
+  //               ),
+  //               title: Text("Course Exam ID: ${exam.courseExamId}",
+  //                   style:
+  //                       TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+  //               subtitle: Text(
+  //                   "Duration: ${exam.duration} mins | Qs: ${exam.questions}",
+  //                   style: TextStyle(fontSize: 12)),
+  //               trailing:
+  //                   Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+  //               onTap: () {
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                     builder: (_) => RulesScreen(exam: exam),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -627,7 +617,6 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                             1;
 
                                                     // Check if exam test is locked
-                                                    log('////IsExAMtESTING$isExamTest');
                                                     bool isQuestionUnlocked =
                                                         exam.isQuestionUnlocked ==
                                                             0;
@@ -638,7 +627,6 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                     if (isExamTest) {
                                                       if ((isQuestionUnlocked &&
                                                           isQuestionMediaUnlocked)) {
-                                                        log('////IsExAMtESTING$isExamTest');
                                                         // Show SnackBar if content is locked
                                                         ScaffoldMessenger.of(
                                                                 context)
@@ -719,12 +707,10 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                             'application/pdf'
                                                         ? 'Open PDF'
                                                         : 'Start Your Test',
-                                                    style: GoogleFonts
-                                                        .plusJakartaSans(
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w700),
                                                   ),
                                                 ),
                                               ),
@@ -752,198 +738,110 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                           Divider(),
                                           SizedBox(height: 16),
 
-                                          // Custom Tab Bar
-                                          Container(
-                                            height: 45,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade100,
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _selectedTabIndex = 0;
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            _selectedTabIndex ==
-                                                                    0
-                                                                ? ColorResources
-                                                                    .colorBlue500
-                                                                : Colors
-                                                                    .transparent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
-                                                        "Curriculum",
-                                                        style: TextStyle(
-                                                          color:
-                                                              _selectedTabIndex ==
-                                                                      0
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .black,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _selectedTabIndex = 1;
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            _selectedTabIndex ==
-                                                                    1
-                                                                ? ColorResources
-                                                                    .colorBlue500
-                                                                : Colors
-                                                                    .transparent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                      ),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
-                                                        "Exams",
-                                                        style: TextStyle(
-                                                          color:
-                                                              _selectedTabIndex ==
-                                                                      1
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .black,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                          CourseCurriculamWidget(
+                                              toggleVideo: showVideo,
+                                              modules: courseContentController
+                                                  .courseContent.value.contents,
+                                              scrollController:
+                                                  _scrollController,
+                                              controllerCourseDetailsController:
+                                                  homeController),
+
+                                          SizedBox(height: 3.v),
+                                          SizedBox(
+                                            width: 323.h,
+                                            child: Text(
+                                              controllerCourseDetailsController
+                                                      .courseDetails
+                                                      ?.description ??
+                                                  '',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: CustomTextStyles
+                                                  .bodyMediumBluegray500_1
+                                                  .copyWith(
+                                                height: 1.43,
+                                              ),
                                             ),
                                           ),
-                                          SizedBox(height: 16),
-
-                                          _selectedTabIndex == 0
-                                              ? CourseCurriculamWidget(
-                                                  toggleVideo: showVideo,
-                                                  modules:
-                                                      courseContentController
-                                                          .courseContent
-                                                          .value
-                                                          .contents,
-                                                  scrollController:
-                                                      _scrollController,
-                                                  controllerCourseDetailsController:
-                                                      homeController)
-                                              : _buildExamsTab(),
-                                          //<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>
-
-                                          // SizedBox(height: 3.v),
-                                          // SizedBox(
-                                          //   width: 323.h,
-                                          //   child: Text(
-                                          //     controllerCourseDetailsController
-                                          //             .courseDetails?.description ??
-                                          //         '',
-                                          //     maxLines: 2,
-                                          //     overflow: TextOverflow.ellipsis,
-                                          //     style: CustomTextStyles.bodyMediumBluegray500_1
-                                          //         .copyWith(
-                                          //       height: 1.43,
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                          // SizedBox(height: 15.v),
-                                          // _buildCourseRatingRow(),
-                                          // SizedBox(height: 18.v),
-                                          // Divider(),
-                                          // SizedBox(height: 20.v),
-                                          // _buildLearningOutcomesColumn(),
-                                          // SizedBox(height: 17.v),
-                                          // Divider(),
-                                          // SizedBox(height: 18.v),
-                                          // Align(
-                                          //   alignment: Alignment.centerLeft,
-                                          //   child: Text(
-                                          //     "lbl_course_overview".tr,
-                                          //     style: theme.textTheme.titleSmall,
-                                          //   ),
-                                          // ),
-                                          // SizedBox(height: 10.v),
-                                          // _buildCourseOverviewRow(),
-                                          // SizedBox(height: 18.v),
-                                          // Divider(),
-                                          // SizedBox(height: 20.v),
-                                          // Align(
-                                          //   alignment: Alignment.centerLeft,
-                                          //   child: Text(
-                                          //     "lbl_summary".tr,
-                                          //     style: theme.textTheme.titleSmall,
-                                          //   ),
-                                          // ),
-                                          // SizedBox(height: 6.v),
-                                          // _buildChapterColumn3(setState),
-                                          // SizedBox(height: 12.v),
-                                          // Align(
-                                          //   alignment: Alignment.centerLeft,
-                                          //   child: Text(
-                                          //     "lbl_reviews".tr,
-                                          //     style: theme.textTheme.titleSmall,
-                                          //   ),
-                                          // ),
-                                          // SizedBox(height: 12.v),
-                                          // Column(
-                                          //   children: List.generate(
-                                          //     controllerCourseDetailsController
-                                          //         .courseReviewList.length,
-                                          //     (index) => Container(
-                                          //       margin: EdgeInsets.only(top: 15.v),
-                                          //       child: Column(
-                                          //         children: [
-                                          //           _buildReviewRow(
-                                          //               reviewData:
-                                          //                   controllerCourseDetailsController
-                                          //                       .courseReviewList[index]),
-                                          //           SizedBox(height: 17.v),
-                                          //           Container(
-                                          //             width: 320.h,
-                                          //             margin: EdgeInsets.only(right: 6.h),
-                                          //             child: Text(
-                                          //               controllerCourseDetailsController
-                                          //                   .courseReviewList[index].comments,
-                                          //               maxLines: 5,
-                                          //               overflow: TextOverflow.ellipsis,
-                                          //               style:
-                                          //                   theme.textTheme.bodyMedium!.copyWith(
-                                          //                 height: 1.43,
-                                          //               ),
-                                          //             ),
-                                          //           ),
-                                          //         ],
-                                          //       ),
-                                          //     ),
-                                          //   ),
-                                          // ),
+                                          SizedBox(height: 15.v),
+                                          _buildCourseRatingRow(),
+                                          SizedBox(height: 18.v),
+                                          Divider(),
+                                          SizedBox(height: 20.v),
+                                          _buildLearningOutcomesColumn(),
+                                          SizedBox(height: 17.v),
+                                          Divider(),
+                                          SizedBox(height: 18.v),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "lbl_course_overview".tr,
+                                              style: theme.textTheme.titleSmall,
+                                            ),
+                                          ),
+                                          SizedBox(height: 10.v),
+                                          _buildCourseOverviewRow(),
+                                          SizedBox(height: 18.v),
+                                          Divider(),
+                                          SizedBox(height: 20.v),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "lbl_summary".tr,
+                                              style: theme.textTheme.titleSmall,
+                                            ),
+                                          ),
+                                          SizedBox(height: 6.v),
+                                          _buildChapterColumn3(setState),
+                                          SizedBox(height: 12.v),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              "lbl_reviews".tr,
+                                              style: theme.textTheme.titleSmall,
+                                            ),
+                                          ),
+                                          SizedBox(height: 12.v),
+                                          Column(
+                                            children: List.generate(
+                                              controllerCourseDetailsController
+                                                  .courseReviewList.length,
+                                              (index) => Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 15.v),
+                                                child: Column(
+                                                  children: [
+                                                    _buildReviewRow(
+                                                        reviewData:
+                                                            controllerCourseDetailsController
+                                                                    .courseReviewList[
+                                                                index]),
+                                                    SizedBox(height: 17.v),
+                                                    Container(
+                                                      width: 320.h,
+                                                      margin: EdgeInsets.only(
+                                                          right: 6.h),
+                                                      child: Text(
+                                                        controllerCourseDetailsController
+                                                            .courseReviewList[
+                                                                index]
+                                                            .comments,
+                                                        maxLines: 5,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: theme.textTheme
+                                                            .bodyMedium!
+                                                            .copyWith(
+                                                          height: 1.43,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       );
                                     }),
@@ -1816,7 +1714,7 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
       {required String oneOne,
       required String imgUrl,
       required int courseId,
-      required Content contentData}) {
+      required CoursePageModel.Content contentData}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

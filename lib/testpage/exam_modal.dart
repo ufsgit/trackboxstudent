@@ -6,6 +6,7 @@ class ExamModel {
   final int questions;
   final int passCount;
   final String examName;
+  final String courseName;
 
   ExamModel({
     required this.courseExamId,
@@ -15,6 +16,7 @@ class ExamModel {
     required this.questions,
     required this.passCount,
     required this.examName,
+    required this.courseName,
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class ExamModel {
       questions: int.tryParse(json['questions'].toString()) ?? 0,
       passCount: int.tryParse(json['passcount'].toString()) ?? 0,
       examName: json['exam_name'] ?? 'Exam',
+      courseName: json['course_name'] ?? 'Course',
     );
   }
 }

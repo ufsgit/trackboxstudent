@@ -302,19 +302,38 @@ class _TestScreenState extends State<TestScreen> {
                       ),
                       child: Row(
                         children: [
-                          Radio<int>(
-                            value: index,
-                            groupValue: selectedAnswer,
-                            onChanged: (value) {
-                              setState(() {
-                                userAnswers[currentIndex] = value!;
-                              });
-                            },
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? appTheme.blue800
+                                  : Colors.transparent,
+                              border: Border.all(
+                                color: isSelected
+                                    ? appTheme.blue800
+                                    : appTheme.gray200,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: isSelected
+                                ? Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 18,
+                                  )
+                                : null,
                           ),
+                          SizedBox(width: 12.h),
                           Expanded(
                             child: Text(
                               question.options[index],
-                              style: theme.textTheme.bodyMedium,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                              ),
                             ),
                           ),
                         ],
