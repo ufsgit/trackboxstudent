@@ -316,16 +316,24 @@ class _TestScreenState extends State<TestScreen> {
                       ),
                       child: Row(
                         children: [
-                          Checkbox(
-                            value: isSelected,
-                            activeColor: appTheme.blue800,
-                            shape: const CircleBorder(),
-                            onChanged: (value) => toggleSelection(),
+                          Radio<int>(
+                            value: index,
+                            groupValue: selectedAnswer,
+                            onChanged: (value) {
+                              setState(() {
+                                userAnswers[currentIndex] = value!;
+                              });
+                            },
                           ),
+                          SizedBox(width: 12.h),
                           Expanded(
                             child: Text(
                               question.options[index],
-                              style: theme.textTheme.bodyMedium,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                              ),
                             ),
                           ),
                         ],
