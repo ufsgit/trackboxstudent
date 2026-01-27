@@ -61,8 +61,8 @@ public class MainActivity extends FlutterFragmentActivity {
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
         // Set the FLAG_SECURE to prevent screenshots and screen recordings
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+        // getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+        //         WindowManager.LayoutParams.FLAG_SECURE);
 
         new MethodChannel(Objects.requireNonNull(getFlutterEngine()).getDartExecutor().getBinaryMessenger(), CHANNEL)
                 .setMethodCallHandler(

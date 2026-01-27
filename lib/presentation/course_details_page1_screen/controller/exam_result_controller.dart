@@ -1,12 +1,16 @@
 import 'package:anandhu_s_application4/http/http_request.dart';
 import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/models/exam_result_model.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/models/student_exam_result_model.dart';
 
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ExamResultController extends GetxController {
   var examResult = <ExamResultModel>[].obs;
+  var studentExamResults = <StudentExamResultModel>[].obs;
+  var isLoading = false.obs;
+  var errorMessage = ''.obs;
 
   getExamResults(String courseId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -36,6 +40,46 @@ class ExamResultController extends GetxController {
     }).catchError((error) {
       print('Error fetching data: $error');
     });
+
+    update();
+  }
+
+  Future<void> getExamResultsByStudentId(int studentId) async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      await HttpRequest.httpGetRequest(
+        endPoint: HttpUrls.getStudentExamResults(studentId.toString()),
+      ).then((response) {
+        if (response!.statusCode == 200) {
+          final responseData = response.data;
+          if (responseData is List<dynamic>) {
+            studentExamResults.value = responseData
+                .map((result) => StudentExamResultModel.fromJson(result))
+                .toList();
+          } else if (responseData is Map<String, dynamic>) {
+            studentExamResults.value = [
+              StudentExamResultModel.fromJson(responseData)
+            ];
+          } else {
+            throw Exception('Unexpected response data format');
+          }
+          isLoading.value = false;
+        } else {
+          errorMessage.value = 'Failed to load exam results';
+          isLoading.value = false;
+        }
+      }).catchError((error) {
+        errorMessage.value = 'Error: $error';
+        isLoading.value = false;
+        print('Error fetching exam results: $error');
+      });
+    } catch (e) {
+      errorMessage.value = 'Error: $e';
+      isLoading.value = false;
+      print('Exception in getExamResultsByStudentId: $e');
+    }
 
     update();
   }

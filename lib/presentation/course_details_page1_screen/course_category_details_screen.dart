@@ -302,7 +302,10 @@ class _CourseCategoryDetailsScreenState
                                 if (enrolController
                                         .courseEnrollist[0].studentCourseId !=
                                     0)
-                                  ExamResultsScreen(),
+                                  ExamResultsScreen(
+                                    studentId:
+                                        int.parse(PrefUtils().getStudentId()),
+                                  ),
                               ],
                             ),
                           ),

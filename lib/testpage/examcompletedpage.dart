@@ -1,221 +1,219 @@
 import 'package:flutter/material.dart';
+import '../presentation/course_details_page1_screen/models/student_exam_result_model.dart';
+import '../presentation/course_details_page1_screen/controller/exam_result_controller.dart';
+import 'package:get/get.dart';
 
 class ExamResultsScreen extends StatelessWidget {
-  const ExamResultsScreen({super.key});
+  final int studentId;
+
+  const ExamResultsScreen({super.key, required this.studentId});
 
   @override
   Widget build(BuildContext context) {
-    // Enhanced dummy data with user participation details (replace with API later)
-    final completedExams = [
-      {
-        "title": "Flutter Basics",
-        "score": 18,
-        "totalQuestions": 20,
-        "status": "Passed",
-        "percentage": 90.0,
-        "correctAnswers": 18,
-        "incorrectAnswers": 2,
-        "skippedQuestions": 0,
-        "timeTaken": "25 mins",
-        "completedDate": "2026-01-20",
-        "attemptNumber": 1,
-        "passingScore": 70,
-      },
-      {
-        "title": "Dart Fundamentals",
-        "score": 12,
-        "totalQuestions": 20,
-        "status": "Failed",
-        "percentage": 60.0,
-        "correctAnswers": 12,
-        "incorrectAnswers": 6,
-        "skippedQuestions": 2,
-        "timeTaken": "30 mins",
-        "completedDate": "2026-01-19",
-        "attemptNumber": 2,
-        "passingScore": 70,
-      },
-      {
-        "title": "Advanced Flutter",
-        "score": 16,
-        "totalQuestions": 20,
-        "status": "Passed",
-        "percentage": 80.0,
-        "correctAnswers": 16,
-        "incorrectAnswers": 3,
-        "skippedQuestions": 1,
-        "timeTaken": "28 mins",
-        "completedDate": "2026-01-22",
-        "attemptNumber": 1,
-        "passingScore": 70,
-      },
-    ];
+    final ExamResultController controller = Get.find<ExamResultController>();
 
-    if (completedExams.isEmpty) {
-      return const Center(
-        child: Text(
-          "No completed exams yet",
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      );
-    }
+    // Fetch exam results when widget builds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getExamResultsByStudentId(studentId);
+    });
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: completedExams.length,
-      itemBuilder: (context, index) {
-        final exam = completedExams[index];
-        final isPassed = exam["status"] == "Passed";
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      if (controller.errorMessage.value.isNotEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                controller.errorMessage.value,
+                style: const TextStyle(fontSize: 16, color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () =>
+                    controller.getExamResultsByStudentId(studentId),
+                child: const Text('Retry'),
+              ),
+            ],
           ),
-          child: InkWell(
-            onTap: () {
-              _showExamDetails(context, exam);
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              exam["title"]!.toString(),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+        );
+      }
+
+      if (controller.studentExamResults.isEmpty) {
+        return const Center(
+          child: Text(
+            "No completed exams yet",
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        );
+      }
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: controller.studentExamResults.length,
+        itemBuilder: (context, index) {
+          final exam = controller.studentExamResults[index];
+          final isPassed = exam.resultStatus == "Pass";
+
+          return Card(
+            margin: const EdgeInsets.only(bottom: 16),
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: InkWell(
+              onTap: () {
+                _showExamDetails(context, exam);
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${exam.courseName} - ${exam.examName}",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "Completed: ${exam["completedDate"]}",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
+                              const SizedBox(height: 4),
+                              Text(
+                                "Completed: ${exam.createdAt?.split('T')[0] ?? 'N/A'}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isPassed
-                              ? Colors.green.shade100
-                              : Colors.red.shade100,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          exam["status"]!.toString(),
-                          style: TextStyle(
-                            color: isPassed ? Colors.green : Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Score Section
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildScoreItem(
-                          "Score",
-                          "${exam["score"]} / ${exam["totalQuestions"]}",
-                          Icons.grade,
-                          Colors.blue,
-                        ),
-                        _buildScoreItem(
-                          "Percentage",
-                          "${exam["percentage"]}%",
-                          Icons.percent,
-                          isPassed ? Colors.green : Colors.orange,
-                        ),
-                        _buildScoreItem(
-                          "Time",
-                          exam["timeTaken"]!.toString(),
-                          Icons.timer,
-                          Colors.purple,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isPassed
+                                ? Colors.green.shade100
+                                : Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            exam.resultStatus ?? 'N/A',
+                            style: TextStyle(
+                              color: isPassed ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
-                  // Participation Details
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildDetailChip(
-                        Icons.check_circle,
-                        "Correct: ${exam["correctAnswers"]}",
-                        Colors.green,
+                    // Score Section
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      _buildDetailChip(
-                        Icons.cancel,
-                        "Wrong: ${exam["incorrectAnswers"]}",
-                        Colors.red,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildScoreItem(
+                            "Score",
+                            "${exam.obtainedMark} / ${exam.totalMark}",
+                            Icons.grade,
+                            Colors.blue,
+                          ),
+                          _buildScoreItem(
+                            "Percentage",
+                            "${exam.percentage}%",
+                            Icons.percent,
+                            isPassed ? Colors.green : Colors.orange,
+                          ),
+                          // _buildScoreItem(
+                          //   "Time",
+                          //   "N/A",
+                          //   Icons.timer,
+                          //   Colors.purple,
+                          // ),
+                        ],
                       ),
-                      _buildDetailChip(
-                        Icons.remove_circle,
-                        "Skipped: ${exam["skippedQuestions"]}",
-                        Colors.orange,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
+                    ),
+                    const SizedBox(height: 12),
 
-                  // Attempt Number
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Attempt #${exam["attemptNumber"]}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[700],
-                          fontWeight: FontWeight.w500,
+                    // // Result Summary
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     _buildDetailChip(
+                    //       Icons.school,
+                    //       "Course: ${exam.courseName}",
+                    //       Colors.blue,
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 12),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     _buildDetailChip(
+                    //       Icons.person,
+                    //       "${exam.firstName} ${exam.lastName}",
+                    //       Colors.purple,
+                    //     ),
+                    //     _buildDetailChip(
+                    //       Icons.assessment,
+                    //       "${exam.examName}",
+                    //       Colors.orange,
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 12),
+
+                    // Pass Mark Info
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Pass Mark: ${exam.passMark}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "Tap for details",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.blue[700],
-                          fontStyle: FontStyle.italic,
+                        Text(
+                          "Tap for details",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue[700],
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    });
   }
 
   Widget _buildScoreItem(
@@ -261,7 +259,7 @@ class ExamResultsScreen extends StatelessWidget {
     );
   }
 
-  void _showExamDetails(BuildContext context, Map<String, dynamic> exam) {
+  void _showExamDetails(BuildContext context, StudentExamResultModel exam) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -292,7 +290,7 @@ class ExamResultsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  exam["title"]!.toString(),
+                  "${exam.courseName} - ${exam.examName}",
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -300,7 +298,7 @@ class ExamResultsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Exam Results - Attempt #${exam["attemptNumber"]}",
+                  "Exam Results",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -310,29 +308,23 @@ class ExamResultsScreen extends StatelessWidget {
 
                 // Detailed Stats
                 _buildDetailRow(
-                    "Completion Date", exam["completedDate"]!.toString()),
-                _buildDetailRow("Time Taken", exam["timeTaken"]!.toString()),
+                    "Completion Date", exam.createdAt?.split('T')[0] ?? 'N/A'),
                 _buildDetailRow(
-                    "Total Questions", exam["totalQuestions"].toString()),
-                _buildDetailRow(
-                    "Correct Answers", exam["correctAnswers"].toString(),
-                    color: Colors.green),
-                _buildDetailRow(
-                    "Incorrect Answers", exam["incorrectAnswers"].toString(),
-                    color: Colors.red),
-                _buildDetailRow(
-                    "Skipped Questions", exam["skippedQuestions"].toString(),
-                    color: Colors.orange),
+                    "Student Name", "${exam.firstName} ${exam.lastName}"),
+                _buildDetailRow("Course", exam.courseName ?? 'N/A'),
+                _buildDetailRow("Exam Name", exam.examName ?? 'N/A',
+                    color: Colors.blue),
                 const Divider(height: 32),
-                _buildDetailRow("Your Score",
-                    "${exam["score"]} / ${exam["totalQuestions"]}",
+                _buildDetailRow("Total Marks", exam.totalMark ?? 'N/A',
                     isBold: true),
-                _buildDetailRow("Percentage", "${exam["percentage"]}%",
+                _buildDetailRow("Pass Mark", exam.passMark ?? 'N/A'),
+                _buildDetailRow("Obtained Mark", exam.obtainedMark ?? 'N/A',
+                    isBold: true, color: Colors.blue),
+                _buildDetailRow("Percentage", "${exam.percentage}%",
                     isBold: true),
-                _buildDetailRow("Passing Score", "${exam["passingScore"]}%"),
-                _buildDetailRow("Status", exam["status"]!.toString(),
+                _buildDetailRow("Status", exam.resultStatus ?? 'N/A',
                     color:
-                        exam["status"] == "Passed" ? Colors.green : Colors.red,
+                        exam.resultStatus == "Pass" ? Colors.green : Colors.red,
                     isBold: true),
 
                 const SizedBox(height: 24),
@@ -346,7 +338,8 @@ class ExamResultsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text("Close"),
+                    child: const Text("Close",
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
