@@ -319,6 +319,14 @@ class _TestScreenState extends State<TestScreen> {
                           Radio<int>(
                             value: index,
                             groupValue: selectedAnswer,
+                            activeColor: Colors.blue, // selected
+                            fillColor: WidgetStateProperty.resolveWith<Color>(
+                                (states) {
+                              if (states.contains(WidgetState.selected)) {
+                                return Colors.blue;
+                              }
+                              return Colors.grey; // unselected
+                            }),
                             onChanged: (value) {
                               setState(() {
                                 userAnswers[currentIndex] = value!;
@@ -354,7 +362,7 @@ class _TestScreenState extends State<TestScreen> {
                 child: OutlinedButton(
                   onPressed: currentIndex > 0 ? previousQuestion : null,
                   style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 80.v),
+                    padding: EdgeInsets.symmetric(vertical: 12.v),
                     side: BorderSide(
                         color: currentIndex > 0
                             ? appTheme.blue800

@@ -139,28 +139,31 @@ class RulesScreen extends StatelessWidget {
               SizedBox(height: 24.v),
 
               /// ================= START BUTTON =================
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => TestScreen(
-                          courseExamId: exam.courseExamId, // ✅ FIXED
-                          duration: exam.duration, courseId: exam.courseId,
-                          passMark: exam.passCount,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Start Exam",
-                    style: theme.textTheme.labelMedium,
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TestScreen(
+                    courseExamId: exam.courseExamId, // ✅ FIXED
+                    duration: exam.duration, courseId: exam.courseId,
+                    passMark: exam.passCount,
                   ),
                 ),
-              )
-            ],
+              );
+            },
+            child: Text(
+              "Start Exam",
+              style: theme.textTheme.labelMedium,
+            ),
           ),
         ),
       ),

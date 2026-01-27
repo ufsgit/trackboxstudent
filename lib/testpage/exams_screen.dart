@@ -42,19 +42,97 @@ class _ExamsHomeScreenState extends State<ExamsHomeScreen> {
             itemBuilder: (context, index) {
               final exam = data[index];
               return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(exam.examName),
-                    subtitle: Text(
-                        "Duration: ${exam.duration} mins | Qs: ${exam.questions}"),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RulesScreen(exam: exam),
-                      ),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RulesScreen(exam: exam),
                     ),
-                  ));
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        // Leading icon
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.assignment_rounded,
+                            color: Colors.blue,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        // Title + subtitle
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                exam.examName,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.timer_outlined,
+                                    size: 14,
+                                    color: Colors.blueAccent,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    "${exam.duration} mins",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Icon(
+                                    Icons.help_outline_rounded,
+                                    size: 14,
+                                    color: Colors.orangeAccent,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    "${exam.questions} questions",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Arrow
+                        const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
             },
           );
         },
