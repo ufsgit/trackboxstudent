@@ -61,8 +61,8 @@ class TeacherWidget extends StatelessWidget {
                                 image: AssetImage(
                                   image,
                                 ),
-                                fit: BoxFit.contain,
-                                color: ColorResources.colorgrey100,
+                                fit: BoxFit.fill,
+                                color: ColorResources.colorBlue100,
                               ),
                             )
                           : CachedNetworkImage(
@@ -110,66 +110,66 @@ class TeacherWidget extends StatelessWidget {
                   softWrap: true,
                   overflow: TextOverflow.visible,
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: onTapAudio,
-                      child: CircleAvatar(
-                        backgroundColor: ColorResources.colorBlue500,
-                        radius: 14,
-                        child: const Icon(
-                          Icons.phone,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    InkWell(
-                      onTap: onTapVideo,
-                      child: CircleAvatar(
-                        backgroundColor: ColorResources.colorBlue500,
-                        radius: 14,
-                        child: const Icon(
-                          Icons.videocam_outlined,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                // trailing: Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+                //     InkWell(
+                //       onTap: onTapAudio,
+                //       child: CircleAvatar(
+                //         backgroundColor: ColorResources.colorBlue500,
+                //         radius: 14,
+                //         child: const Icon(
+                //           Icons.phone,
+                //           color: Colors.white,
+                //           size: 18,
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 12),
+                //     InkWell(
+                //       onTap: onTapVideo,
+                //       child: CircleAvatar(
+                //         backgroundColor: ColorResources.colorBlue500,
+                //         radius: 14,
+                //         child: const Icon(
+                //           Icons.videocam_outlined,
+                //           color: Colors.white,
+                //           size: 18,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
               ),
             ),
           ),
         ),
-        Positioned(
-            right: 0,
-            top: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                height: 20,
-                child: Center(
-                    child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    bannerText,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: bannerTextColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                )),
-                decoration: BoxDecoration(
-                    color: bannerColor,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        topRight: Radius.circular(6))),
-              ),
-            ))
+        // Positioned(
+        //     right: 0,
+        //     top: 0,
+        //     child: Padding(
+        //       padding: const EdgeInsets.symmetric(horizontal: 16),
+        //       child: Container(
+        //         height: 20,
+        //         child: Center(
+        //             child: Padding(
+        //           padding: const EdgeInsets.symmetric(horizontal: 8),
+        //           child: Text(
+        //             bannerText,
+        //             style: GoogleFonts.plusJakartaSans(
+        //               color: bannerTextColor,
+        //               fontSize: 12,
+        //               fontWeight: FontWeight.w700,
+        //             ),
+        //           ),
+        //         )),
+        //         decoration: BoxDecoration(
+        //             color: bannerColor,
+        //             borderRadius: BorderRadius.only(
+        //                 bottomLeft: Radius.circular(12),
+        //                 topRight: Radius.circular(6))),
+        //       ),
+        //     ))
       ],
     );
   }
