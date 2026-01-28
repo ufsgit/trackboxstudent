@@ -100,7 +100,7 @@ class ExamResultController extends GetxController {
         bodyData: {
           "student_id": studentId,
           "course_id": courseId,
-          "exam_data_id": examDataId,
+          "course_exam_id": examDataId,
           "total_mark": totalMark,
           "pass_mark": passMark,
           "obtained_mark": obtainedMark,

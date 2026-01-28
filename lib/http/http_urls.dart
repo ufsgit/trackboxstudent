@@ -114,4 +114,9 @@ class HttpUrls {
   static String saveExamResult = '/student/Save_Exam_Result';
   static String getStudentExamResults(String studentId) =>
       '/student/Get_Exam_Results/$studentId';
+
+  // Video Attendance endpoints
+  static String saveVideoAttendance = '/student/Save_Video_Attendance';
+  static String getVideoAttendance(String studentId) =>
+      '/student/Get_Video_Attendance/$studentId';
 }

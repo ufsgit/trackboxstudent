@@ -1,4 +1,6 @@
 import 'package:anandhu_s_application4/core/app_export.dart';
+import 'package:anandhu_s_application4/core/utils/pref_utils.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/video_attendance_controller.dart';
 import 'package:anandhu_s_application4/theme/theme_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -11,17 +13,24 @@ class AttendanceReportScreen extends StatefulWidget {
 
 class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   DateTime selectedMonth = DateTime.now();
+  final VideoAttendanceController _controller =
+      Get.put(VideoAttendanceController());
 
-  /// Dummy data (later filter by month)
-  final attendanceList = [
-    {"date": "01 Sep 2024", "status": "Present"},
-    {"date": "02 Sep 2024", "status": "Absent"},
-    {"date": "03 Sep 2024", "status": "Present"},
-    {"date": "04 Sep 2024", "status": "Present"},
-    {"date": "05 Sep 2024", "status": "Absent"},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadAttendance();
+  }
 
-  /// ================= MONTH PICKER =================
+  /// Load attendance data for selected month
+  Future<void> _loadAttendance() async {
+    final studentId = int.parse(PrefUtils().getStudentId());
+    final monthStr =
+        '${selectedMonth.year}-${selectedMonth.month.toString().padLeft(2, '0')}';
+    await _controller.getVideoAttendanceByStudentId(studentId, month: monthStr);
+  }
+
+  /// Month picker
   Future<void> _pickMonth() async {
     final picked = await showDatePicker(
       context: context,
@@ -35,6 +44,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
       setState(() {
         selectedMonth = DateTime(picked.year, picked.month);
       });
+      _loadAttendance();
     }
   }
 
@@ -109,27 +119,28 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
             SizedBox(height: 16.v),
 
             /// ================= ATTENDANCE STATS =================
-            Row(
-              children: [
-                _statCard(
-                  title: "Present",
-                  value: "3",
-                  color: appTheme.green800,
-                ),
-                SizedBox(width: 12.v),
-                _statCard(
-                  title: "Absent",
-                  value: "2",
-                  color: appTheme.red400,
-                ),
-                SizedBox(width: 12.v),
-                _statCard(
-                  title: "Total",
-                  value: "5",
-                  color: appTheme.blue800,
-                ),
-              ],
-            ),
+            Obx(() {
+              final attendanceList = _controller.videoAttendanceList;
+              final presentCount =
+                  attendanceList.where((a) => a.status == "Present").length;
+              final totalCount = attendanceList.length;
+
+              return Row(
+                children: [
+                  _statCard(
+                    title: "Present",
+                    value: "$presentCount",
+                    color: appTheme.green800,
+                  ),
+                  SizedBox(width: 12.v),
+                  _statCard(
+                    title: "Total",
+                    value: "$totalCount",
+                    color: appTheme.blue800,
+                  ),
+                ],
+              );
+            }),
 
             SizedBox(height: 20.v),
 
@@ -142,66 +153,138 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
             SizedBox(height: 12.v),
 
             /// ================= ATTENDANCE LIST =================
-            ListView.builder(
-              itemCount: attendanceList.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final item = attendanceList[index];
-                final isPresent = item["status"] == "Present";
-
-                return Container(
-                  margin: EdgeInsets.only(bottom: 8.v),
-                  padding: EdgeInsets.all(12.v),
-                  decoration: BoxDecoration(
-                    color: appTheme.whiteA700,
-                    borderRadius: BorderRadius.circular(12.v),
-                    boxShadow: [
-                      BoxShadow(
-                        color: appTheme.gray5005e,
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isPresent ? Icons.check_circle : Icons.cancel,
-                        color: isPresent ? appTheme.green800 : appTheme.red400,
-                      ),
-                      SizedBox(width: 12.v),
-                      Expanded(
-                        child: Text(
-                          item["date"]!,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12.v,
-                          vertical: 6.v,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isPresent
-                              ? appTheme.green800.withOpacity(0.1)
-                              : appTheme.red400.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20.v),
-                        ),
-                        child: Text(
-                          item["status"]!,
-                          style: theme.textTheme.bodySmall!.copyWith(
-                            color:
-                                isPresent ? appTheme.green800 : appTheme.red400,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
+            Obx(() {
+              if (_controller.isLoading.value) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: appTheme.blue800,
                   ),
                 );
-              },
-            ),
+              }
+
+              if (_controller.videoAttendanceList.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.v),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 48.v,
+                          color: appTheme.gray600,
+                        ),
+                        SizedBox(height: 16.v),
+                        Text(
+                          "No attendance records for this month",
+                          style: theme.textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: _controller.videoAttendanceList.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final item = _controller.videoAttendanceList[index];
+                  final isPresent = item.status == "Present";
+
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 8.v),
+                    padding: EdgeInsets.all(12.v),
+                    decoration: BoxDecoration(
+                      color: appTheme.whiteA700,
+                      borderRadius: BorderRadius.circular(12.v),
+                      boxShadow: [
+                        BoxShadow(
+                          color: appTheme.gray5005e,
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.video_library,
+                              color: appTheme.blue800,
+                              size: 20.v,
+                            ),
+                            SizedBox(width: 8.v),
+                            Expanded(
+                              child: Text(
+                                item.contentTitle ?? 'Video Content',
+                                style: theme.textTheme.titleSmall,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.v,
+                                vertical: 6.v,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isPresent
+                                    ? appTheme.green800.withOpacity(0.1)
+                                    : appTheme.red400.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20.v),
+                              ),
+                              child: Text(
+                                item.status ?? "Unknown",
+                                style: theme.textTheme.bodySmall!.copyWith(
+                                  color: isPresent
+                                      ? appTheme.green800
+                                      : appTheme.red400,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.v),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                item.courseName ?? '',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: appTheme.gray600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            SizedBox(width: 8.v),
+                            Text(
+                              '${item.watchPercentage?.toStringAsFixed(0) ?? '0'}% watched',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: appTheme.blue800,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 4.v),
+                        Text(
+                          item.date ?? '',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: appTheme.gray100,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }),
           ],
         ),
       ),

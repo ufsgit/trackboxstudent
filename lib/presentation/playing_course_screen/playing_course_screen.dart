@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:anandhu_s_application4/core/colors_res.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/video_attendance_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
@@ -9,14 +10,92 @@ class PlayingCourseScreen extends StatefulWidget {
   const PlayingCourseScreen({
     Key? key,
     required this.controller,
+    this.courseId,
+    this.contentId,
+    this.contentTitle,
   }) : super(key: key);
   final VideoPlayerController controller;
+  final int? courseId;
+  final int? contentId;
+  final String? contentTitle;
 
   @override
   State<PlayingCourseScreen> createState() => _PlayingCourseScreenState();
 }
 
 class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
+  // Watch time tracking
+  Set<int> _watchedSegments = {};
+  Duration _lastPosition = Duration.zero;
+  bool _hasSubmittedAttendance = false;
+  static const double ATTENDANCE_THRESHOLD = 80.0; // 80% watch threshold
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_trackVideoProgress);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_trackVideoProgress);
+    _submitAttendanceIfNeeded(); // Submit on exit
+    super.dispose();
+  }
+
+  /// Track which seconds of video have been watched
+  void _trackVideoProgress() {
+    if (!widget.controller.value.isInitialized) return;
+
+    final currentPosition = widget.controller.value.position;
+    final currentSecond = currentPosition.inSeconds;
+
+    // Only track forward progress (not seeking backward)
+    if (currentPosition >= _lastPosition) {
+      _watchedSegments.add(currentSecond);
+    }
+
+    _lastPosition = currentPosition;
+
+    // Check if video ended
+    if (currentPosition >=
+        widget.controller.value.duration - Duration(seconds: 1)) {
+      _submitAttendanceIfNeeded();
+    }
+  }
+
+  /// Submit attendance if watch threshold is met
+  Future<void> _submitAttendanceIfNeeded() async {
+    if (_hasSubmittedAttendance) return;
+    if (widget.courseId == null || widget.contentId == null) return;
+
+    final totalDuration = widget.controller.value.duration.inSeconds;
+    final watchedDuration = _watchedSegments.length;
+    final watchPercentage = (watchedDuration / totalDuration) * 100;
+
+    if (watchPercentage >= ATTENDANCE_THRESHOLD) {
+      _hasSubmittedAttendance = true;
+
+      final controller = Get.find<VideoAttendanceController>();
+      final success = await controller.saveVideoAttendance(
+        courseId: widget.courseId!,
+        contentId: widget.contentId!,
+        contentTitle: widget.contentTitle ?? 'Video Content',
+        watchDurationSeconds: watchedDuration,
+        totalDurationSeconds: totalDuration,
+      );
+
+      if (success) {
+        Get.snackbar(
+          'Attendance Marked',
+          'You have been marked present for this video (${watchPercentage.toStringAsFixed(0)}% watched)',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: Duration(seconds: 3),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,8 +298,6 @@ class _ControlsOverlay extends StatelessWidget {
     );
   }
 }
-
-
 
 // class PlayingCourseScreen extends GetWidget<PlayingCourseController> {
 //   const PlayingCourseScreen({Key? key})
