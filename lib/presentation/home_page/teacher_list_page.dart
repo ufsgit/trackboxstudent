@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/core/colors_res.dart';
 import 'package:anandhu_s_application4/core/utils/common_utils.dart';
+import 'package:anandhu_s_application4/core/utils/date_time_utils.dart';
 import 'package:anandhu_s_application4/core/utils/extentions.dart';
 import 'package:anandhu_s_application4/core/utils/meet_utils.dart';
 import 'package:anandhu_s_application4/http/http_urls.dart';
@@ -192,7 +193,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                                               .teacherList[index].userTypeId !=
                                           2
                                       ? 'Available at : 24 x 7'
-                                      : 'Available at : ${controller.teacherList[index].startTime.toString()}${controller.teacherList[index].endTime.toString()}',
+                                      : 'Available at : ${controller.teacherList[index].startTime.toString()} - ${controller.teacherList[index].endTime.toString()}',
                                   bannerTextColor:
                                       controller.teacherList[index].batchId !=
                                               null

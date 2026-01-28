@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 import '../models/android_large_5_model.dart';
 
@@ -9,13 +8,10 @@ import '../models/android_large_5_model.dart';
 class AndroidLarge5Controller extends GetxController {
   AndroidLarge5Controller(this.androidLarge5ModelObj);
 
-  TextEditingController searchController = TextEditingController();
-
   Rx<AndroidLarge5Model> androidLarge5ModelObj;
 
   @override
   void onClose() {
     super.onClose();
-    searchController.dispose();
   }
 }

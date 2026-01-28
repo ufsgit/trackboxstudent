@@ -24,8 +24,8 @@ extension DateTimeExtension on DateTime {
     String formattedDate = dateFormat.format(now);
     return formattedDate;
   }
-  static String getTimeAgo(String dateTimeStr) {
 
+  static String getTimeAgo(String dateTimeStr) {
     // final year = int.parse(timestamp.substring(0, 4));
     // final month = int.parse(timestamp.substring(5, 7));
     // final day = int.parse(timestamp.substring(8, 10));
@@ -65,12 +65,13 @@ extension DateTimeExtension on DateTime {
 
     return timeAgo + ' ago';
   }
-
-
 }
+
 String formatDuration(double totalSeconds) {
-  final totalSecondsInt = totalSeconds.floor(); // Get the integer part of seconds
-  final fractionalSeconds = totalSeconds - totalSecondsInt; // Get the fractional part
+  final totalSecondsInt =
+      totalSeconds.floor(); // Get the integer part of seconds
+  final fractionalSeconds =
+      totalSeconds - totalSecondsInt; // Get the fractional part
 
   final hours = totalSecondsInt ~/ 3600; // Get total hours
   final minutes = (totalSecondsInt % 3600) ~/ 60; // Get remaining minutes
@@ -88,15 +89,45 @@ String formatDuration(double totalSeconds) {
     return formattedSeconds;
   }
 }
+
 String formatDateinDdMmYy(String isoDateString) {
-  DateTime parsedDate = DateTime.parse(isoDateString);
+  DateTime parsedDate = DateTime.parse(isoDateString).toLocal();
 
   DateFormat format = DateFormat('dd/MM/yy');
   return format.format(parsedDate);
 }
 
 String formatTimeinAmPm(String isoDateString) {
-  DateTime parsedDate = DateTime.parse(isoDateString);
+  DateTime parsedDate = DateTime.parse(isoDateString).toLocal();
   DateFormat format = DateFormat('hh:mm a');
   return format.format(parsedDate);
+}
+
+String convertRawTimeToLocal(String timeStr) {
+  if (timeStr.isEmpty) return "";
+  try {
+    // Expects "HH:mm" or "HH:mm:ss"
+    final now = DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+    // Parse as UTC by appending 'Z'
+    final utcTime = DateTime.parse('${dateStr}T${timeStr}Z');
+    return DateFormat('hh:mm a').format(utcTime.toLocal());
+  } catch (e) {
+    return timeStr;
+  }
+}
+
+String convertAvailabilityToLocal(String availability) {
+  if (availability.isEmpty || availability == "24 x 7") return availability;
+  try {
+    // Regex for HH:mm (optionally with :ss)
+    final regExp = RegExp(r'\d{2}:\d{2}(:\d{2})?');
+    return availability.splitMapJoin(
+      regExp,
+      onMatch: (m) => convertRawTimeToLocal(m.group(0)!),
+      onNonMatch: (n) => n,
+    );
+  } catch (e) {
+    return availability;
+  }
 }

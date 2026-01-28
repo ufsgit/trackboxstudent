@@ -28,7 +28,7 @@ class StudentChatLogModel {
         profilePhotoPath:
             json['Profile_Photo_Path'] ?? 'assets/images/image_not_found.png',
         unreadCount: json['unread_count'] ?? 0,
-        sentTime: DateTime.parse(json["timestamp"]),
+        sentTime: DateTime.parse(json["timestamp"]).toLocal(),
         filePath: json['File_Path'] ?? '',
       );
 

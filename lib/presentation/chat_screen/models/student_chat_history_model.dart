@@ -25,7 +25,7 @@ class ChatHistoryModel {
         firstName: json["First_Name"] ?? '',
         lastName: json['Last_Name'] ?? '',
         message: json["message"] ?? '',
-        timestamp: DateTime.parse(json["timestamp"]) ?? DateTime.now(),
+        timestamp: DateTime.parse(json["timestamp"]).toLocal(),
         profilePath: json["Profile_Photo_Path"] ?? '',
         unreadCount: json["unread_count"] ?? 0,
         filePath: json['File_Path'] ?? '',

@@ -1,30 +1,18 @@
 import 'dart:developer';
 import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/core/colors_res.dart';
-import 'package:anandhu_s_application4/http/chat_bot_socket.dart';
-import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/http/socket_io.dart';
-import 'package:anandhu_s_application4/presentation/android_large_5_page/call_log_screen.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/chat_log_screen.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/controller/android_large_5_controller.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/controller/call_chat_controller.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/models/android_large_5_model.dart';
-import 'package:anandhu_s_application4/presentation/android_large_5_page/models/userprofilelist_item_model.dart';
-import 'package:anandhu_s_application4/presentation/chat_screen/controller/chat_firebase_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/controller/home_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/models/home_model.dart';
-import 'package:anandhu_s_application4/presentation/home_page/teacher_list_page.dart';
 import 'package:anandhu_s_application4/presentation/login/login_controller.dart';
-import 'package:anandhu_s_application4/theme/custom_button_style.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:anandhu_s_application4/widgets/app_bar/appbar_leading_iconbutton.dart';
 import 'package:anandhu_s_application4/widgets/app_bar/custom_app_bar.dart';
-import 'package:anandhu_s_application4/widgets/custom_outlined_button.dart';
-import 'package:anandhu_s_application4/widgets/custom_search_view.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home_page_container_screen/controller/home_page_container_controller.dart';
@@ -43,9 +31,7 @@ class AndroidLarge5Screen extends StatefulWidget {
   _AndroidLarge5ScreenState createState() => _AndroidLarge5ScreenState();
 }
 
-class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen> {
   AndroidLarge5Controller controller =
       Get.put(AndroidLarge5Controller(AndroidLarge5Model().obs));
   CallandChatController callandChatController =
@@ -54,7 +40,7 @@ class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen>
       Get.find<HomePageContainerController>();
   final LoginController lgOutController = Get.put(LoginController());
   HomeController hodController = Get.put(HomeController(HomeModel().obs));
-  int selectedTabIndex = 0;
+
   bool _isInfoVisible = false;
 
   void _toggleInfoBox() {
@@ -65,26 +51,12 @@ class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen>
 
   @override
   void initState() {
-    _tabController = TabController(
-        length: 2, vsync: this, initialIndex: widget.initialTabIndex ?? 0);
-
-    // Set initial tab index if provided
-    if (widget.initialTabIndex != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _tabController.index = widget.initialTabIndex!;
-      });
-    } else {
-      _tabController.index =
-          Get.find<HomePageContainerController>().mentorChildIndex.value;
-    }
     super.initState();
   }
 
   @override
   void dispose() {
     log('mentors screen disposedf =======================');
-    controller.searchController.clear();
-    _tabController.dispose(); // Dispose the TabController when done
     super.dispose();
   }
 
@@ -135,32 +107,15 @@ class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen>
                                 },
                                 icon: Icon(CupertinoIcons.back)),
                             Text(
-                              selectedTabIndex == 0
-                                  ? 'Mentors 1:1 Chat'
-                                  : 'Mentors 1:1 Call',
+                              'Chat',
                               style: CustomTextStyles.titleMediumBluegray80001,
                             )
                           ],
                         ),
                       ),
-                      SizedBox(height: 17.v),
-                      selectedTabIndex == 0
-                          ? Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.h),
-                              child: CustomSearchView(
-                                onChanged: (v) =>
-                                    callandChatController.searchMentors(
-                                        isChat: _tabController.index == 0,
-                                        query: v),
-                                controller: controller.searchController,
-                                hintText: "lbl_search_mentor".tr,
-                              ),
-                            )
-                          : SizedBox(),
-                      SizedBox(height: 16.v),
-                      _buildTabBar(),
-                      SizedBox(height: 8.v),
-                      _buildUserProfileListTabs(),
+                      Expanded(
+                        child: ChatLogScreen(),
+                      ),
                     ],
                   ),
                 ),
@@ -219,43 +174,6 @@ class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen>
         imagePath: ImageConstant.imgArrowLeft,
         margin: EdgeInsets.only(left: 16.h, right: 320.h, top: 8.h),
         onTap: onTapArrowleftone,
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.h),
-      child: TabBar(
-        physics: NeverScrollableScrollPhysics(),
-        onTap: (i) {
-          setState(() => selectedTabIndex = i);
-        },
-        controller: _tabController,
-        labelColor: appTheme.black900,
-        unselectedLabelColor: appTheme.indigo5001,
-        indicatorColor: appTheme.black900,
-        indicatorPadding: EdgeInsets.all(10),
-        tabAlignment: TabAlignment.start,
-        dividerColor: Colors.white,
-        isScrollable: true,
-        tabs: [
-          Tab(text: "lbl_chats".tr),
-          Tab(text: "lbl_calls".tr),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserProfileListTabs() {
-    return Expanded(
-      child: TabBarView(
-        physics: NeverScrollableScrollPhysics(),
-        controller: _tabController,
-        children: [
-          ChatLogScreen(),
-          CallLogScreen(),
-        ],
       ),
     );
   }

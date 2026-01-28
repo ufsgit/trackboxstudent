@@ -1,6 +1,6 @@
 import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/exam_result_controller.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/day_category_screen.dart';
+// import 'package:anandhu_s_application4/presentation/course_details_page1_screen/day_category_screen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/result_viewing_screen.dart';
 import 'package:anandhu_s_application4/testpage/examcompletedpage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -45,8 +45,8 @@ class _CourseCategoryDetailsScreenState
     _tabController = TabController(
         length: enrolController.courseEnrollist.isNotEmpty &&
                 enrolController.courseEnrollist[0].studentCourseId != 0
-            ? 4
-            : 3,
+            ? 3
+            : 2, // Reduced length from 4/3 to 3/2
         vsync: this);
     _tabController.addListener(_handleTabChange);
     if (enrolController.courseEnrollist[0].studentCourseId != 0) {
@@ -152,17 +152,17 @@ class _CourseCategoryDetailsScreenState
                     ),
                   ),
                   SizedBox(height: 8),
-                  controller.courseInfo[0].description != ''
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: ReadMoreWidget(
-                            description: controller.courseInfo[0].description,
-                          ),
-                        )
-                      : SizedBox(),
-                  controller.courseInfo[0].description != ''
-                      ? SizedBox(height: 32)
-                      : SizedBox(),
+                  // controller.courseInfo[0].description != ''
+                  //     ? Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 16),
+                  //         child: ReadMoreWidget(
+                  //           description: controller.courseInfo[0].description,
+                  //         ),
+                  //       )
+                  //     : SizedBox(),
+                  // controller.courseInfo[0].description != ''
+                  //     ? SizedBox(height: 32)
+                  //     : SizedBox(),
                   Obx(() {
                     // double listViewHeight;
 
@@ -182,8 +182,8 @@ class _CourseCategoryDetailsScreenState
                       length:
                           enrolController.courseEnrollist[0].studentCourseId !=
                                   0
-                              ? 4
-                              : 3,
+                              ? 3
+                              : 2, // Reduced length from 4/3 to 3/2
                       child: Column(
                         children: [
                           TabBar(
@@ -205,19 +205,19 @@ class _CourseCategoryDetailsScreenState
                                   ),
                                 ),
                               ),
-                              Tab(
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    'Library',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: ColorResources.colorgrey700,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // Tab(
+                              //   child: FittedBox(
+                              //     fit: BoxFit.scaleDown,
+                              //     child: Text(
+                              //       'Library',
+                              //       style: GoogleFonts.plusJakartaSans(
+                              //         color: ColorResources.colorgrey700,
+                              //         fontSize: 14,
+                              //         fontWeight: FontWeight.w700,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                               Tab(
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
@@ -280,17 +280,17 @@ class _CourseCategoryDetailsScreenState
                                     );
                                   },
                                 ),
-                                DayCategoryScreen(
-                                  title: '',
-                                  IsEnrollCourse: enrolController
-                                      .courseEnrollist[0].studentCourseId,
-                                  isTab: true,
-                                  isExam: true,
-                                  isLibrary: true,
-                                  dayId: '0',
-                                  courseId: widget.courseId.toString(),
-                                  moduleId: '0',
-                                ),
+                                // DayCategoryScreen(
+                                //   title: '',
+                                //   IsEnrollCourse: enrolController
+                                //       .courseEnrollist[0].studentCourseId,
+                                //   isTab: true,
+                                //   isExam: true,
+                                //   isLibrary: true,
+                                //   dayId: '0',
+                                //   courseId: widget.courseId.toString(),
+                                //   moduleId: '0',
+                                // ),
                                 Padding(
                                   padding: const EdgeInsets.only(
                                       top: 8, left: 18, right: 16, bottom: 24),

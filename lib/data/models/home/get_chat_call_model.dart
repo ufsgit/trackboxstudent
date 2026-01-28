@@ -22,8 +22,8 @@ class GetChatCallModel {
         id: json["id"],
         teacherId: json["teacher_id"],
         studentId: json["student_id"],
-        callStart: DateTime.parse(json["call_start"]),
-        callEnd: DateTime.parse(json["call_end"]),
+        callStart: DateTime.parse(json["call_start"]).toLocal(),
+        callEnd: DateTime.parse(json["call_end"]).toLocal(),
         callDuration: json["call_duration"],
         callType: json["call_type"],
       );

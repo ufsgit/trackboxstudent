@@ -170,9 +170,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           height: 8.h,
                         ),
 
-                        textFieldWidget(
-                            controller: pController.gmeetController,
-                            labelText: 'Google meet link'),
+                        // textFieldWidget(
+                        //     controller: pController.gmeetController,
+                        //     labelText: 'Google meet link'),
                         SizedBox(
                           height: 8.h,
                         ),

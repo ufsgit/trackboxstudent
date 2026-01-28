@@ -33,13 +33,14 @@ class StudentChatHistoryModel {
         teacherId: json["teacher_id"] ?? 0,
         studentId: json['student_id'] ?? 0,
         message: json['message'] ?? '',
-        messageTimestamp: DateTime.parse(json["message_timestamp"]),
+        messageTimestamp: DateTime.parse(json["message_timestamp"]).toLocal(),
         callId: json['call_id'] ?? 0,
         callStart: json["call_start"] != null
-            ? DateTime.parse(json["call_start"])
+            ? DateTime.parse(json["call_start"]).toLocal()
             : null,
-        callEnd:
-            json["call_end"] != null ? DateTime.parse(json["call_end"]) : null,
+        callEnd: json["call_end"] != null
+            ? DateTime.parse(json["call_end"]).toLocal()
+            : null,
         // callDuration: json['call_duration'] ?? 0,
         callType: json['call_type'] ?? '',
         filePath: json['File_Path'] ?? '',

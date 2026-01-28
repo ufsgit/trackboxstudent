@@ -32,7 +32,7 @@ class EnrolItemWidget extends StatelessWidget {
 
   String formatDate(String date) {
     // Parse the date from the input string
-    DateTime parsedDate = DateTime.parse(date);
+    DateTime parsedDate = DateTime.parse(date).toLocal();
 
     // Format the date in dd/mm/yyyy format
     String formattedDate = "${parsedDate.day.toString().padLeft(2, '0')}/"
@@ -67,14 +67,15 @@ class EnrolItemWidget extends StatelessWidget {
                 gravity: ToastGravity.BOTTOM,
                 backgroundColor: ColorResources.colorBlack,
                 textColor: ColorResources.colorwhite);
-          } else {
-            Fluttertoast.showToast(
-                msg: 'Course access currently restricted',
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.BOTTOM,
-                backgroundColor: ColorResources.colorBlack,
-                textColor: ColorResources.colorwhite);
           }
+          //  else {
+          //   Fluttertoast.showToast(
+          //       msg: 'Course access currently restricted',
+          //       toastLength: Toast.LENGTH_LONG,
+          //       gravity: ToastGravity.BOTTOM,
+          //       backgroundColor: ColorResources.colorBlack,
+          //       textColor: ColorResources.colorwhite);
+          // }
           return;
         }
 

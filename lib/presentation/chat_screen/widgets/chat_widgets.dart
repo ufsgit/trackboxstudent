@@ -1,12 +1,7 @@
 import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/core/colors_res.dart';
-import 'package:anandhu_s_application4/core/utils/common_utils.dart';
 import 'package:anandhu_s_application4/core/utils/extentions.dart';
-import 'package:anandhu_s_application4/core/utils/meet_utils.dart';
 import 'package:anandhu_s_application4/http/socket_io.dart';
-import 'package:anandhu_s_application4/presentation/android_large_5_page/controller/call_chat_controller.dart';
-import 'package:anandhu_s_application4/presentation/android_large_5_page/incoming_call_page.dart';
-import 'package:anandhu_s_application4/presentation/android_large_5_page/widgets/handle_call_widget.dart';
 import 'package:anandhu_s_application4/presentation/chat_screen/controller/chat_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/controller/home_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/models/home_model.dart';
@@ -14,7 +9,6 @@ import 'package:anandhu_s_application4/presentation/home_page/video_individual_s
 import 'package:anandhu_s_application4/presentation/profile/controller/profile_controller.dart';
 import 'package:anandhu_s_application4/widgets/custom_icon_button.dart';
 import 'package:anandhu_s_application4/widgets/custom_text_form_field.dart';
-import 'package:anandhu_s_application4/widgets/google_meet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +22,6 @@ Widget buildAppBar(String isHod, String teacherName, String profileUrl,
     int teacherId, BuildContext context) {
   final ChatHistoryController chatHistoryController =
       Get.find<ChatHistoryController>();
-  final CallandChatController callandChatController =
-      Get.find<CallandChatController>();
-  final HomeController homeController = Get.find<HomeController>();
-
   final ProfileController profileController = Get.find<ProfileController>();
   return Container(
     decoration: const BoxDecoration(color: ColorResources.colorwhite),
@@ -101,96 +91,6 @@ Widget buildAppBar(String isHod, String teacherName, String profileUrl,
                 fontWeight: FontWeight.w500,
               ),
             ),
-          ),
-          Row(
-            children: [
-              InkWell(
-                onTap: PrefUtils().getGmeetLink().isNotEmpty
-                    ? () async {
-                        await handleTeacherCall(
-                            teacherId: teacherId.toString(),
-                            teacherName: teacherName,
-                            callId: '',
-                            isVideo: true,
-                            profileImageUrl: profileUrl,
-                            liveLink: PrefUtils().getGmeetLink(),
-                            homeController: homeController,
-                            callandChatController: callandChatController,
-                            safeBack: safeBack,
-                            isIncomingCall: false);
-
-                        MeetCallTracker(
-                          onCallEnded: () {},
-                        ).startMeetCall(meetCode: PrefUtils().getGmeetLink());
-
-                        // final CallandChatController callandChatController =
-                        //     Get.find<CallandChatController>();
-
-                        // if (!await isCallExist(context, callandChatController)) {
-                        //   Get.to(() => IncomingCallPage(
-                        //         liveLink: "",
-                        //         callId: "",
-                        //         video: false,
-                        //         teacherId: teacherId,
-                        //         // isIncomingCall: true,
-                        //         profileImageUrl: profileUrl,
-                        //         teacherName: teacherName,
-                        //       ))?.then((value) {});
-                        // }
-                      }
-                    : () {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                'Create a google meet link to initiate call')));
-                      },
-                child: const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Icon(
-                    CupertinoIcons.phone,
-                    size: 18,
-                    color: ColorResources.colorgrey700,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 12.h,
-              ),
-              GestureDetector(
-                onTap: PrefUtils().getGmeetLink().isNotEmpty
-                    ? () async {
-                        await handleTeacherCall(
-                            teacherId: teacherId.toString(),
-                            teacherName: teacherName,
-                            callId: '',
-                            isVideo: true,
-                            profileImageUrl: profileUrl,
-                            liveLink: PrefUtils().getGmeetLink(),
-                            homeController: homeController,
-                            callandChatController: callandChatController,
-                            safeBack: safeBack,
-                            isIncomingCall: false);
-
-                        MeetCallTracker(
-                          onCallEnded: () {},
-                        ).startMeetCall(meetCode: PrefUtils().getGmeetLink());
-                      }
-                    : () {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                'Create a google meet link to initiate call')));
-                      },
-                child: const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Icon(
-                    CupertinoIcons.videocam,
-                    size: 24,
-                    color: ColorResources.colorgrey700,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
