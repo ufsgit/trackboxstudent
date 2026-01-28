@@ -1,45 +1,81 @@
 class VideoAttendanceModel {
+  int? videoAttendanceId;
   int? studentId;
   int? courseId;
   String? courseName;
   int? contentId;
-  String? contentTitle;
-  double? watchPercentage;
-  String? date;
-  String? status;
+  String? contentName;
+  String? watchedDate;
+  String? updateTime;
+  int? deleteStatus;
 
   VideoAttendanceModel({
+    this.videoAttendanceId,
     this.studentId,
     this.courseId,
     this.courseName,
     this.contentId,
-    this.contentTitle,
-    this.watchPercentage,
-    this.date,
-    this.status,
+    this.contentName,
+    this.watchedDate,
+    this.updateTime,
+    this.deleteStatus,
   });
 
   VideoAttendanceModel.fromJson(Map<String, dynamic> json) {
-    studentId = json['student_id'];
-    courseId = json['course_id'];
-    courseName = json['course_name'];
-    contentId = json['content_id'];
-    contentTitle = json['content_title'];
-    watchPercentage = json['watch_percentage']?.toDouble();
-    date = json['date'];
-    status = json['status'];
+    videoAttendanceId = json['VideoAttendance_ID'];
+    studentId = json['Student_ID'];
+    courseId = json['Course_ID'];
+    courseName = json['Course_Name'];
+    contentId = json['Content_ID'];
+    contentName = json['Content_Name'];
+    watchedDate = json['Watched_Date'];
+    updateTime = json['Update_Time'];
+    deleteStatus = json['Delete_Status'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['student_id'] = studentId;
-    data['course_id'] = courseId;
-    data['course_name'] = courseName;
-    data['content_id'] = contentId;
-    data['content_title'] = contentTitle;
-    data['watch_percentage'] = watchPercentage;
-    data['date'] = date;
-    data['status'] = status;
+    data['VideoAttendance_ID'] = videoAttendanceId;
+    data['Student_ID'] = studentId;
+    data['Course_ID'] = courseId;
+    data['Course_Name'] = courseName;
+    data['Content_ID'] = contentId;
+    data['Content_Name'] = contentName;
+    data['Watched_Date'] = watchedDate;
+    data['Update_Time'] = updateTime;
+    data['Delete_Status'] = deleteStatus;
     return data;
   }
+
+  // Helper to get formatted date
+  String get formattedDate {
+    if (watchedDate == null) return '';
+    try {
+      final date = DateTime.parse(watchedDate!);
+      return '${date.day.toString().padLeft(2, '0')} ${_getMonthName(date.month)} ${date.year}';
+    } catch (e) {
+      return watchedDate!;
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return months[month - 1];
+  }
+
+  // Status is always "Present" if record exists
+  String get status => 'Present';
 }

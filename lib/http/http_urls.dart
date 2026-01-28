@@ -116,7 +116,7 @@ class HttpUrls {
       '/student/Get_Exam_Results/$studentId';
 
   // Video Attendance endpoints
-  static String saveVideoAttendance = '/student/Save_Video_Attendance';
+  static String saveVideoAttendance = '/course/Save_VideoAttendance';
   static String getVideoAttendance(String studentId) =>
-      '/student/Get_Video_Attendance/$studentId';
+      '/course/Get_VideoAttendance/$studentId';
 }
