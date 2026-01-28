@@ -146,7 +146,8 @@ class RulesScreen extends StatelessWidget {
       bottomNavigationBar: SizedBox(
         width: double.infinity,
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding:
+              const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 40),
           child: ElevatedButton(
             onPressed: () {
               Navigator.pushReplacement(

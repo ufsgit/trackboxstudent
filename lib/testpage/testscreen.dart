@@ -354,7 +354,8 @@ class _TestScreenState extends State<TestScreen> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.all(16.v),
+          padding:
+              EdgeInsets.only(left: 16.v, right: 16.v, top: 16.v, bottom: 40.v),
           child: Row(
             children: [
               // Previous Button

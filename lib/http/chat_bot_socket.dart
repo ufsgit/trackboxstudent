@@ -134,7 +134,7 @@ class ChatbotSocket {
       var id = data["id"];
 
       print(payLoad);
-      ChatModel model = ChatModel.fromJson(payLoad, type,id);
+      ChatModel model = ChatModel.fromJson(payLoad, type, id);
       Get.find<ChatScreenController>().setMessage(model);
     });
   }

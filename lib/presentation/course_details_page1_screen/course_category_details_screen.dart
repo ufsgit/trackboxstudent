@@ -11,8 +11,8 @@ import 'package:anandhu_s_application4/core/colors_res.dart';
 import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/course_details_page1_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/course_enrol_controller.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/tab_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/bottom_sheet_guidance.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/tab_controller.dart';
 
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/read_more_widget.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/final_test_widget.dart';
