@@ -97,8 +97,7 @@ void main() async {
   //   ],
   // );
 
-/////
-  // PushNotificationHelper.initialize();
+  // Notification initializations are handled by NotificationService().initialize() above
   await PrefUtils().init();
 
   await ChatSocket.initSocket();

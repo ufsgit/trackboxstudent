@@ -8,6 +8,7 @@ import 'package:anandhu_s_application4/core/utils/firebase_utils.dart';
 import 'package:anandhu_s_application4/firebase_options.dart';
 import 'package:anandhu_s_application4/http/socket_io.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/controller/call_chat_controller.dart';
+import 'package:anandhu_s_application4/presentation/home_page_container_screen/controller/home_page_container_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page_container_screen/home_page_container_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -111,34 +112,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 
   if (type == "new_call" || type == "new_live") {
-    String callId = message.data.containsKey("id") ? message.data['id'] : "";
-    FirebaseUtils.listenCalls();
-
-    if (message.data.containsKey('timestamp') && type == "new_call") {
-      // Parse the send time from the notification payload as UTC
-      DateTime sendTime = DateTime.parse(message.data['timestamp']).toUtc();
-      DateTime arrivalTime = DateTime.now().toUtc();
-
-      int delayInSeconds = arrivalTime.difference(sendTime).inSeconds;
-
-      if (delayInSeconds <= 50) {
-        Get.put(CallandChatController()).listenIncomingCallNotification();
-
-        // _showNotification(message);
-      } else {
-        // FirebaseUtils.deleteCall(callId);
-      }
-    } else {
-      if (type == "new_live") {
-        handleNotification(message);
-      }
-      // _showNotification(message);
-    }
+    // Call notifications are handled by system/CallKit, ignoring per user request to focus on chat
+    // But keeping minimal logic if needed for background processing
+    return;
   } else if (type == "new_message" || type == "chat") {
     // Only show local notification if system didn't show one (no notification payload)
     if (message.notification == null) {
       // Handle background/terminated chat messages (data-only)
-      // Initialize strictly for background (channels logic)
       await NotificationService().initializeForBackground();
       await NotificationService().showLocalNotification(message);
     }
@@ -293,6 +273,24 @@ class NotificationService {
     _configureForegroundOptions();
     _listenToForegroundMessages();
     _setupInteractedMessage();
+    await syncTokenAndTopics();
+  }
+
+  Future<void> syncTokenAndTopics() async {
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      log("🔥 FCM Token: $token");
+
+      // Subscribe to student-specific topic if logged in
+      String studentId = PrefUtils().getStudentId();
+      if (studentId != "0" && studentId.isNotEmpty) {
+        String studentTopic = "STD-$studentId";
+        await FirebaseMessaging.instance.subscribeToTopic(studentTopic);
+        log("✅ Subscribed to student topic: $studentTopic");
+      }
+    } catch (e) {
+      log("❌ Error syncing token/topics: $e");
+    }
   }
 
   Future<void> _requestPermission() async {
@@ -675,15 +673,24 @@ class NotificationService {
     if (payload != null) {
       try {
         Map<String, dynamic> data = jsonDecode(payload);
+        log("🔔 Handling notification tap with payload: $data");
+
         // Handle navigation based on data type
         String? type = data['type'];
-        if (type == 'new_message' || type == 'chat') {
-          Get.to(() => HomePageContainerScreen());
-        } else if (type == 'new_call') {
-          // Handle call
+
+        // Handle chat notifications
+        if (type == 'new_message' ||
+            type == 'chat' ||
+            data.containsKey('teacherId')) {
+          // Direct to Chats tab (Index 2 in HomePageContainerScreen)
+          final containerController = Get.find<HomePageContainerController>();
+          containerController.setTemporaryPage(AppRoutes.androidLarge5Page,
+              mentorIndex: 0);
+
+          log("🚀 Deep linked to Chat Tab");
         }
       } catch (e) {
-        log("Error parsing payload: $e");
+        log("❌ Error parsing notification payload: $e");
       }
     }
   }
