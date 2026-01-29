@@ -1,13 +1,10 @@
 import 'package:anandhu_s_application4/core/app_export.dart';
-import 'package:anandhu_s_application4/core/colors_res.dart';
+import 'package:anandhu_s_application4/core/utils/file_utils.dart';
 import 'package:anandhu_s_application4/core/utils/extentions.dart';
 import 'package:anandhu_s_application4/data/models/home/course_content_by_module_model.dart';
-import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/presentation/home_page/controller/home_controller.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CourseCurriculamWidget extends StatelessWidget {
@@ -21,7 +18,7 @@ class CourseCurriculamWidget extends StatelessWidget {
   final HomeController controllerCourseDetailsController;
   final ScrollController scrollController;
   final List<Content>? modules;
-  final void Function(String) toggleVideo;
+  final void Function(Content) toggleVideo;
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -50,15 +47,15 @@ class CourseCurriculamWidget extends StatelessWidget {
                   controllerCourseDetailsController
                       .setTitle(v.value.contentName);
                   controllerCourseDetailsController.getSelectedCourseCategory(
-                      v.value.fileType ?? v.value.exams![0].fileType);
+                      v.value.fileType ?? v.value.exams[0].fileType);
                   controllerCourseDetailsController.videoURL =
                       v.value.file ?? '';
-                  toggleVideo(v.value.file.toString());
+                  toggleVideo(v.value);
                   controllerCourseDetailsController.seletctedPdfUrl =
-                      v.value.exams![0].supportingDocumentPath;
+                      v.value.exams[0].supportingDocumentPath;
                   controllerCourseDetailsController.seletctedAudio =
-                      v.value.exams![0].mainQuestion;
-                  print('sfdsdf ${v.value.exams![0].fileName}');
+                      v.value.exams[0].mainQuestion;
+                  print('sfdsdf ${v.value.exams[0].fileName}');
                   scrollController.animateTo(0,
                       curve: Curves.fastEaseInToSlowEaseOut,
                       duration: Duration(milliseconds: 700));
@@ -109,31 +106,15 @@ class CourseCurriculamWidget extends StatelessWidget {
                     height: 44,
                     width: 48,
                     decoration: BoxDecoration(
-                        color: v.key == 0
+                        color: v.key ==
+                                controllerCourseDetailsController
+                                    .selectedIndex.value
                             ? Colors.blue.shade200
                             : Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(7)),
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          '${HttpUrls.imgBaseUrl}${v.value.contentThumbnailPath}',
-                      fit: BoxFit.contain,
-                      placeholder: (BuildContext context, String url) {
-                        return Center(
-                            child: CircularProgressIndicator(
-                          color: ColorResources.colorBlue500,
-                        ));
-                      },
-                      errorWidget:
-                          (BuildContext context, String url, dynamic error) {
-                        return Center(
-                          child: Icon(
-                            Icons.image_not_supported_outlined,
-                            color: ColorResources.colorBlue100,
-                            size: 40,
-                          ),
-                        );
-                      },
-                    )),
+                    child: v.value.file != null && v.value.file != ''
+                        ? FileUtils.getFileIcon(v.value.file)
+                        : FileUtils.getFileIcon(v.value.exams![0].fileName)),
                 subtitle: Row(
                   children: [
                     Container(
@@ -144,7 +125,7 @@ class CourseCurriculamWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
-                        v.value.fileType ?? v.value.exams![0].fileType,
+                        v.value.fileType ?? v.value.exams[0].fileType,
                         style: GoogleFonts.plusJakartaSans(
                             color: Colors.grey.shade600,
                             fontWeight: FontWeight.w500,

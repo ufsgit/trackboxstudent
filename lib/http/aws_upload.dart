@@ -1,15 +1,24 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:math';
 import 'package:anandhu_s_application4/core/utils/file_utils.dart';
 import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/http/loader.dart';
-import 'package:aws_s3_upload_lite/aws_s3_upload_lite.dart';
-import 'package:aws_s3_upload_lite/enum/acl.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:minio/minio.dart';
+import 'package:dio/dio.dart' as dio;
 
 class AwsUpload {
+  static final Minio minio = Minio(
+    endPoint: dotenv.env['CLOUDFLARE_R2_ENDPOINT'] ?? '',
+    accessKey: dotenv.env['CLOUDFLARE_R2_ACCESS_KEY_ID'] ?? '',
+    secretKey: dotenv.env['CLOUDFLARE_R2_SECRET_ACCESS_KEY'] ?? '',
+    useSSL: true,
+  );
+
+  static final String bucket =
+      dotenv.env['CLOUDFLARE_R2_BUCKET_NAME'] ?? 'trackbox';
+
   static Future<String?> uploadToAws(File result) async {
     LoaderChat.showLoader();
     try {
@@ -24,33 +33,21 @@ class AwsUpload {
       int compressedSize = await compressedFile.length();
       print('Compressed file size: ${_formatFileSize(compressedSize)}');
 
-      String filePath = compressedFile.path;
-      FormData formData = FormData.fromMap({
-        "myFile": await MultipartFile.fromFile(filePath,
-            filename: compressedFile.path.split('/').last),
-      });
-
       String uploadFileName =
           DateTime.now().millisecondsSinceEpoch.toString() + ".jpg";
       String uploadFilePath = 'Briffni/Students/';
       final uploadKey = uploadFilePath + uploadFileName;
 
-      final data = await AwsS3.uploadFile(
-        acl: ACL.public_read,
-        accessKey: dotenv.env['AWS_ACCESS_KEY'] ?? '',
-        secretKey: dotenv.env['AWS_SECRET_KEY'] ?? '',
-        file: compressedFile,
-        bucket: "ufsnabeelphotoalbum",
-        region: "us-east-2",
-        key: uploadKey,
-        metadata: {"test": "test"},
-        contentType: 'image/jpeg',
-        destDir: uploadFilePath,
-        filename: uploadFileName,
+      // Upload using Minio
+      await minio.putObject(
+        bucket,
+        uploadKey,
+        compressedFile.openRead().cast<Uint8List>(),
+        size: compressedSize,
+        metadata: {'Content-Type': 'image/jpeg'},
       );
 
-      print('<<<<<<<<<<<<<<aws result>>>>>>>>>>>>>>');
-      print(data.toString());
+      print('<<<<<<<<<<<<<<Cloudflare R2 result: Success>>>>>>>>>>>>>>');
 
       LoaderChat.stopLoader();
 
@@ -60,18 +57,14 @@ class AwsUpload {
       return uploadKey;
     } catch (e) {
       LoaderChat.stopLoader();
-      print('Error uploading to AWS: $e');
+      print('Error uploading to Cloudflare R2: $e');
       return null;
     }
   }
 
   static Future<String?> uploadChatImageToAws(File selectedFile,
       String studentId, String teacherId, String fileType) async {
-    // LoaderChat.showLoader();
     try {
-      // Print original file size
-      int originalSize = await selectedFile.length();
-
       // Compress the image if it's a supported type
       File fileToUpload = fileType.toLowerCase() == 'png' ||
               fileType.toLowerCase() == 'jpg' ||
@@ -79,50 +72,48 @@ class AwsUpload {
           ? await FileUtils.compressImage(selectedFile)
           : selectedFile;
 
-      // Print compressed file size (or original size if not compressed)
       int finalSize = await fileToUpload.length();
-
-      // String filePath = fileToUpload.path;
-      // FormData formData = FormData.fromMap({
-      //   "myFile": await MultipartFile.fromFile(filePath,
-      //       filename: fileToUpload.path.split('/').last),
-      // });
 
       String fileName =
           FileUtils.getFileName(selectedFile.path) + "." + fileType;
       String uploadFilePath = 'Briffni/Chat/$studentId-$teacherId/';
       final uploadKey = uploadFilePath + fileName;
 
-      final data = await AwsS3.uploadFile(
-        acl: ACL.public_read,
-        accessKey: dotenv.env['AWS_ACCESS_KEY'] ?? '',
-        secretKey: dotenv.env['AWS_SECRET_KEY'] ?? '',
-        file: fileToUpload,
-        bucket: "ufsnabeelphotoalbum",
-        region: "us-east-2",
-        key: uploadKey,
-        metadata: {"test": "test"},
-        destDir: uploadFilePath,
-        filename: fileToUpload.path.split('/').last,
+      // Upload using Minio
+      await minio.putObject(
+        bucket,
+        uploadKey,
+        fileToUpload.openRead().cast<Uint8List>(),
+        size: finalSize,
+        metadata: {'Content-Type': _getContentType(fileType)},
       );
-
-      // LoaderChat.stopLoader();
-
-      final publicUrl = '${HttpUrls.imgBaseUrl}$uploadKey';
 
       return uploadKey;
     } catch (e) {
-      LoaderChat.stopLoader();
-      print('Error uploading to AWS: $e');
+      print('Error uploading chat image to Cloudflare R2: $e');
       return null;
     }
   }
 
-  static Future<FormData?> prepareFormData(File result) async {
+  static String _getContentType(String fileType) {
+    switch (fileType.toLowerCase()) {
+      case 'png':
+        return 'image/png';
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'pdf':
+        return 'application/pdf';
+      default:
+        return 'application/octet-stream';
+    }
+  }
+
+  static Future<dio.FormData?> prepareFormData(File result) async {
     try {
       String filePath = result.path;
-      FormData formData = FormData.fromMap({
-        "myFile": await MultipartFile.fromFile(filePath,
+      dio.FormData formData = dio.FormData.fromMap({
+        "myFile": await dio.MultipartFile.fromFile(filePath,
             filename: result.path.split('/').last),
       });
 

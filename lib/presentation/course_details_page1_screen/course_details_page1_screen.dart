@@ -7,10 +7,14 @@ import 'package:anandhu_s_application4/presentation/course_details_page1_screen/
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/listening_test_screen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/pdf_viewer_screen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/course_curriculam_widget.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/video_attendance_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/models/course_content_model.dart';
+import 'package:anandhu_s_application4/data/models/home/course_content_by_module_model.dart'
+    as module_model;
 import 'package:anandhu_s_application4/presentation/course_details_page_screen/models/course_content_model.dart'
     as CoursePageModel;
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/course_overview_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -62,6 +66,8 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
   CourseModuleController videoController = Get.put(CourseModuleController());
 
   CourseEnrolController enrolController = Get.put(CourseEnrolController());
+  VideoAttendanceController attendanceController =
+      Get.put(VideoAttendanceController());
 
   late FlickManager flickManager;
   final ScrollController _scrollController = ScrollController();
@@ -145,6 +151,12 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
           videoPlayerController:
               VideoPlayerController.networkUrl(Uri.parse(_videoUrl ?? '')),
         );
+        _currentContentId =
+            courseContentController.courseContent.value.contents?[0].contentId;
+        _currentContentTitle = courseContentController
+            .courseContent.value.contents?[0].contentName;
+        flickManager.flickVideoManager?.videoPlayerController
+            ?.addListener(_trackVideoProgress);
       } else {
         print('hiii er4w');
 
@@ -182,32 +194,133 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
     courseContentController.isLoading.value = false;
   }
 
-  void showVideo(String url) {
-    setState(() {
-      _videoUrl = url;
-
-      // Dispose of the old controller if it exists
-      flickManager.flickControlManager?.pause();
-      flickManager.dispose();
-
-      flickManager = FlickManager(
-        videoPlayerController: VideoPlayerController.networkUrl(
-            Uri.parse('${HttpUrls.imgBaseUrl}$url')),
-      );
-      flickManager.flickControlManager?.play();
-    });
-  }
+  // Attendance tracking variables
+  Set<int> _watchedSegments = {};
+  Duration _lastPosition = Duration.zero;
+  bool _hasSubmittedAttendance = false;
+  int? _currentContentId;
+  String? _currentContentTitle;
+  static const double ATTENDANCE_THRESHOLD = 1.0;
 
   @override
   void dispose() {
+    if (_videoUrl != null) {
+      flickManager.flickVideoManager?.videoPlayerController
+          ?.removeListener(_trackVideoProgress);
+    }
     flickManager.dispose();
-
     player.dispose();
-
     courseContentController.courseContent.value.contents = null;
-    // _videoPlayerController.dispose();
-    // _chewieController?.dispose();
     super.dispose();
+  }
+
+  /// Track which seconds of video have been watched
+  void _trackVideoProgress() {
+    final videoPlayerController =
+        flickManager.flickVideoManager?.videoPlayerController;
+    if (videoPlayerController == null ||
+        !videoPlayerController.value.isInitialized) return;
+
+    final currentPosition = videoPlayerController.value.position;
+    final currentSecond = currentPosition.inSeconds;
+
+    // Only track forward progress (not seeking backward)
+    if (currentPosition >= _lastPosition) {
+      _watchedSegments.add(currentSecond);
+    }
+
+    _lastPosition = currentPosition;
+
+    // Check if video ended or played enough
+    if (currentPosition >=
+        videoPlayerController.value.duration - Duration(seconds: 1)) {
+      _submitAttendanceIfNeeded();
+    } else {
+      // Check periodically (every 5 seconds of play time roughly)
+      if (_watchedSegments.length % 5 == 0) {
+        _submitAttendanceIfNeeded();
+      }
+    }
+  }
+
+  /// Submit attendance if watch threshold is met
+  Future<void> _submitAttendanceIfNeeded() async {
+    if (_hasSubmittedAttendance) return;
+    if (widget.courseId == null || _currentContentId == null) return;
+
+    final videoPlayerController =
+        flickManager.flickVideoManager?.videoPlayerController;
+    if (videoPlayerController == null ||
+        !videoPlayerController.value.isInitialized) return;
+
+    final totalDuration = videoPlayerController.value.duration.inSeconds;
+    if (totalDuration == 0) return;
+
+    final watchedDuration = _watchedSegments.length;
+    final watchPercentage = (watchedDuration / totalDuration) * 100;
+
+    if (watchPercentage >= ATTENDANCE_THRESHOLD) {
+      _hasSubmittedAttendance = true;
+
+      // We need to ensure VideoAttendanceController is available
+      final attendanceController = Get.find<VideoAttendanceController>();
+      final success = await attendanceController.saveVideoAttendance(
+        courseId: int.parse(widget.courseId!),
+        contentId: _currentContentId!,
+        contentTitle: _currentContentTitle ?? 'Video Content',
+        watchDurationSeconds: watchedDuration,
+        totalDurationSeconds: totalDuration,
+      );
+
+      if (success) {
+        Get.snackbar(
+          'Attendance Marked',
+          'Attendance recorded for "${_currentContentTitle}"',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          duration: Duration(seconds: 3),
+        );
+      }
+    }
+  }
+
+  void updateActiveContent(module_model.Content content) {
+    setState(() {
+      _videoUrl = content.file;
+      _currentContentId = content.contentId;
+      _currentContentTitle = content.contentName;
+
+      // Reset tracking for new video
+      _watchedSegments = {};
+      _lastPosition = Duration.zero;
+      _hasSubmittedAttendance = false;
+
+      // Dispose of the old controller if it exists
+      flickManager.flickVideoManager?.videoPlayerController
+          ?.removeListener(_trackVideoProgress);
+      flickManager.flickControlManager?.pause();
+      flickManager.dispose();
+
+      if (content.fileType == 'video/mp4') {
+        flickManager = FlickManager(
+          videoPlayerController: VideoPlayerController.networkUrl(
+              Uri.parse('${HttpUrls.imgBaseUrl}${content.file}')),
+        );
+
+        // Add listener to new controller
+        flickManager.flickVideoManager?.videoPlayerController
+            ?.addListener(_trackVideoProgress);
+
+        flickManager.flickControlManager?.play();
+      } else {
+        // Placeholder/empty flickManager when not a video
+        flickManager = FlickManager(
+          videoPlayerController:
+              VideoPlayerController.networkUrl(Uri.parse('')),
+        );
+      }
+    });
   }
 
   List<String> srcs = [
@@ -507,40 +620,39 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                       ],
                                                     ),
                                                   )
-                                                  // Row(
-                                                  //   mainAxisAlignment:
-                                                  //       MainAxisAlignment.center,
-                                                  //   children: [
-                                                  //     ElevatedButton(
-                                                  //       onPressed: () =>
-                                                  //           _changePlaybackSpeed(
-                                                  //               0.5),
-                                                  //       child: Text('0.5x'),
-                                                  //     ),
-                                                  //     SizedBox(width: 10),
-                                                  //     ElevatedButton(
-                                                  //       onPressed: () =>
-                                                  //           _changePlaybackSpeed(
-                                                  //               1.0),
-                                                  //       child: Text('1x'),
-                                                  //     ),
-                                                  //     SizedBox(width: 10),
-                                                  //     ElevatedButton(
-                                                  //       onPressed: () =>
-                                                  //           _changePlaybackSpeed(
-                                                  //               1.5),
-                                                  //       child: Text('1.5x'),
-                                                  //     ),
-                                                  //     SizedBox(width: 10),
-                                                  //     ElevatedButton(
-                                                  //       onPressed: () =>
-                                                  //           _changePlaybackSpeed(
-                                                  //               2.0),
-                                                  //       child: Text('2x'),
-                                                  //     ),
-                                                  //   ],
-                                                  // ),
                                                 ],
+                                              ),
+                                            )
+                                          else if (homeController
+                                                      .selectedCourseCategory
+                                                      .value ==
+                                                  'image/jpeg' ||
+                                              homeController
+                                                      .selectedCourseCategory
+                                                      .value ==
+                                                  'image/png')
+                                            Container(
+                                              height: 200,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      '${HttpUrls.imgBaseUrl}${homeController.videoURL}',
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) =>
+                                                      Center(
+                                                          child:
+                                                              CircularProgressIndicator()),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                ),
                                               ),
                                             )
                                           // _chewieController != null &&
@@ -589,13 +701,19 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                                 .value
                                                                 .contents?[
                                                             currentIndex];
-                                                    final exam = currentContent
-                                                        ?.exams[0];
+                                                    final exam = (currentContent
+                                                                    ?.exams !=
+                                                                null &&
+                                                            currentContent!
+                                                                .exams
+                                                                .isNotEmpty)
+                                                        ? currentContent
+                                                            .exams[0]
+                                                        : null;
 
-                                                    // Early exit if currentContent or exam is null
+                                                    // Early exit if currentContent is null
                                                     if (currentContent ==
-                                                            null ||
-                                                        exam == null) {
+                                                        null) {
                                                       ScaffoldMessenger.of(
                                                               context)
                                                           .showSnackBar(
@@ -606,11 +724,28 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                       return;
                                                     }
 
-                                                    bool isPdf = exam
-                                                        .supportingDocumentName
-                                                        .endsWith('.pdf');
-                                                    bool isAudio = exam.fileName
-                                                        .endsWith('.mp3');
+                                                    bool isPdf = (exam !=
+                                                                null &&
+                                                            exam.supportingDocumentName
+                                                                .endsWith(
+                                                                    '.pdf')) ||
+                                                        currentContent
+                                                                .fileType ==
+                                                            'application/pdf' ||
+                                                        currentContent.file
+                                                            .toString()
+                                                            .endsWith('.pdf');
+                                                    bool isAudio = (exam !=
+                                                                null &&
+                                                            exam.fileName
+                                                                .endsWith(
+                                                                    '.mp3')) ||
+                                                        currentContent
+                                                                .fileType ==
+                                                            'audio/mpeg' ||
+                                                        currentContent.file
+                                                            .toString()
+                                                            .endsWith('.mp3');
                                                     bool isExamTest =
                                                         currentContent
                                                                 .examTest ==
@@ -618,15 +753,16 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
 
                                                     // Check if exam test is locked
                                                     bool isQuestionUnlocked =
-                                                        exam.isQuestionUnlocked ==
-                                                            0;
+                                                        exam?.isQuestionUnlocked ==
+                                                            1;
                                                     bool
                                                         isQuestionMediaUnlocked =
-                                                        exam.isQuestionMediaUnlocked ==
-                                                            0;
-                                                    if (isExamTest) {
-                                                      if ((isQuestionUnlocked &&
-                                                          isQuestionMediaUnlocked)) {
+                                                        exam?.isQuestionMediaUnlocked ==
+                                                            1;
+                                                    if (isExamTest &&
+                                                        exam != null) {
+                                                      if (!isQuestionUnlocked &&
+                                                          !isQuestionMediaUnlocked) {
                                                         // Show SnackBar if content is locked
                                                         ScaffoldMessenger.of(
                                                                 context)
@@ -659,12 +795,13 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                       Get.to(
                                                           () => PdfViewerPage(
                                                                 isAnswerKeyUnlocked:
-                                                                    exam.isAnswerUnlocked ==
+                                                                    exam?.isAnswerUnlocked ==
                                                                             1
                                                                         ? true
                                                                         : false,
-                                                                answerPdf: exam
-                                                                    .answerKeyPath,
+                                                                answerPdf:
+                                                                    exam?.answerKeyPath ??
+                                                                        '',
                                                                 isExamTest:
                                                                     currentContent.examTest ==
                                                                             1
@@ -673,21 +810,28 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                                                 isFromCourseScreen:
                                                                     true,
                                                                 isMediaUnlocked:
-                                                                    exam.isQuestionMediaUnlocked ==
+                                                                    exam?.isQuestionMediaUnlocked ==
                                                                             1
                                                                         ? true
                                                                         : false,
                                                                 isPdfUnLocked:
-                                                                    exam.isQuestionUnlocked ==
+                                                                    exam?.isQuestionUnlocked ==
                                                                             1
                                                                         ? true
                                                                         : false,
                                                                 answerKey:
-                                                                    '${HttpUrls.imgBaseUrl}${exam.answerKeyPath}',
+                                                                    exam?.answerKeyPath !=
+                                                                            null
+                                                                        ? '${HttpUrls.imgBaseUrl}${exam!.answerKeyPath}'
+                                                                        : null,
                                                                 media: exam
-                                                                    .mainQuestion,
-                                                                fileUrl:
-                                                                    '${HttpUrls.imgBaseUrl}${exam.supportingDocumentPath}',
+                                                                    ?.mainQuestion,
+                                                                fileUrl: (exam !=
+                                                                            null &&
+                                                                        exam.supportingDocumentPath
+                                                                            .isNotEmpty)
+                                                                    ? '${HttpUrls.imgBaseUrl}${exam.supportingDocumentPath}'
+                                                                    : '${HttpUrls.imgBaseUrl}${currentContent.file}',
                                                               ));
                                                     } else {
                                                       // Show SnackBar if content is locked
@@ -739,7 +883,7 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
                                           SizedBox(height: 16),
 
                                           CourseCurriculamWidget(
-                                              toggleVideo: showVideo,
+                                              toggleVideo: updateActiveContent,
                                               modules: courseContentController
                                                   .courseContent.value.contents,
                                               scrollController:

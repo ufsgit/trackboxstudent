@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:anandhu_s_application4/http/http_request.dart';
 import 'package:anandhu_s_application4/http/http_urls.dart';
 import 'package:anandhu_s_application4/presentation/profile/models/video_attendance_model.dart';
@@ -29,20 +30,26 @@ class VideoAttendanceController extends GetxController {
         "Saving video attendance: Student=$studentId, Course=$courseId, Content=$contentId, Watch=${watchPercentage.toStringAsFixed(1)}%");
 
     try {
+      final body = {
+        "Student_ID": int.parse(studentId),
+        "Course_ID": courseId,
+        "Content_ID": contentId,
+      };
+
+      print("📤 Request Body for Save Attendance: $body");
+
       final response = await HttpRequest.httpPostBodyRequest(
         endPoint: HttpUrls.saveVideoAttendance,
-        bodyData: {
-          "Student_ID": int.parse(studentId),
-          "Course_ID": courseId,
-          "Content_ID": contentId,
-        },
+        bodyData: body,
       );
 
       if (response != null && response.statusCode == 200) {
-        print("Video attendance saved successfully: ${response.data}");
+        print("✅ Video attendance saved successfully!");
+        print("📥 Response Data video attendance: ${response.data}");
         return true;
       } else {
-        print("Failed to save video attendance: ${response?.statusCode}");
+        print("❌ Failed to save video attendance: ${response?.statusCode}");
+        print("📥 Error Response Body: ${response?.data}");
         return false;
       }
     } catch (e) {
@@ -58,25 +65,26 @@ class VideoAttendanceController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      String endPoint = HttpUrls.getVideoAttendance(studentId.toString());
+      String endPoint = "${HttpUrls.getVideoAttendance}/$studentId";
 
-      // Add query parameters if provided
       List<String> queryParams = [];
       if (month != null) {
-        queryParams.add('month=$month');
+        queryParams.add('Month=$month');
       }
       if (courseId != null) {
-        queryParams.add('course_id=$courseId');
+        queryParams.add('Course_ID=$courseId');
       }
       if (queryParams.isNotEmpty) {
         endPoint += '?${queryParams.join('&')}';
       }
 
+      log('Fetching attendance from: $endPoint');
       await HttpRequest.httpGetRequest(
         endPoint: endPoint,
       ).then((response) {
         if (response != null && response.statusCode == 200) {
           final responseData = response.data;
+          log('Attendance data received: $responseData');
 
           // Handle two possible response formats:
           // 1. Array format: [ {...}, {...} ]
@@ -85,8 +93,12 @@ class VideoAttendanceController extends GetxController {
           List<dynamic> dataList = [];
 
           if (responseData is List<dynamic>) {
-            // Format 1: Direct array
-            dataList = responseData;
+            // Handle double-nested list [[{...}]]
+            if (responseData.isNotEmpty && responseData[0] is List) {
+              dataList = responseData[0];
+            } else {
+              dataList = responseData;
+            }
           } else if (responseData is Map<String, dynamic>) {
             // Format 2: Success wrapper
             if (responseData['success'] == true &&
@@ -99,9 +111,22 @@ class VideoAttendanceController extends GetxController {
             throw Exception('Unexpected response data format');
           }
 
-          videoAttendanceList.value = dataList
-              .map((item) => VideoAttendanceModel.fromJson(item))
-              .toList();
+          try {
+            videoAttendanceList.value = dataList
+                .map((item) => VideoAttendanceModel.fromJson(item))
+                .toList();
+
+            print("📜 Fetched Attendance Records:");
+            for (var record in videoAttendanceList) {
+              print(
+                  "- ID: ${record.videoAttendanceId}, Content: ${record.contentName}, Date: ${record.watchedDate}, Status: ${record.status}");
+            }
+            log('Attendance list mapped successfully: ${videoAttendanceList.length} items');
+          } catch (e) {
+            print("❌ Error mapping attendance data: $e");
+            log('Error mapping attendance data: $e');
+            errorMessage.value = 'Data format error: $e';
+          }
 
           isLoading.value = false;
         } else {

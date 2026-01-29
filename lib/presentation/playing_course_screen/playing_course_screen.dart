@@ -28,7 +28,7 @@ class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
   Set<int> _watchedSegments = {};
   Duration _lastPosition = Duration.zero;
   bool _hasSubmittedAttendance = false;
-  static const double ATTENDANCE_THRESHOLD = 80.0; // 80% watch threshold
+  static const double ATTENDANCE_THRESHOLD = 1.0; // Mark immediate attendance
 
   @override
   void initState() {
@@ -88,7 +88,7 @@ class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
       if (success) {
         Get.snackbar(
           'Attendance Marked',
-          'You have been marked present for this video (${watchPercentage.toStringAsFixed(0)}% watched)',
+          'Attendance recorded for this video',
           snackPosition: SnackPosition.BOTTOM,
           duration: Duration(seconds: 3),
         );

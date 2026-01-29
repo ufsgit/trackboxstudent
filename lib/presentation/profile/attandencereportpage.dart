@@ -119,36 +119,36 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
             SizedBox(height: 16.v),
 
             /// ================= ATTENDANCE STATS =================
-            Obx(() {
-              final attendanceList = _controller.videoAttendanceList;
-              final presentCount =
-                  attendanceList.where((a) => a.status == "Present").length;
-              final totalCount = attendanceList.length;
+            // Obx(() {
+            //   final attendanceList = _controller.videoAttendanceList;
+            //   final presentCount =
+            //       attendanceList.where((a) => a.status == "Present").length;
+            //   final totalCount = attendanceList.length;
 
-              return Row(
-                children: [
-                  _statCard(
-                    title: "Present",
-                    value: "$presentCount",
-                    color: appTheme.green800,
-                  ),
-                  SizedBox(width: 12.v),
-                  _statCard(
-                    title: "Absent",
-                    value: "0",
-                    color: appTheme.red400,
-                  ),
-                  SizedBox(width: 12.v),
-                  _statCard(
-                    title: "Total",
-                    value: "$totalCount",
-                    color: appTheme.blue800,
-                  ),
-                ],
-              );
-            }),
+            //   return Row(
+            //     children: [
+            //       _statCard(
+            //         title: "Present",
+            //         value: "$presentCount",
+            //         color: appTheme.green800,
+            //       ),
+            //       SizedBox(width: 12.v),
+            //       _statCard(
+            //         title: "Absent",
+            //         value: "0",
+            //         color: appTheme.red400,
+            //       ),
+            //       SizedBox(width: 12.v),
+            //       _statCard(
+            //         title: "Total",
+            //         value: "$totalCount",
+            //         color: appTheme.blue800,
+            //       ),
+            //     ],
+            //   );
+            // }),
 
-            SizedBox(height: 20.v),
+            // SizedBox(height: 20.v),
 
             /// ================= LIST TITLE =================
             Text(
@@ -164,6 +164,21 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                 return Center(
                   child: CircularProgressIndicator(
                     color: appTheme.blue800,
+                  ),
+                );
+              }
+
+              if (_controller.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32.v),
+                    child: Text(
+                      _controller.errorMessage.value,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.red,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 );
               }
@@ -191,85 +206,56 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                 );
               }
 
-              return ListView.builder(
-                itemCount: _controller.videoAttendanceList.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final item = _controller.videoAttendanceList[index];
-
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 8.v),
-                    padding: EdgeInsets.all(12.v),
-                    decoration: BoxDecoration(
-                      color: appTheme.whiteA700,
-                      borderRadius: BorderRadius.circular(12.v),
-                      boxShadow: [
-                        BoxShadow(
-                          color: appTheme.gray5005e,
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+              return Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12.v),
+                decoration: BoxDecoration(
+                  color: appTheme.whiteA700,
+                  borderRadius: BorderRadius.circular(12.v),
+                  border: Border.all(
+                    color: appTheme.gray10002,
+                    width: 1,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    headingRowColor: MaterialStateProperty.all(
+                      appTheme.gray10002,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.video_library,
-                              color: appTheme.blue800,
-                              size: 20.v,
+                    headingTextStyle: theme.textTheme.titleSmall,
+                    dataTextStyle: theme.textTheme.bodySmall,
+                    columnSpacing: 24,
+                    columns: const [
+                      DataColumn(label: Text('Content Name')),
+                      DataColumn(label: Text('Course')),
+                      DataColumn(label: Text('Date')),
+                    ],
+                    rows: _controller.videoAttendanceList.map((item) {
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                            Text(
+                              item.contentName ?? 'Video Content',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            SizedBox(width: 8.v),
-                            Expanded(
-                              child: Text(
-                                item.contentName ?? 'Video Content',
-                                style: theme.textTheme.titleSmall,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.v,
-                                vertical: 6.v,
-                              ),
-                              decoration: BoxDecoration(
-                                color: appTheme.green800.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20.v),
-                              ),
-                              child: Text(
-                                "Present",
-                                style: theme.textTheme.bodySmall!.copyWith(
-                                  color: appTheme.green800,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8.v),
-                        Text(
-                          item.courseName ?? '',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: appTheme.gray600,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 4.v),
-                        Text(
-                          item.formattedDate,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: appTheme.gray600,
+                          DataCell(
+                            Text(
+                              item.courseName ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                          DataCell(
+                            Text(item.formattedDate),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
               );
             }),
           ],

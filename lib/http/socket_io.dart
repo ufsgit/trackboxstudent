@@ -112,7 +112,37 @@ class ChatSocket {
       print(
           'chat log list after received: ${chtLogController.searchableChatList}');
 
-      // Removed redundant notification logic that triggered every time the chat tab was opened
+      // Attempt to show notification for the latest message
+      try {
+        if (chatLogHistory.isNotEmpty) {
+          var latest = chatLogHistory[0];
+          // Construct details for notification
+          String name =
+              "${latest['First_Name'] ?? ''} ${latest['Last_Name'] ?? ''}"
+                  .trim();
+          if (name.isEmpty) name = "Teacher";
+
+          // Check if it's a valid message to notify
+          // You might want to check 'unread_count' > 0 or similar if available
+          // For now, triggering to ensure visibility as requested
+
+          Map<String, dynamic> notificationData =
+              Map<String, dynamic>.from(latest);
+          // Ensure keys match what NotificationService looks for
+          notificationData['teacherId'] = latest['teacher_id'];
+          notificationData['type'] = 'new_message';
+
+          // Only show if we are not actively looking at this chat?
+          // For now, show always to verify functionality.
+          NotificationService().showNotification(
+            title: name,
+            body: latest['message'] ?? "New Message",
+            data: notificationData,
+          );
+        }
+      } catch (e) {
+        print("Error showing notification from chat list: $e");
+      }
 
       chtLogController.update();
       LoaderChat.stopLoader();
@@ -121,69 +151,52 @@ class ChatSocket {
     socket?.on(
       'new message',
       (data) async {
-        log('Received new message socket event: $data');
-        try {
-          int parsedTeacherId = int.tryParse(data['teacherId']?.toString() ??
-                  data['teacher_id']?.toString() ??
-                  '0') ??
-              0;
-          int parsedStudentId = int.tryParse(studentId) ?? 0;
+        StudentChatHistoryModel newChat = StudentChatHistoryModel(
+            messageId: null,
+            teacherId: data['teacherId'],
+            studentId: int.parse(studentId),
+            message: data['message'],
+            messageTimestamp: DateTime.now(),
+            callId: null,
+            callStart: null,
+            callEnd: null,
+            // callDuration: 0,
+            callType: '',
+            filePath: data['File_Path'] ?? '',
+            isStudent: data['isStudent'] ?? true);
+        // Get the current date
+        DateTime now = DateTime.now();
 
-          StudentChatHistoryModel newChat = StudentChatHistoryModel(
-              messageId: null,
-              teacherId: parsedTeacherId,
-              studentId: parsedStudentId,
-              message: data['message'] ?? '',
-              messageTimestamp: DateTime.now(),
-              callId: null,
-              callStart: null,
-              callEnd: null,
-              // callDuration: 0,
-              callType: '',
-              filePath: data['File_Path'] ?? '',
-              isStudent: (data['isStudent'] == true || data['isStudent'] == 1));
+        // Format the current date
+        String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
-          // Get the current date
-          DateTime now = DateTime.now();
+        log(formattedDate); // Output: 2024-07-22
+        if (!chatMsgController.chatHistoryListMap.containsKey(formattedDate)) {
+          chatMsgController.chatHistoryListMap[formattedDate] = [];
+        }
+        chatMsgController.chatHistoryListMap[formattedDate]!.add(newChat);
+        chatMsgController.update();
+        log('mark as readddddddddd ${data['isStudent']}');
+        socket?.emit('mark as read', {
+          "studentId": studentId,
+          "teacherId": data['teacherId'],
+          "isStudent": data['isStudent'],
+          "chatType": 'teacher_student',
+        });
 
-          // Format the current date
-          String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+        chtLogController.getStudentChatLog();
+        chtLogController.update();
 
-          log('Updating chat map for date $formattedDate');
-          if (!chatMsgController.chatHistoryListMap
-              .containsKey(formattedDate)) {
-            chatMsgController.chatHistoryListMap[formattedDate] = [];
-          }
-          chatMsgController.chatHistoryListMap[formattedDate]!.add(newChat);
-          chatMsgController.update();
-          log('mark as read for teacher $parsedTeacherId');
-          socket?.emit('mark as read', {
-            "studentId": studentId,
-            "teacherId": parsedTeacherId,
-            "isStudent": newChat.isStudent,
-            "chatType": 'teacher_student',
-          });
-
-          chtLogController.getStudentChatLog();
-          chtLogController.update();
-
-          // Show Notification if we are NOT in the active chat with this teacher
-          bool isFromTeacher =
-              (data['isStudent'] == false || data['isStudent'] == 0);
-          if (isFromTeacher) {
-            log('Attempting to show notification for teacher: ${data['senderName']}');
-            await NotificationService().showNotification(
-              title: data['senderName'] ?? "Teacher",
-              body: data['message'] ?? "New Message",
-              data: Map<String, dynamic>.from(data),
-            );
-            log('Notification call completed');
-          } else {
-            log('Not showing notification: message is from current user/student');
-          }
-        } catch (e, stack) {
-          log('Error in new message listener: $e');
-          log(stack.toString());
+        // Show Notification if we are NOT in the active chat with this teacher
+        // TODO: specific check if Get.currentRoute == ChatScreen && teacherId matches.
+        // For now, allow notification to show.
+        if (data['isStudent'] == false) {
+          // Only notify if message is from Teacher
+          await NotificationService().showNotification(
+            title: data['senderName'] ?? "Teacher", // Try to find sender name
+            body: data['message'] ?? "New Message",
+            data: Map<String, dynamic>.from(data),
+          );
         }
       },
     );

@@ -22,15 +22,35 @@ class VideoAttendanceModel {
   });
 
   VideoAttendanceModel.fromJson(Map<String, dynamic> json) {
-    videoAttendanceId = json['VideoAttendance_ID'];
-    studentId = json['Student_ID'];
-    courseId = json['Course_ID'];
-    courseName = json['Course_Name'];
-    contentId = json['Content_ID'];
-    contentName = json['Content_Name'];
-    watchedDate = json['Watched_Date'];
-    updateTime = json['Update_Time'];
-    deleteStatus = json['Delete_Status'];
+    videoAttendanceId = int.tryParse(json['VideoAttendance_ID']?.toString() ??
+            json['videoAttendance_id']?.toString() ??
+            json['id']?.toString() ??
+            '') ??
+        0;
+    studentId = int.tryParse(json['Student_ID']?.toString() ??
+            json['student_id']?.toString() ??
+            '') ??
+        0;
+    courseId = int.tryParse(json['Course_ID']?.toString() ??
+            json['course_id']?.toString() ??
+            '') ??
+        0;
+    courseName =
+        json['Course_Name'] ?? json['course_name'] ?? json['courseName'];
+    contentId = int.tryParse(json['Content_ID']?.toString() ??
+            json['content_id']?.toString() ??
+            '') ??
+        0;
+    contentName =
+        json['Content_Name'] ?? json['content_name'] ?? json['contentName'];
+    watchedDate =
+        json['Watched_Date'] ?? json['watched_date'] ?? json['watchedDate'];
+    updateTime =
+        json['Update_Time'] ?? json['update_time'] ?? json['updateTime'];
+    deleteStatus = int.tryParse(json['Delete_Status']?.toString() ??
+            json['delete_status']?.toString() ??
+            '') ??
+        0;
   }
 
   Map<String, dynamic> toJson() {
@@ -51,7 +71,7 @@ class VideoAttendanceModel {
   String get formattedDate {
     if (watchedDate == null) return '';
     try {
-      final date = DateTime.parse(watchedDate!);
+      final date = DateTime.parse(watchedDate!).toLocal();
       return '${date.day.toString().padLeft(2, '0')} ${_getMonthName(date.month)} ${date.year}';
     } catch (e) {
       return watchedDate!;
