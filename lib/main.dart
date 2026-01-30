@@ -22,10 +22,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:zego_effects_plugin/zego_effects_plugin.dart';
-// import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:zego_express_engine/zego_express_engine.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'core/app_export.dart';
 import 'core/utils/notification_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -114,18 +114,9 @@ void main() async {
   Get.put(CourseContentController());
   Get.put(CallandChatController());
 
-  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
-
-  Get.put(CallandChatController()).listenIncomingCallNotification();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    // Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
-    ZegoExpressEngine.createEngineWithProfile(ZegoEngineProfile(
-            appID, ZegoScenario.Default,
-            appSign: appSign, enablePlatformView: true))
-        .then((onValue) {
-      runApp(MyApp());
-    });
+    runApp(MyApp());
   });
 }
 
@@ -186,29 +177,7 @@ class _MyAppState extends State<MyApp> {
         locale: Get.deviceLocale,
         fallbackLocale: Locale('en', 'US'),
         builder: (BuildContext context, Widget? child) {
-          return Stack(
-            children: [
-              child!,
-              ZegoUIKitPrebuiltCallMiniOverlayPage(
-                showLeaveButton: false,
-                foregroundBuilder: (BuildContext context, Size size,
-                    ZegoUIKitUser? user, Map extraInfo) {
-                  return user != null
-                      ? ValueListenableBuilder(
-                          valueListenable:
-                              ZegoUIKit().getCameraStateNotifier(user.id),
-                          builder: (context, isCameraOn, child) {
-                            return isCameraOn ? const SizedBox() : child!;
-                          },
-                          child: const AnimatedPhoneCallContainer())
-                      : const SizedBox();
-                },
-                contextQuery: () {
-                  return navigatorKey.currentState!.context;
-                },
-              ),
-            ],
-          );
+          return child!;
         },
         title: 'Happy English',
         initialRoute: AppRoutes.initialRoute,

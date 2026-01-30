@@ -5,26 +5,23 @@ import 'package:anandhu_s_application4/presentation/exam_details_screen/models/l
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:zego_express_engine/zego_express_engine.dart';
-import '../../../core/utils/zego_sdk_user.dart';
+// import 'package:zego_express_engine/zego_express_engine.dart';
+// import '../../../core/utils/zego_sdk_user.dart';
 import '../../../http/http_request.dart';
 import '../../../http/http_urls.dart';
 import '../../profile/controller/profile_controller.dart';
 
 class LiveClassJoiningController extends GetxController {
-
-
-  ValueNotifier<ZegoPublisherState> publisherState =
-      ValueNotifier<ZegoPublisherState>(ZegoPublisherState.NoPublish);
-  ZegoSDKUser? currentUser;
-  List<ZegoSDKUser> userDataList = [];
+  ValueNotifier<dynamic> publisherState = ValueNotifier<dynamic>(null);
+  // ZegoSDKUser? currentUser;
+  // List<ZegoSDKUser> userDataList = [];
 
   Future<void> connectUser(String id, String name, {String? token}) async {
-    currentUser = ZegoSDKUser(userID: id, userName: name);
+    // currentUser = ZegoSDKUser(userID: id, userName: name);
   }
 
   Future<void> disconnectUser() async {
-    currentUser = null;
+    // currentUser = null;
   }
 
   Future<bool> requestPermission() async {
@@ -53,9 +50,9 @@ class LiveClassJoiningController extends GetxController {
   }
 
   Future<void> updateStreamExtraInfo(bool micStatus, bool camStatus) async {
-    if (kIsWeb && (publisherState.value != ZegoPublisherState.Publishing)) {
-      return;
-    }
+    // if (kIsWeb && (publisherState.value != ZegoPublisherState.Publishing)) {
+    //   return;
+    // }
 
     final ProfileController profileController = Get.find<ProfileController>();
     final extraInfo = jsonEncode({
@@ -64,7 +61,7 @@ class LiveClassJoiningController extends GetxController {
       "userID": profileController.profileData?.studentId ?? "",
       "userName": profileController.profileData?.firstName ?? "",
     });
-    await ZegoExpressEngine.instance.setStreamExtraInfo(extraInfo);
+    // await ZegoExpressEngine.instance.setStreamExtraInfo(extraInfo);
     for (int index = 0; index < userInfoList.length; index++) {
       if (userInfoList[index]["userID"] ==
           profileController.profileData!.studentId) {
@@ -85,13 +82,13 @@ class LiveClassJoiningController extends GetxController {
 
   var qnaMode = false.obs;
   void turnCameraOn(bool isOn, context) {
-    ZegoExpressEngine.instance.enableCamera(isOn);
+    // ZegoExpressEngine.instance.enableCamera(isOn);
     isVideoEnabled.value = isOn;
     updateStreamExtraInfo(isAudioEnabled.value, isVideoEnabled.value);
   }
 
   void turnMicrophoneOn(bool isOn, context) {
-    ZegoExpressEngine.instance.mutePublishStreamAudio(isOn);
+    // ZegoExpressEngine.instance.mutePublishStreamAudio(isOn);
     isAudioEnabled.value = isOn;
     updateStreamExtraInfo(isAudioEnabled.value, isVideoEnabled.value);
   }
@@ -101,21 +98,21 @@ class LiveClassJoiningController extends GetxController {
   }
 
   var userStatus = false.obs;
-  List<ZegoUser> usersList = [];
-  getUserList(bool status, List<ZegoUser> userList, int index, context) {
+  List<dynamic> usersList = [];
+  getUserList(bool status, List<dynamic> userList, int index, context) {
     userStatus.value = status;
     usersList = userList;
     if (userStatus.value == true) {
-      if (userInfoList
-              .indexWhere((item) => item['userID'] == userList[index].userID) ==
-          -1) {
-        userInfoList.add({
-          "userID": userList[index].userID,
-          "userName": userList[index].userName,
-          "videoStatus": isVideoEnabled.value,
-          "audioStatus": isAudioEnabled.value,
-        });
-      }
+      // if (userInfoList
+      //         .indexWhere((item) => item['userID'] == userList[index].userID) ==
+      //     -1) {
+      //   userInfoList.add({
+      //     "userID": userList[index].userID,
+      //     "userName": userList[index].userName,
+      //     "videoStatus": isVideoEnabled.value,
+      //     "audioStatus": isAudioEnabled.value,
+      //   });
+      // }
     } else {
       userInfoList.removeAt(index);
     }
@@ -134,7 +131,7 @@ class LiveClassJoiningController extends GetxController {
 
   var frontCamEnabled = true.obs;
   switchCamera(bool isOn) {
-    ZegoExpressEngine.instance.useFrontCamera(isOn);
+    // ZegoExpressEngine.instance.useFrontCamera(isOn);
     frontCamEnabled.value = isOn;
     popUpMenuButton(false);
   }

@@ -211,40 +211,5 @@ class ProfileController extends GetxController {
     });
   }
 
-  Future<void> fetchEffectsLicense({
-    required String appId,
-    required String authInfo,
-  }) async {
-    final dio = Dio();
-
-    try {
-      final Map<String, dynamic> queryParameters = {
-        'Action': 'DescribeEffectsLicense',
-        'AppId': appId,
-        'AuthInfo': authInfo
-      };
-
-      // Make GET request
-      final response = await dio.get(
-        'https://aieffects-api.zego.im',
-        queryParameters: queryParameters,
-      );
-
-      if (response.statusCode == 200) {
-        print('Response data: ${response.data}');
-      } else {
-        print('Request failed with status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (e is DioException) {
-        print('Dio error: ${e.message}');
-
-        if (e.response != null) {
-          print('Error response: ${e.response?.data}');
-        }
-      } else {
-        print('Error occurred: $e');
-      }
-    }
-  }
+  // Zego license fetching logic removed
 }

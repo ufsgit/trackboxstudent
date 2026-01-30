@@ -32,7 +32,7 @@ import 'package:flutter_callkit_incoming_yoer/flutter_callkit_incoming.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+// Zego import removed
 
 CallandChatController getCallChatController() {
   if (!Get.isRegistered<CallandChatController>()) {
@@ -315,13 +315,9 @@ class CallandChatController extends GetxController {
     } else {
       FirebaseUtils.deleteCall(teacherId, "incoming screen");
     }
-    //added clearing currentcallmodel befor api call to ensure call localy disconnected successfully
+    // added clearing currentcallmodel befor api call to ensure call localy disconnected successfully
     currentCallModel.value = CurrentCallModel();
-    ZegoUIKit.instance.uninit();
-
-    // if (ZegoUIKitPrebuiltCallController().minimize.isMinimizing) {
-    //   ZegoUIKitPrebuiltCallController().minimize.hide();
-    // }
+    // Zego uninit removed
     if (!callId.isNullOrEmpty()) {
       await Get.put(CallandChatController())
           .stopCall(teacherId, callId, totalDuration, isRejectCall: isReject);

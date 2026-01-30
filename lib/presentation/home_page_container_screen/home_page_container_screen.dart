@@ -36,7 +36,7 @@ import 'package:flutter_callkit_incoming_yoer/flutter_callkit_incoming.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+// Zego import removed
 import '../../core/app_export.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../android_large_5_page/android_large_5_page.dart';
@@ -322,54 +322,10 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            InkWell(
-                              onTap: () async {
-                                ZegoUIKit().turnMicrophoneOn(!ZegoUIKit()
-                                    .getMicrophoneStateNotifier(
-                                        ZegoUIKit().getLocalUser().id)
-                                    .value);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(0.0),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      ZegoUIKit()
-                                              .getMicrophoneStateNotifier(
-                                                  ZegoUIKit().getLocalUser().id)
-                                              .value
-                                          ? Icons.mic
-                                          : Icons.mic_off,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Zego mic toggle removed
                             InkWell(
                               onTap: () {
-                                // ZegoUIKitPrebuiltCallController()
-                                //     .minimize
-                                //     .restore(context);
-                                // Get.to(
-                                //   () => IncomingCallPage(
-                                //     liveLink: callandChatController
-                                //         .currentCallModel.value.liveLink!,
-                                //     callId: callandChatController
-                                //         .currentCallModel.value.callId!,
-                                //     teacherId: int.parse(callandChatController
-                                //         .currentCallModel.value.callerId!),
-                                //     video: callandChatController
-                                //         .currentCallModel.value.isVideo!,
-                                //     profileImageUrl: callandChatController
-                                //         .currentCallModel.value.profileImg!,
-                                //     teacherName: callandChatController
-                                //         .currentCallModel.value.callerName!,
-                                //   ),
-                                // );
+                                // Zego restore logic removed
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -400,7 +356,7 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
                             ),
                             InkWell(
                               onTap: () async {
-                                await ZegoUIKit().leaveRoom();
+                                // Zego leave room removed
                                 CallandChatController callChatController =
                                     Get.find();
                                 callChatController.disconnectCall(
@@ -723,17 +679,10 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
 
   handleNotificationClick(Map<String, dynamic> payLoad) async {
     String type = payLoad.containsKey("type") ? payLoad['type'] : "";
-    if (type == "new_message") {
+    if (type != "new_call") {
       if (!callandChatController.currentCallModel.value.callId
           .isNullOrEmpty()) {
-        // await handleChatNotification();
-        // _onItemTapped(0);
-        if (!ZegoUIKitPrebuiltCallController().minimize.isMinimizing) {
-          ZegoUIKitPrebuiltCallController().minimize.minimize(
-                navigatorKey.currentContext ?? Get.context!,
-                rootNavigator: true,
-              );
-        }
+        // Zego minimize logic removed
       }
       String senderId = payLoad['sender_id'];
       String senderName = payLoad['senderName'];

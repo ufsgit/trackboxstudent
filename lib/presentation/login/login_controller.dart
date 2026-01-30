@@ -30,7 +30,7 @@ import 'package:anandhu_s_application4/presentation/splash_screen/splashscreen1.
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+// Zego import removed
 import '../../http/http_urls.dart';
 import '../onboarding/occupation_screen.dart';
 import '../onboarding/onboard_controller.dart';
@@ -469,13 +469,10 @@ class LoginController extends GetxController {
     // isLoggedIn.value = false;
     if (!callOngoingController.currentCallModel.value.callId.isNullOrEmpty()) {
       String callId = callOngoingController.currentCallModel.value.callId ?? "";
-
+      // added clearing currentcallmodel befor api call to ensure call localy disconnected successfully
+      callOngoingController.currentCallModel.value = CurrentCallModel();
+      // Zego uninit removed
       if (callOngoingController.currentCallModel.value.type == "new_live") {
-        ZegoUIKit.instance.uninit();
-
-        // if (ZegoUIKitPrebuiltCallController().minimize.isMinimizing) {
-        //   ZegoUIKitPrebuiltCallController().minimize.hide();
-        // }
         callOngoingController.currentCallModel.value = CurrentCallModel();
       } else {
         await callOngoingController.disconnectCall(

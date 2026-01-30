@@ -11,7 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:zego_express_engine/zego_express_engine.dart';
+
 import '../../core/utils/key_center.dart';
 import '../home_page/controller/home_controller.dart';
 import '../home_page/models/home_model.dart';
@@ -331,11 +331,11 @@ class _ExamDetailsScreenState extends State<ExamDetailsScreen> {
     );
   }
 
-  Future<void> createEngine() async {
-    await ZegoExpressEngine.createEngineWithProfile(ZegoEngineProfile(
-      appID,
-      ZegoScenario.Default,
-      appSign: appSign,
-    ));
-  }
+  // Future<void> createEngine() async {
+  //   await ZegoExpressEngine.createEngineWithProfile(ZegoEngineProfile(
+  //     appID,
+  //     ZegoScenario.Default,
+  //     appSign: appSign,
+  //   ));
+  // }
 }

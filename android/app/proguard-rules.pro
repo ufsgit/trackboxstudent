@@ -1,10 +1,4 @@
--keep class **.zego.**  { *; }
--keep class **.**.zego_zpns.** { *; }
-
--keep class **.**.zego_zim.** { *; }
-
--keep class im.zego.** { *; }
--keep class com.zego.** { *; }
+# Zego rules removed
 
 # Preserve TypeToken generic types
 -keepattributes Signature
