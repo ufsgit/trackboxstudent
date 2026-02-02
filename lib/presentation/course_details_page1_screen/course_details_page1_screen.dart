@@ -273,14 +273,14 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
       );
 
       if (success) {
-        Get.snackbar(
-          'Attendance Marked',
-          'Attendance recorded for "${_currentContentTitle}"',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-          duration: Duration(seconds: 3),
-        );
+        // Get.snackbar(
+        //   'Attendance Marked',
+        //   'Attendance recorded for "${_currentContentTitle}"',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   backgroundColor: Colors.green.withOpacity(0.8),
+        //   colorText: Colors.white,
+        //   duration: Duration(seconds: 3),
+        // );
       }
     }
   }

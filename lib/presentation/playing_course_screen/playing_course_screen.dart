@@ -86,12 +86,12 @@ class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
       );
 
       if (success) {
-        Get.snackbar(
-          'Attendance Marked',
-          'Attendance recorded for this video',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 3),
-        );
+        // Get.snackbar(
+        //   'Attendance Marked',
+        //   'Attendance recorded for this video',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   duration: Duration(seconds: 3),
+        // );
       }
     }
   }

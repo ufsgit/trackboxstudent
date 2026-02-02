@@ -8,7 +8,7 @@ import 'package:anandhu_s_application4/core/utils/notification_service.dart';
 import 'package:anandhu_s_application4/http/loader.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/controller/call_chat_controller.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/models/ongoing_call_model.dart';
-import 'package:anandhu_s_application4/presentation/breff_screen/breff_screen.dart';
+
 import 'package:anandhu_s_application4/presentation/breff_screen/controller/breff_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/certificate_download_page.dart';
 import 'package:anandhu_s_application4/presentation/explore_courses/controller/explore_course_controller.dart';
@@ -673,31 +673,27 @@ class _HomePageState extends State<HomePage> {
                               // mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ////change it with avathar
-                                GestureDetector(
-                                  onTap: () => Get.to(
-                                      () => BreffScreen(isLoginButton: false)),
-                                  child: SizedBox(
-                                    height: 130.h,
-                                    width: Get.width,
-                                    child: CustomImageView(
-                                      // imagePath: ImageConstant.breffImage,
-                                      imagePath:
-                                          PrefUtils().getBreffGenderData() ==
-                                                  "Male"
-                                              ? ImageConstant.breffImageNew
-                                              : ImageConstant.breffiniImageNew,
-                                      // : (profileController.profileData
-                                      //                 ?.avatar ==
-                                      //             'Male' ||
-                                      //         profileController
-                                      //                 .profileData
-                                      //                 ?.avatar ==
-                                      //             'male')
-                                      //     ? ImageConstant.breffImage
-                                      //     : ImageConstant.breffiniImage,
-                                      //  height: 145.v,
-                                      // width: 101.h,
-                                    ),
+                                SizedBox(
+                                  height: 130.h,
+                                  width: Get.width,
+                                  child: CustomImageView(
+                                    // imagePath: ImageConstant.breffImage,
+                                    imagePath:
+                                        PrefUtils().getBreffGenderData() ==
+                                                "Male"
+                                            ? ImageConstant.breffImageNew
+                                            : ImageConstant.breffiniImageNew,
+                                    // : (profileController.profileData
+                                    //                 ?.avatar ==
+                                    //             'Male' ||
+                                    //         profileController
+                                    //                 .profileData
+                                    //                 ?.avatar ==
+                                    //             'male')
+                                    //     ? ImageConstant.breffImage
+                                    //     : ImageConstant.breffiniImage,
+                                    //  height: 145.v,
+                                    // width: 101.h,
                                   ),
                                 ),
                                 Positioned(
