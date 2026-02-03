@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: 16.v),
                             // _buildExploreCoursesStack(),
                             CaroselWidget(
-                              height: 115,
+                              height: 135,
                               items: [
                                 CarouselItem(
                                     imageUrl: 'assets/images/carosel_1.png',
