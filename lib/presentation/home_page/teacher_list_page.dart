@@ -398,13 +398,28 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     : SizedBox(
                         height: Get.height / 1.5,
                         child: Center(
-                            child: Text(
-                          'No mentors available',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: ColorResources.colorgrey600,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'No mentors available',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: ColorResources.colorgrey600,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              controller.errorMessage.value,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.red,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         )));
               }),
             )

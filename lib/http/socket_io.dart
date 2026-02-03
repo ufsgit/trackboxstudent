@@ -134,11 +134,14 @@ class ChatSocket {
 
           // Only show if we are not actively looking at this chat?
           // For now, show always to verify functionality.
-          NotificationService().showNotification(
-            title: name,
-            body: latest['message'] ?? "New Message",
-            data: notificationData,
-          );
+          // Only notify if there are unread messages
+          if (latest['unread_count'] != null && latest['unread_count'] > 0) {
+            NotificationService().showNotification(
+              title: name,
+              body: latest['message'] ?? "New Message",
+              data: notificationData,
+            );
+          }
         }
       } catch (e) {
         print("Error showing notification from chat list: $e");

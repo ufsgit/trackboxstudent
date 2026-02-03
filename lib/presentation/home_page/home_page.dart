@@ -45,7 +45,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../core/app_export.dart';
 import '../../http/http_urls.dart';
 import '../../theme/custom_button_style.dart';
-import '../../widgets/app_bar/appbar_subtitle_two.dart';
+
 import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_outlined_button.dart';
 import '../android_large_5_page/incoming_call_page.dart';
@@ -400,410 +400,78 @@ class _HomePageState extends State<HomePage> {
 
   /// Section Widget
   Widget _buildImageStack() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        CustomImageView(
-          imagePath: 'assets/images/home_appbar_bg.png',
-          height: 154.v,
-          width: 360.h,
-          radius: BorderRadius.vertical(
-            bottom: Radius.circular(12.h),
-          ),
-          alignment: Alignment.center,
+    return ClipRRect(
+      borderRadius: BorderRadius.vertical(
+        bottom: Radius.circular(12.h),
+      ),
+      child: SizedBox(
+        height: 174.v,
+        width: double.infinity,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // ✅ Banner Image (ONLY ONCE)
+            Image.asset(
+              'assets/images/banner_home_page.jpg.png',
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+            ),
+
+            // ✅ Soft overlay (optional but recommended)
+            Container(
+              color: const Color(0xff0B4BA8).withOpacity(0.15),
+            ),
+
+            // ✅ AppBar Content
+            // Padding(
+            //   padding: EdgeInsets.only(top: 16.v, left: 16.h, right: 16.h),
+            //   child: GetBuilder<HomeController>(
+            //     id: 'profile_name',
+            //     init: controller,
+            //     builder: (_) {
+            //       return Row(
+            //         children: [
+            //           // Avatar
+            //           GestureDetector(
+            //             onTap: () {
+            //               Get.to(() => StudentProfileScreen(isHomePage: true));
+            //             },
+            //             child: CircleAvatar(
+            //               radius: 18.v,
+            //               backgroundColor: Colors.white,
+            //               backgroundImage: controller.profileImageUrl != null
+            //                   ? NetworkImage(
+            //                       '${HttpUrls.imgBaseUrl}${controller.profileImageUrl}',
+            //                     )
+            //                   : null,
+            //               child: controller.profileImageUrl == null
+            //                   ? Icon(Icons.person,
+            //                       color: ColorResources.colorBlue300)
+            //                   : null,
+            //             ),
+            //           ),
+
+            //           SizedBox(width: 10.h),
+
+            //           // Name
+            //           Expanded(
+            //             child: Text(
+            //               'Hi, ${controller.userName} 👋',
+            //               style: GoogleFonts.plusJakartaSans(
+            //                 color: Colors.white,
+            //                 fontSize: 16,
+            //                 fontWeight: FontWeight.w700,
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       );
+            //     },
+            //   ),
+            // ),
+          ],
         ),
-        Align(
-          alignment: Alignment.center,
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 0,
-            margin: EdgeInsets.all(0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadiusStyle.customBorderBL12,
-            ),
-            child: Container(
-              // height: 154.v,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage('assets/images/home_appbar_bg.png'))),
-
-              // AppDecoration.gradientBlueToBlue.copyWith(
-              //   borderRadius: BorderRadiusStyle.customBorderBL12,
-              // ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xff0B4BA8).withOpacity(0.1),
-
-                  //           gradient: LinearGradient(colors:  [Color(0xffFFFFFF).withOpacity(0.5),
-
-                  // Color.fromARGB(255, 86, 141, 217).withOpacity(0.7),
-                  // //  Color(0xff1580E3),
-                  // // Color(0xffFFFFFF),
-
-                  // ])
-                ),
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    // CustomImageView(
-                    //   imagePath: ImageConstant.imgImage29,
-                    //   height: 109.v,
-                    //   width: 140.h,
-                    //   alignment: Alignment.bottomLeft,
-                    // ),
-                    // CustomImageView(
-                    //   imagePath: ImageConstant.imgEllipse13,
-                    //   height: 60.v,
-                    //   width: 360.h,
-                    //   alignment: Alignment.bottomCenter,
-                    // ),
-                    // CustomImageView(
-                    //   imagePath: ImageConstant.imgEllipse14,
-                    //   height: 24.v,
-                    //   width: 359.h,
-                    //   alignment: Alignment.bottomCenter,
-                    // ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            // left: 11.h,
-                            // right: 16.h,
-                            ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GetBuilder<HomeController>(
-                                id: 'profile_name',
-                                init: controller,
-                                builder: (context) {
-                                  return Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 10.v, top: 5.v),
-                                    child: CustomAppBar(
-                                      height: 40.v,
-                                      leadingWidth: 40.h,
-                                      leading: Container(
-                                        height: 10,
-                                        width: 10,
-                                        decoration: BoxDecoration(
-                                          color: ColorResources.colorBlue100,
-                                          border: Border.all(),
-                                          shape: BoxShape.circle,
-                                          // image: DecorationImage(
-                                          //     fit: BoxFit.cover,
-                                          //     image: NetworkImage(
-                                          //         '${HttpUrls.imgBaseUrl}${profileController.profileData?.profilePhotoPath}'))
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(40.v / 2),
-                                          child: GetBuilder<ProfileController>(
-                                              init: ProfileController(),
-                                              id: 'profile_name',
-                                              builder: (pController) {
-                                                return InkWell(
-                                                  onTap: () {
-                                                    log(pController.profileData!
-                                                        .profilePhotoPath);
-                                                    log('${HttpUrls.imgBaseUrl}${pController.profileData?.profilePhotoPath}');
-                                                    Get.to(() =>
-                                                        StudentProfileScreen(
-                                                          isHomePage: true,
-                                                        ));
-                                                  },
-                                                  child: pController.profileData
-                                                              ?.profilePhotoPath !=
-                                                          null
-                                                      ? CachedNetworkImage(
-                                                          imageUrl:
-                                                              '${HttpUrls.imgBaseUrl}${pController.profileData?.profilePhotoPath}',
-                                                          height: 10.v,
-                                                          width: 10.v,
-                                                          fit: BoxFit.cover,
-                                                          placeholder:
-                                                              (BuildContext
-                                                                      context,
-                                                                  String url) {
-                                                            return Center(
-                                                              child: Transform
-                                                                  .scale(
-                                                                scale: 0.6,
-                                                                child:
-                                                                    CircularProgressIndicator(
-                                                                  strokeWidth:
-                                                                      3,
-                                                                  color:
-                                                                      darkbluesix,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                          errorWidget:
-                                                              (BuildContext
-                                                                      context,
-                                                                  String url,
-                                                                  dynamic
-                                                                      error) {
-                                                            return Center(
-                                                              child: Icon(
-                                                                Icons
-                                                                    .person_rounded,
-                                                                color: ColorResources
-                                                                    .colorBlue300,
-                                                                size: 18.v,
-                                                              ),
-                                                            );
-                                                          },
-                                                        )
-                                                      : Image.asset(
-                                                          height: 10.v,
-                                                          width: 10.v,
-                                                          '${ImageConstant.defaultProfile}',
-                                                          fit: BoxFit.fill,
-                                                        ),
-                                                );
-                                              }),
-                                        ),
-                                      ),
-                                      title: Padding(
-                                        padding: EdgeInsets.only(left: 8.h),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            GetBuilder<ProfileController>(
-                                                init: ProfileController(),
-                                                id: 'profile_name',
-                                                builder: (profileData) {
-                                                  return AppbarSubtitleTwo(
-                                                    text: profileData
-                                                                .profileData
-                                                                ?.firstName !=
-                                                            null
-                                                        ? '${profileData.profileData?.firstName} ${profileData.profileData?.lastName}'
-                                                        : '',
-                                                    margin: EdgeInsets.only(
-                                                        right: 79.h),
-                                                  );
-                                                }),
-                                            SizedBox(height: 1.v),
-                                            // AppbarSubtitleFour(
-                                            //   text: DateTime.now()
-                                            //       .formatCurrentDate()
-                                            //       .tr,
-                                            //   // text: "msg_tuesday_23_april".tr,
-                                            // )
-                                            // AppbarSubtitleFour(
-                                            //   text: DateTime.now()
-                                            //       .formatCurrentDate()
-                                            //       .tr,
-                                            //   // text: "msg_tuesday_23_april".tr,
-                                            // )
-                                          ],
-                                        ),
-                                      ),
-                                      actions: [
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                            left: 16.h,
-                                            right: 16.h,
-                                            bottom: 2.v,
-                                          ),
-                                          decoration:
-                                              AppDecoration.fillBlack.copyWith(
-                                            borderRadius: BorderRadiusStyle
-                                                .circleBorder18,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              // AppbarImage(
-                                              //   onTap: () async {
-                                              //     print('click');
-                                              //     Loader.showLoader();
-                                              //     await exController
-                                              //         .getAllExploreCourses();
-                                              //     Loader.stopLoader();
-                                              //     Get.toNamed(AppRoutes
-                                              //         .exploreCoursesPage);
-                                              //   },
-                                              //   imagePath: ImageConstant
-                                              //       .imgSearchWhiteA700,
-                                              //   margin: EdgeInsets.only(
-                                              //     left: 2.h,
-                                              //     top: 2.v,
-                                              //     bottom: 2.v,
-                                              //   ),
-                                              // ),
-                                              // Padding(
-                                              //   padding: EdgeInsets.fromLTRB(
-                                              //       2.h, 2.v, 8.h, 2.v),
-                                              //   child: InkWell(
-                                              //     onTap: () {
-                                              //       showLogoutDialog();
-                                              //     },
-                                              //     child: Icon(
-                                              //       Icons.logout,
-                                              //       color: ColorResources
-                                              //           .colorgrey200
-                                              //           .withOpacity(0.9),
-                                              //       size: 20.adaptSize,
-                                              //     ),
-                                              //   ),
-                                              // ),
-                                              // AppbarImage(
-                                              //   imagePath: ImageConstant
-                                              //       .imgFrame2609305,
-                                              //   margin: EdgeInsets.fromLTRB(
-                                              //       8.h, 2.v, 2.h, 2.v),
-                                              // )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }),
-                            SizedBox(height: 21.v),
-                            Stack(
-                              // mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ////change it with avathar
-                                SizedBox(
-                                  height: 130.h,
-                                  width: Get.width,
-                                  child: CustomImageView(
-                                    // imagePath: ImageConstant.breffImage,
-                                    imagePath:
-                                        PrefUtils().getBreffGenderData() ==
-                                                "Male"
-                                            ? ImageConstant.breffImageNew
-                                            : ImageConstant.breffiniImageNew,
-                                    // : (profileController.profileData
-                                    //                 ?.avatar ==
-                                    //             'Male' ||
-                                    //         profileController
-                                    //                 .profileData
-                                    //                 ?.avatar ==
-                                    //             'male')
-                                    //     ? ImageConstant.breffImage
-                                    //     : ImageConstant.breffiniImage,
-                                    //  height: 145.v,
-                                    // width: 101.h,
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 16,
-                                  bottom: 16,
-                                  child: Container(
-                                    width: 214.h,
-                                    margin: EdgeInsets.only(
-                                        // top: 28.v,
-                                        // bottom: 13.v,
-                                        ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Text(
-                                            //   PrefUtils().getBreffGenderData() ==
-                                            //           "Male"
-                                            //       ? "Hello, i'm AI".tr
-                                            //       : "Hello, i'm AI".tr,
-                                            //   // "Your study partner in\ngame",
-                                            //   // : (profileController
-                                            //   //                 .profileData
-                                            //   //                 ?.avatar ==
-                                            //   //             'Male' ||
-                                            //   //         profileController
-                                            //   //                 .profileData
-                                            //   //                 ?.avatar ==
-                                            //   //             'male')
-                                            //   //     ? "msg_hello_i_m_breff".tr
-                                            //   //     : "Hello, I'm Breffini",
-                                            //   style: CustomTextStyles
-                                            //       .titleSmallWhiteA700,
-                                            // ),
-                                            // SizedBox(height: 1.v),
-                                            // SizedBox(
-                                            //   width: 120.h,
-                                            //   child: Text(
-                                            //     'Your study partner in game',
-                                            //     maxLines: 2,
-                                            //     overflow: TextOverflow.ellipsis,
-                                            //     style: CustomTextStyles
-                                            //         .bodySmallWhiteA700
-                                            //         .copyWith(
-                                            //       height: 1.60,
-                                            //     ),
-                                            //   ),
-                                            // )
-                                          ],
-                                        ),
-                                        // OutlineGradientButton(
-                                        //   padding: EdgeInsets.only(
-                                        //     left: 1.h,
-                                        //     top: 1.v,
-                                        //     right: 1.h,
-                                        //     bottom: 1.v,
-                                        //   ),
-                                        //   strokeWidth: 1.h,
-                                        //   gradient: LinearGradient(
-                                        //     begin: Alignment(0.5, 0),
-                                        //     end: Alignment(0.5, 1),
-                                        //     colors: [
-                                        //       appTheme.whiteA700,
-                                        //       appTheme.gray50
-                                        //     ],
-                                        //   ),
-                                        // corners: Corners(
-                                        //   topLeft: Radius.circular(18.v),
-                                        //   topRight: Radius.circular(18.v),
-                                        //   bottomLeft: Radius.circular(18.v),
-                                        //   bottomRight: Radius.circular(18.v),
-                                        // ),
-                                        // child: CustomOutlinedButton(
-                                        //   onPressed: () {
-                                        //     // Get.to(()=> GeminiChatScreen());
-                                        //     Get.to(() => BreffScreen(
-                                        //         isLoginButton: false));
-                                        //   },
-                                        //   height: 28.v,
-                                        //   width: 59.h,
-                                        //   text: "lbl_ask".tr,
-                                        //   buttonStyle:
-                                        //       CustomButtonStyles.none,
-                                        //   decoration: CustomButtonStyles
-                                        //       .gradientBlueToSecondaryContainerDecoration,
-                                        //   buttonTextStyle: CustomTextStyles
-                                        //       .labelLargePrimaryContainer,
-                                        // ),
-                                        // )
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        )
-      ],
+      ),
     );
   }
 

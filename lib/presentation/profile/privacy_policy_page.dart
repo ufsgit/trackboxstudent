@@ -70,7 +70,7 @@ class PrivacyPolicyContent extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Text(
-                  'Effective Date: August 16, 2024\n\n'
+                  'Effective Date: January 30, 2026\n\n'
                   'Welcome to our Privacy Policy. Your privacy is critically important to us.\n\n'
                   'We are committed to safeguarding the privacy of our website visitors; this policy sets out how we will treat your personal information.\n\n'
                   '1. **Information We Collect**\n'

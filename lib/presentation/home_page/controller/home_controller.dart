@@ -48,6 +48,7 @@ class HomeController extends GetxController {
   var teacherList = <TeacherModel>[].obs;
   var hodList = <TeacherModel>[].obs;
   var timeSlotList = <TimeSlotModel>[].obs;
+  var errorMessage = ''.obs;
   RxInt selectedIndex = 0.obs;
   RxString title = ''.obs;
   RxString selectedCourseCategory = ''.obs;
@@ -60,6 +61,17 @@ class HomeController extends GetxController {
     print('onready fn ');
 
     super.onReady();
+  }
+
+  String get profileImageUrl =>
+      profileController.profileData?.profilePhotoPath ?? "";
+
+  String get userName {
+    var data = profileController.profileData;
+    if (data != null && data.firstName.isNotEmpty) {
+      return '${data.firstName} ${data.lastName}';
+    }
+    return 'User';
   }
 
   setTitle(String selectedTitle) {
@@ -358,12 +370,13 @@ class HomeController extends GetxController {
 
   getTeacherList() async {
     print('hdgfhrf ');
+    errorMessage.value = '';
     try {
       final response = await HttpRequest.httpGetRequest(
         endPoint: '${HttpUrls.getAvailableMentors}',
       );
 
-      if (response!.statusCode == 200) {
+      if (response != null && response.statusCode == 200) {
         // Log the raw response data
         print('Raw response data: ${response.data}');
 
@@ -371,49 +384,75 @@ class HomeController extends GetxController {
         if (response.data is List<dynamic>) {
           final responseData = response.data as List<dynamic>;
 
-          // Check each item in the list
-          for (var item in responseData) {
-            print('Item type: ${item.runtimeType}');
-            print('Item data: $item');
-          }
+          // Place checks for nested vs flat list here..
+          // Reuse my previous logic logic but safer
 
-          // If responseData is a List<List<dynamic>>, handle accordingly
           if (responseData.isNotEmpty && responseData.first is List<dynamic>) {
             final nestedList = responseData.first as List<dynamic>;
-
-            // Log the nested list's structure
-            for (var nestedItem in nestedList) {
-              print('Nested item type: ${nestedItem.runtimeType}');
-              print('Nested item data: $nestedItem');
-            }
-
             // Map the nested list to TeacherModel
-            final teacherDataList = nestedList.map((item) {
-              if (item is Map<String, dynamic>) {
-                return TeacherModel.fromJson(item);
-              } else {
-                throw Exception(
-                    'Unexpected nested item type: ${item.runtimeType}');
-              }
-            }).toList();
+            final teacherDataList = nestedList
+                .map((item) {
+                  if (item is Map<String, dynamic>) {
+                    try {
+                      return TeacherModel.fromJson(item);
+                    } catch (e) {
+                      print('Error parsing teacher item: $e');
+                      return null;
+                    }
+                  } else {
+                    return null;
+                  }
+                })
+                .where((element) => element != null)
+                .cast<TeacherModel>()
+                .toList();
 
             teacherList.value = teacherDataList;
-
-            print(teacherDataList);
             print('Teacher details loaded successfully');
+          } else if (responseData.isNotEmpty &&
+              responseData.first is Map<String, dynamic>) {
+            // Handle flat list structure
+            final teacherDataList = responseData
+                .map((item) {
+                  if (item is Map<String, dynamic>) {
+                    try {
+                      return TeacherModel.fromJson(item);
+                    } catch (e) {
+                      print('Error parsing teacher item: $e');
+                      return null;
+                    }
+                  } else {
+                    return null;
+                  }
+                })
+                .where((element) => element != null)
+                .cast<TeacherModel>()
+                .toList();
+
+            teacherList.value = teacherDataList;
+            print('Teacher details loaded successfully (flat list)');
           } else {
-            throw Exception(
-                'Unexpected response format: List does not contain nested lists');
+            teacherList.clear();
+            errorMessage.value = 'Response list is empty';
+            print('Response list is empty or format not recognized.');
           }
         } else {
-          throw Exception(
-              'Unexpected response format: ${response.data.runtimeType}');
+          errorMessage.value =
+              'Unexpected data format: ${response.data.runtimeType}';
+          print('Unexpected response format: ${response.data.runtimeType}');
+          teacherList.clear();
         }
       } else {
-        throw Exception('Failed to load teacher data: ${response.statusCode}');
+        errorMessage.value =
+            'Failed to load data. Status: ${response?.statusCode}';
+        print(
+            'Failed to load teacher data or response is null: ${response?.statusCode}');
+        teacherList.clear();
       }
     } catch (e) {
-      print('Error: $e');
+      errorMessage.value = 'Error: $e';
+      print('Error in getTeacherList: $e');
+      teacherList.clear();
     }
 
     update();
