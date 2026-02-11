@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
-import '../presentation/course_details_page1_screen/controller/exam_result_controller.dart';
 
 class ResultScreen extends StatefulWidget {
   final int score;
@@ -23,46 +22,6 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
-  final ExamResultController _controller = Get.find<ExamResultController>();
-  bool _isSaving = false;
-
-  Future<void> _handleSaveAndExit() async {
-    setState(() {
-      _isSaving = true;
-    });
-
-    final success = await _controller.saveExamResult(
-      courseId: widget.courseId,
-      examDataId: widget.examDataId,
-      totalMark: widget.total
-          .toString(), // Assuming 100 for now, or derive from questions
-      passMark: widget.passMark.toString(),
-      obtainedMark: widget.score.toString(),
-    );
-
-    setState(() {
-      _isSaving = false;
-    });
-
-    if (success) {
-      Get.snackbar(
-        "Success",
-        "Exam result saved successfully",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-      // Determine where to go back to. usually home or exams list.
-      Navigator.popUntil(context, (route) => route.isFirst);
-    } else {
-      Get.snackbar(
-        "Error",
-        "Failed to save exam result. Please try again.",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final double percentage = (widget.score / widget.total) * 100;
@@ -167,20 +126,13 @@ class _ResultScreenState extends State<ResultScreen> {
               width: double.infinity,
               height: 48.v,
               child: ElevatedButton(
-                onPressed: _isSaving ? null : _handleSaveAndExit,
-                child: _isSaving
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Text(
-                        "Back to Home",
-                        style: theme.textTheme.labelMedium,
-                      ),
+                onPressed: () {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                child: Text(
+                  "Back to Home",
+                  style: theme.textTheme.labelMedium,
+                ),
               ),
             ),
           ],

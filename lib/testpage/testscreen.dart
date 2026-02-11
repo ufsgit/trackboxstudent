@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 import 'quastions_modal.dart';
 import 'resultscreen.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/exam_result_controller.dart';
+import 'package:get/get.dart';
 import 'examservieses.dart';
 
 class TestScreen extends StatefulWidget {
@@ -87,8 +89,17 @@ class _TestScreenState extends State<TestScreen> {
     }
   }
 
-  void _submitExam() {
+  Future<void> _submitExam() async {
     _timer?.cancel();
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
 
     int score = 0;
     for (int i = 0; i < questions.length; i++) {
@@ -98,18 +109,46 @@ class _TestScreenState extends State<TestScreen> {
       }
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ResultScreen(
-          score: score,
-          total: questions.length,
-          courseId: widget.courseId,
-          examDataId: widget.courseExamId,
-          passMark: widget.passMark,
-        ),
-      ),
+    final examResultController = Get.put(ExamResultController());
+
+    final success = await examResultController.saveExamResult(
+      courseId: widget.courseId,
+      examDataId: widget.courseExamId,
+      totalMark: questions.length.toString(),
+      passMark: widget.passMark.toString(),
+      obtainedMark: score.toString(),
     );
+
+    // Dismiss loading dialog
+    Navigator.pop(context);
+
+    if (success) {
+      Get.snackbar(
+        "Success",
+        "Exam result saved successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ResultScreen(
+            score: score,
+            total: questions.length,
+            courseId: widget.courseId,
+            examDataId: widget.courseExamId,
+            passMark: widget.passMark,
+          ),
+        ),
+      );
+    } else {
+      Get.snackbar(
+        "Error",
+        "Failed to save exam result. Please try again.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   void previousQuestion() {
