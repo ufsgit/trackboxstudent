@@ -61,10 +61,10 @@ class ChipviewbookmarItemWidget extends StatelessWidget {
                   12.h,
                 ),
               ),
-        onSelected: (value) {
-          Get.toNamed(AppRoutes.readingTestQuestionScreen);
-          chipviewbookmarItemModelObj.isSelected!.value = value;
-        },
+        // onSelected: (value) {
+        //   Get.toNamed(AppRoutes.readingTestQuestionScreen);
+        //   chipviewbookmarItemModelObj.isSelected!.value = value;
+        // },
       ),
     );
   }

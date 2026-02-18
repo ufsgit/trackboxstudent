@@ -183,8 +183,7 @@ class Frame1000004962Screen extends GetWidget<Frame1000004962Controller> {
         return AppRoutes.connectMentorsPage;
       case BottomBarEnum.Mentors:
         return AppRoutes.androidLarge5Page;
-      case BottomBarEnum.Test:
-        return AppRoutes.testTab;
+
       case BottomBarEnum.Profile:
         return AppRoutes.profileScreen;
       default:

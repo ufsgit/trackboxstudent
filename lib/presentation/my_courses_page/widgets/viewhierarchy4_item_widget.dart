@@ -11,7 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import '../../../core/app_export.dart';
-import '../../exam_details_screen/exam_details_screen.dart';
+
 import '../../filter_bottom_sheet_bottomsheet/controller/filter_bottom_sheet_controller.dart';
 import '../../home_page/controller/home_controller.dart';
 import '../../home_page/models/home_model.dart';
@@ -54,12 +54,6 @@ class Viewhierarchy4ItemWidget extends StatelessWidget {
         );
 
         Loader.stopLoader();
-
-        Get.to(() => ExamDetailsScreen(
-              isNotificationClick: false,
-              courseId: viewhierarchy4ItemModelObj.courseId,
-              batchId: viewhierarchy4ItemModelObj.batchID,
-            ));
       },
       child: Container(
         padding: EdgeInsets.all(5.h),

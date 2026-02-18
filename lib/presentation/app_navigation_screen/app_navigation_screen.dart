@@ -132,46 +132,46 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                           onTapScreenTitle: () =>
                               onTapScreenTitle(AppRoutes.frame1000004962Screen),
                         ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_writing_test_question".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.writingTestQuestionScreen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_reading_test_passage".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.readingTestPassageScreen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_reading_test_questions".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.readingTestQuestionsScreen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_reading_test_question".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.readingTestQuestionScreen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_reading_test_questions".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.readingTestQuestions1Screen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_speaking_test".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.speakingTestQuestionScreen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_speaking_test_checking".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.speakingTestCheckingScreen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "msg_listening_test".tr,
-                          onTapScreenTitle: () => onTapScreenTitle(
-                              AppRoutes.listeningTestOngoingScreen),
-                        )
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_writing_test_question".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.writingTestQuestionScreen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_reading_test_passage".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.readingTestPassageScreen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_reading_test_questions".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.readingTestQuestionsScreen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_reading_test_question".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.readingTestQuestionScreen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_reading_test_questions".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.readingTestQuestions1Screen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_speaking_test".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.speakingTestQuestionScreen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_speaking_test_checking".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.speakingTestCheckingScreen),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "msg_listening_test".tr,
+                        //   onTapScreenTitle: () => onTapScreenTitle(
+                        //       AppRoutes.listeningTestOngoingScreen),
+                        // )
                       ],
                     ),
                   ),

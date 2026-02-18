@@ -14,8 +14,7 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/core/colors_res.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/answer_key_page.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/controller/exam_details_controller.dart';
+
 import 'package:pdf/pdf.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:printing/printing.dart';
@@ -56,8 +55,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   final ValueNotifier<double> downloadProgress = ValueNotifier<double>((0.0));
   final ValueNotifier<String> cachedUrl = ValueNotifier<String>("");
   ValueNotifier<bool> isPdfLoaded = ValueNotifier<bool>(false);
-  final ExamDetailsScreenController examDetailsScreenController =
-      Get.put(ExamDetailsScreenController());
+
   var client = http.Client();
   final ValueNotifier<String> _progressNotifier = ValueNotifier<String>('0');
 
@@ -338,9 +336,6 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                     );
                   } else {
                     // If answer key exists and is unlocked
-                    Get.to(() => AnswerKeyPage(
-                          answerKey: widget.answerKey!,
-                        ));
                   }
                 },
                 label: Text(

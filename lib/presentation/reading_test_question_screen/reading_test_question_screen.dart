@@ -248,10 +248,10 @@ class ReadingTestQuestionScreen
   /// Section Widget
   Widget _buildStartNowButton() {
     return CustomOutlinedButton(
-      onPressed: () {
-        Get.toNamed(AppRoutes.readingTestPassageScreen);
-        
-      },
+      // onPressed: () {
+      //   Get.toNamed(AppRoutes.readingTestPassageScreen);
+
+      // },
       text: "lbl_start_now".tr,
       margin: EdgeInsets.only(
         left: 16.h,

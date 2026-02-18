@@ -19,7 +19,7 @@ import 'package:anandhu_s_application4/presentation/android_large_5_page/models/
 import 'package:anandhu_s_application4/presentation/android_large_5_page/widgets/handle_call_widget.dart';
 import 'package:anandhu_s_application4/presentation/chat_screen/chat_firebase_screen.dart';
 import 'package:anandhu_s_application4/presentation/chat_screen/controller/chat_firebase_controller.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/live_call_screen.dart';
+//import 'package:anandhu_s_application4/presentation/exam_details_screen/live_call_screen.dart';
 import 'package:anandhu_s_application4/presentation/home_page/controller/home_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/models/home_model.dart';
 import 'package:anandhu_s_application4/presentation/home_page/teacher_list_page.dart';
@@ -43,7 +43,6 @@ import '../android_large_5_page/android_large_5_page.dart';
 import '../home_page/home_page.dart';
 import '../my_courses_page/my_courses_page.dart';
 
-import 'package:anandhu_s_application4/testpage/mainexamstapbar.dart';
 import 'controller/home_page_container_controller.dart'; // ignore_for_file: must_be_immutable
 
 class HomePageContainerScreen extends StatefulWidget {
@@ -775,13 +774,9 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
         return AppRoutes.connectMentorsPage;
       case BottomBarEnum.Mentors:
         return AppRoutes.androidLarge5Page;
-      case BottomBarEnum.Test:
-        return AppRoutes.testTab;
+
       case BottomBarEnum.Profile:
         return AppRoutes.profileScreen;
-
-      default:
-        return AppRoutes.homePage;
     }
   }
 

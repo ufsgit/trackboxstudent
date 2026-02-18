@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:anandhu_s_application4/core/colors_res.dart';
 import 'package:anandhu_s_application4/http/loader.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/controller/call_chat_controller.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/controller/live_class_joining_controller.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/models/live_class_joining_model.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/live_call_screen.dart';
+
 import 'package:anandhu_s_application4/presentation/home_page_container_screen/controller/home_page_container_controller.dart';
 import 'package:anandhu_s_application4/presentation/login/login_controller.dart';
 import 'package:anandhu_s_application4/presentation/my_courses_page/controller/live_class_controller.dart';
@@ -45,8 +43,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
   LiveClassController liveController = Get.put(LiveClassController());
   final HomePageContainerController controllers =
       Get.find<HomePageContainerController>();
-  LiveClassJoiningController liveJoiningController =
-      Get.put(LiveClassJoiningController());
+
   CallandChatController callandChatController =
       Get.put(CallandChatController());
   List<String> categoryList = ['Category1', 'Category2', 'Category3'];
@@ -253,22 +250,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
           ),
           SizedBox(height: 13.v),
           CustomOutlinedButton(
-            onPressed: () async {
-              // await callandChatController.startStudentLiveClass(
-              //     passDuration: false,
-              //     endTime: null,
-              //     liveClassId: liveController.liveNowCourseList[0].liveClassID
-              //         .toString(),
-              //     startTime: DateTime.now());
-              // Get.to(() => LiveCallScreen(
-              //       liveLink: liveController.liveNowCourseList[0].liveLink,
-              //       callId: liveController.liveNowCourseList[0].liveClassID,
-              //       teacherId: liveController.liveNowCourseList[0].teacherID
-              //           .toString(),
-              //       teacherName: liveController.liveNowCourseList[0].firstName
-              //           .toString(),
-              //     ));
-            },
+            onPressed: () async {},
             text: "Join Now",
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientBlueToBlueDecoration,

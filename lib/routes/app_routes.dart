@@ -4,10 +4,7 @@ import 'package:anandhu_s_application4/presentation/explore_courses/explore_cour
 import 'package:anandhu_s_application4/presentation/login/login_home_page.dart';
 import 'package:anandhu_s_application4/presentation/profile/student_profile_screen.dart';
 import 'package:anandhu_s_application4/presentation/splash_screen/splashscreen.dart';
-import 'package:anandhu_s_application4/testpage/exams_screen.dart';
-import 'package:anandhu_s_application4/testpage/mainexamstapbar.dart';
 
-import 'package:anandhu_s_application4/testpage/rulsscreen.dart';
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 import '../presentation/chat_screen/chat_firebase_screen.dart';
@@ -41,30 +38,9 @@ import '../presentation/home_page_after_joining_a_course_screen/binding/home_pag
 import '../presentation/home_page_after_joining_a_course_screen/home_page_after_joining_a_course_screen.dart';
 import '../presentation/home_page_container_screen/binding/home_page_container_binding.dart';
 import '../presentation/home_page_container_screen/home_page_container_screen.dart';
-import '../presentation/listening_test_ongoing_screen/binding/listening_test_ongoing_binding.dart';
-import '../presentation/listening_test_ongoing_screen/listening_test_ongoing_screen.dart';
-import '../presentation/playing_course_screen/binding/playing_course_binding.dart';
-import '../presentation/playing_course_screen/playing_course_screen.dart';
-import '../presentation/reading_test_passage_screen/binding/reading_test_passage_binding.dart';
-import '../presentation/reading_test_passage_screen/reading_test_passage_screen.dart';
-import '../presentation/reading_test_question_screen/binding/reading_test_question_binding.dart';
-import '../presentation/reading_test_question_screen/reading_test_question_screen.dart';
-import '../presentation/reading_test_questions1_screen/binding/reading_test_questions1_binding.dart';
-import '../presentation/reading_test_questions1_screen/reading_test_questions1_screen.dart';
-import '../presentation/reading_test_questions_screen/binding/reading_test_questions_binding.dart';
-import '../presentation/reading_test_questions_screen/reading_test_questions_screen.dart';
-import '../presentation/search_page_screen/binding/search_page_binding.dart';
-import '../presentation/search_page_screen/search_page_screen.dart';
-import '../presentation/speaking_test_checking_screen/binding/speaking_test_checking_binding.dart';
-import '../presentation/speaking_test_checking_screen/speaking_test_checking_screen.dart';
-import '../presentation/speaking_test_question_screen/binding/speaking_test_question_binding.dart';
-import '../presentation/speaking_test_question_screen/speaking_test_question_screen.dart';
-import '../presentation/writing_test_question_screen/binding/writing_test_question_binding.dart';
-import '../presentation/writing_test_question_screen/writing_test_question_screen.dart'; // ignore_for_file: must_be_immutable
 
 class AppRoutes {
   static const String homePageContainerScreen = '/home_page_container_screen';
-  static const String testTab = '/test_tab';
 
   static const String homePage = '/home_page';
 
@@ -112,29 +88,6 @@ class AppRoutes {
 
   static const String frame1000004962Screen = '/frame_1000004962_screen';
 
-  static const String writingTestQuestionScreen =
-      '/writing_test_question_screen';
-
-  static const String readingTestPassageScreen = '/reading_test_passage_screen';
-
-  static const String readingTestQuestionsScreen =
-      '/reading_test_questions_screen';
-
-  static const String readingTestQuestionScreen =
-      '/reading_test_question_screen';
-
-  static const String readingTestQuestions1Screen =
-      '/reading_test_questions1_screen';
-
-  static const String speakingTestQuestionScreen =
-      '/speaking_test_question_screen';
-
-  static const String speakingTestCheckingScreen =
-      '/speaking_test_checking_screen';
-
-  static const String listeningTestOngoingScreen =
-      '/listening_test_ongoing_screen';
-
   static const String myCoursesPage = '/my_courses_page';
 
   //explore courses
@@ -176,11 +129,11 @@ class AppRoutes {
       page: () => BreffiniScreen(),
       bindings: [BreffiniBinding()],
     ),
-    GetPage(
-      name: searchPageScreen,
-      page: () => SearchPageScreen(),
-      bindings: [SearchPageBinding()],
-    ),
+    // GetPage(
+    //   name: searchPageScreen,
+    //   page: () => SearchPageScreen(),
+    //   bindings: [SearchPageBinding()],
+    // ),
     GetPage(
       name: courseDetailsPageScreen,
       page: () => CourseDetailsPageScreen(),
@@ -191,13 +144,13 @@ class AppRoutes {
       page: () => Frame1000004952Screen(),
       bindings: [Frame1000004952Binding()],
     ),
-    GetPage(
-      name: playingCourseScreen,
-      page: () => PlayingCourseScreen(
-        controller: Get.arguments['controller'],
-      ),
-      bindings: [PlayingCourseBinding()],
-    ),
+    // GetPage(
+    //   name: playingCourseScreen,
+    //   page: () => PlayingCourseScreen(
+    //     controller: Get.arguments['controller'],
+    //   ),
+    //   bindings: [PlayingCourseBinding()],
+    // ),
     // GetPage(
     //   name: testTab,
     //   page: () {
@@ -291,46 +244,7 @@ class AppRoutes {
       page: () => Frame1000004962Screen(),
       bindings: [Frame1000004962Binding()],
     ),
-    GetPage(
-      name: writingTestQuestionScreen,
-      page: () => WritingTestQuestionScreen(),
-      bindings: [WritingTestQuestionBinding()],
-    ),
-    GetPage(
-      name: readingTestPassageScreen,
-      page: () => ReadingTestPassageScreen(),
-      bindings: [ReadingTestPassageBinding()],
-    ),
-    GetPage(
-      name: readingTestQuestionsScreen,
-      page: () => ReadingTestQuestionsScreen(),
-      bindings: [ReadingTestQuestionsBinding()],
-    ),
-    GetPage(
-      name: readingTestQuestionScreen,
-      page: () => ReadingTestQuestionScreen(),
-      bindings: [ReadingTestQuestionBinding()],
-    ),
-    GetPage(
-      name: readingTestQuestions1Screen,
-      page: () => ReadingTestQuestions1Screen(),
-      bindings: [ReadingTestQuestions1Binding()],
-    ),
-    GetPage(
-      name: speakingTestQuestionScreen,
-      page: () => SpeakingTestQuestionScreen(),
-      bindings: [SpeakingTestQuestionBinding()],
-    ),
-    GetPage(
-      name: speakingTestCheckingScreen,
-      page: () => SpeakingTestCheckingScreen(),
-      bindings: [SpeakingTestCheckingBinding()],
-    ),
-    GetPage(
-      name: listeningTestOngoingScreen,
-      page: () => ListeningTestOngoingScreen(),
-      bindings: [ListeningTestOngoingBinding()],
-    ),
+
     GetPage(
       name: appNavigationScreen,
       page: () => AppNavigationScreen(),

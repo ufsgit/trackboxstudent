@@ -597,8 +597,7 @@ class AndroidLarge7Screen extends GetWidget<AndroidLarge7Controller> {
         return AppRoutes.connectMentorsPage;
       case BottomBarEnum.Mentors:
         return AppRoutes.androidLarge5Page;
-      case BottomBarEnum.Test:
-        return AppRoutes.testTab;
+
       case BottomBarEnum.Profile:
         return AppRoutes.profileScreen;
       default:

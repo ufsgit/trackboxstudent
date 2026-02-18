@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/app_export.dart';
 
-enum BottomBarEnum { Home, Connect, Mentors, Test, Profile, Mycourses }
+enum BottomBarEnum { Home, Connect, Mentors, Profile, Mycourses }
 
 class CustomBottomBar extends StatelessWidget {
   CustomBottomBar({Key? key, this.onChanged}) : super(key: key);

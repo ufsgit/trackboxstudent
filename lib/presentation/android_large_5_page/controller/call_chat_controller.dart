@@ -18,8 +18,7 @@ import 'package:anandhu_s_application4/presentation/android_large_5_page/models/
 import 'package:anandhu_s_application4/presentation/android_large_5_page/models/ongoing_call_model.dart';
 import 'package:anandhu_s_application4/presentation/android_large_5_page/widgets/handle_call_widget.dart';
 import 'package:anandhu_s_application4/presentation/chat_screen/models/student_chat_log_model.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/live_call_screen.dart';
-import 'package:anandhu_s_application4/presentation/exam_details_screen/models/live_class_joining_model.dart';
+
 import 'package:anandhu_s_application4/presentation/home_page/controller/home_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/models/home_model.dart';
 import 'package:anandhu_s_application4/widgets/google_meet.dart';
