@@ -441,6 +441,39 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
     });
   }
 
+  Widget _buildSpeedButton() {
+    return PopupMenuButton(
+      color: Colors.white,
+      iconColor: Colors.white,
+      icon: Container(
+        padding: EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(Icons.speed, color: Colors.white, size: 20),
+      ),
+      itemBuilder: (c) => [
+        PopupMenuItem(
+          onTap: () => _changePlaybackSpeed(0.5),
+          child: Text('0.5x', style: TextStyle(color: Colors.black)),
+        ),
+        PopupMenuItem(
+          onTap: () => _changePlaybackSpeed(1.0),
+          child: Text('1x', style: TextStyle(color: Colors.black)),
+        ),
+        PopupMenuItem(
+          onTap: () => _changePlaybackSpeed(1.5),
+          child: Text('1.5x', style: TextStyle(color: Colors.black)),
+        ),
+        PopupMenuItem(
+          onTap: () => _changePlaybackSpeed(2),
+          child: Text('2x', style: TextStyle(color: Colors.black)),
+        ),
+      ],
+    );
+  }
+
   // Widget _buildExamsTab() {
   //   return FutureBuilder<List<ExamModel>>(
   //     future: examsFuture,
@@ -507,496 +540,476 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: Obx(() {
-          final message = courseContentController.courseContent.value.message;
-          return courseContentController.isLoading.value
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: ColorResources.colorBlue500,
-                  ),
-                )
-              : courseContentController.courseContent.value.contents == null &&
-                      message == null
-                  ? Center(
-                      child: Text('No Documents Found In This Course'),
-                    )
-                  : message != null
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(message),
-                          ),
-                        )
-                      : Container(
-                          width: double.maxFinite,
-                          padding: EdgeInsets.symmetric(vertical: 5.v),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  controller: _scrollController,
-                                  child: Container(
-                                    margin: EdgeInsets.only(bottom: 5.v),
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16.h),
-                                    child: Obx(() {
-                                      return Column(
-                                        children: [
-                                          // FlickVideoPlayer(
-                                          //   flickManager: flickManager,
-                                          //   flickVideoWithControls: FlickSetPlayBack(
-                                          //     speed: 1.5,
-                                          //   ),
-                                          // ),
-                                          if (homeController
-                                                  .selectedCourseCategory
-                                                  .value ==
-                                              'video/mp4')
-                                            Container(
-                                              height: 200,
-                                              child: Stack(
-                                                children: [
-                                                  FlickVideoPlayer(
-                                                      flickManager: flickManager
-
-                                                      // flickVideoWithControls: FlickSetPlayBack(
-                                                      //   speed: 1.5,
-                                                      // ),
-                                                      ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.topRight,
-                                                    child: PopupMenuButton(
-                                                      color: Colors.white,
-                                                      iconColor:
-                                                          Colors.grey.shade600,
-                                                      itemBuilder: (c) => [
-                                                        PopupMenuItem(
-                                                          onTap: () =>
-                                                              _changePlaybackSpeed(
-                                                                  0.5),
-                                                          child: Text(
-                                                            '0.5x',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black),
-                                                          ),
-                                                        ),
-                                                        PopupMenuItem(
-                                                          onTap: () =>
-                                                              _changePlaybackSpeed(
-                                                                  1.0),
-                                                          child: Text(
-                                                            '1x',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black),
-                                                          ),
-                                                        ),
-                                                        PopupMenuItem(
-                                                          onTap: () =>
-                                                              _changePlaybackSpeed(
-                                                                  1.5),
-                                                          child: Text(
-                                                            '1.5x',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black),
-                                                          ),
-                                                        ),
-                                                        PopupMenuItem(
-                                                          onTap: () =>
-                                                              _changePlaybackSpeed(
-                                                                  2),
-                                                          child: Text(
-                                                            '2x',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .black),
-                                                          ),
+      child: WillPopScope(
+        onWillPop: () async {
+          if (flickManager.flickControlManager?.isFullscreen ?? false) {
+            flickManager.flickControlManager?.exitFullscreen();
+            return false;
+          }
+          return true;
+        },
+        child: Scaffold(
+          appBar: _buildAppBar(),
+          body: Obx(() {
+            final message = courseContentController.courseContent.value.message;
+            return courseContentController.isLoading.value
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: ColorResources.colorBlue500,
+                    ),
+                  )
+                : courseContentController.courseContent.value.contents ==
+                            null &&
+                        message == null
+                    ? Center(
+                        child: Text('No Documents Found In This Course'),
+                      )
+                    : message != null
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(message),
+                            ),
+                          )
+                        : Container(
+                            width: double.maxFinite,
+                            padding: EdgeInsets.symmetric(vertical: 5.v),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    controller: _scrollController,
+                                    child: Container(
+                                      margin: EdgeInsets.only(bottom: 5.v),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16.h),
+                                      child: Obx(() {
+                                        return Column(
+                                          children: [
+                                            // FlickVideoPlayer(
+                                            //   flickManager: flickManager,
+                                            //   flickVideoWithControls: FlickSetPlayBack(
+                                            //     speed: 1.5,
+                                            //   ),
+                                            // ),
+                                            if (homeController
+                                                    .selectedCourseCategory
+                                                    .value ==
+                                                'video/mp4')
+                                              Container(
+                                                height: 200,
+                                                child: FlickVideoPlayer(
+                                                  flickManager: flickManager,
+                                                  flickVideoWithControls:
+                                                      FlickVideoWithControls(
+                                                    controls: Stack(
+                                                      children: [
+                                                        FlickPortraitControls(),
+                                                        Positioned(
+                                                          top: 10,
+                                                          right: 10,
+                                                          child:
+                                                              _buildSpeedButton(),
                                                         ),
                                                       ],
                                                     ),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          else if (homeController
-                                                      .selectedCourseCategory
-                                                      .value ==
-                                                  'image/jpeg' ||
-                                              homeController
-                                                      .selectedCourseCategory
-                                                      .value ==
-                                                  'image/png')
-                                            Container(
-                                              height: 200,
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                child: CachedNetworkImage(
-                                                  imageUrl:
-                                                      '${HttpUrls.imgBaseUrl}${homeController.videoURL}',
-                                                  fit: BoxFit.cover,
-                                                  placeholder: (context, url) =>
-                                                      Center(
-                                                          child:
-                                                              CircularProgressIndicator()),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Icon(Icons.error),
-                                                ),
-                                              ),
-                                            )
-                                          // _chewieController != null &&
-                                          //         _chewieController!.videoPlayerController
-                                          //             .value.isInitialized
-                                          //     ? SizedBox(
-                                          //         height: 200,
-                                          //         child:
-                                          //             Chewie(controller: _chewieController!))
-                                          //     : SizedBox(
-                                          //         height: 200,
-                                          //         child: const Center(
-                                          //           child: CircularProgressIndicator(),
-                                          //         ),
-                                          //       )
-                                          else
-                                            Container(
-                                              height: 200,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: AssetImage(
-                                                      'assets/images/OET Thumbnails 1.png'),
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    foregroundColor:
-                                                        Colors.black,
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 37,
-                                                            vertical: 25),
                                                   ),
-                                                  onPressed: () {
-                                                    final currentIndex =
-                                                        homeController
-                                                            .selectedIndex
-                                                            .value;
-                                                    final currentContent =
+                                                  flickVideoWithControlsFullscreen:
+                                                      FlickVideoWithControls(
+                                                    controls: Stack(
+                                                      children: [
+                                                        FlickLandscapeControls(),
+                                                        Positioned(
+                                                          top: 10,
+                                                          right: 50,
+                                                          child:
+                                                              _buildSpeedButton(),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            else if (homeController
+                                                        .selectedCourseCategory
+                                                        .value ==
+                                                    'image/jpeg' ||
+                                                homeController
+                                                        .selectedCourseCategory
+                                                        .value ==
+                                                    'image/png')
+                                              Container(
+                                                height: 200,
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl:
+                                                        '${HttpUrls.imgBaseUrl}${homeController.videoURL}',
+                                                    fit: BoxFit.cover,
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        Center(
+                                                            child:
+                                                                CircularProgressIndicator()),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Icon(Icons.error),
+                                                  ),
+                                                ),
+                                              )
+                                            // _chewieController != null &&
+                                            //         _chewieController!.videoPlayerController
+                                            //             .value.isInitialized
+                                            //     ? SizedBox(
+                                            //         height: 200,
+                                            //         child:
+                                            //             Chewie(controller: _chewieController!))
+                                            //     : SizedBox(
+                                            //         height: 200,
+                                            //         child: const Center(
+                                            //           child: CircularProgressIndicator(),
+                                            //         ),
+                                            //       )
+                                            else
+                                              Container(
+                                                height: 200,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: AssetImage(
+                                                        'assets/images/OET Thumbnails 1.png'),
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      foregroundColor:
+                                                          Colors.black,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 37,
+                                                              vertical: 25),
+                                                    ),
+                                                    onPressed: () {
+                                                      final currentIndex =
+                                                          homeController
+                                                              .selectedIndex
+                                                              .value;
+                                                      final currentContent =
+                                                          courseContentController
+                                                                  .courseContent
+                                                                  .value
+                                                                  .contents?[
+                                                              currentIndex];
+                                                      final exam = (currentContent
+                                                                      ?.exams !=
+                                                                  null &&
+                                                              currentContent!
+                                                                  .exams
+                                                                  .isNotEmpty)
+                                                          ? currentContent
+                                                              .exams[0]
+                                                          : null;
+
+                                                      // Early exit if currentContent is null
+                                                      if (currentContent ==
+                                                          null) {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                              content: Text(
+                                                                  'Content not available.')),
+                                                        );
+                                                        return;
+                                                      }
+
+                                                      bool isPdf = (exam !=
+                                                                  null &&
+                                                              exam.supportingDocumentName
+                                                                  .endsWith(
+                                                                      '.pdf')) ||
+                                                          currentContent
+                                                                  .fileType ==
+                                                              'application/pdf' ||
+                                                          currentContent.file
+                                                              .toString()
+                                                              .endsWith('.pdf');
+                                                      bool isAudio = (exam !=
+                                                                  null &&
+                                                              exam.fileName
+                                                                  .endsWith(
+                                                                      '.mp3')) ||
+                                                          currentContent
+                                                                  .fileType ==
+                                                              'audio/mpeg' ||
+                                                          currentContent.file
+                                                              .toString()
+                                                              .endsWith('.mp3');
+                                                      bool isExamTest =
+                                                          currentContent
+                                                                  .examTest ==
+                                                              1;
+
+                                                      // Check if exam test is locked
+                                                      bool isQuestionUnlocked =
+                                                          exam?.isQuestionUnlocked ==
+                                                              1;
+                                                      bool
+                                                          isQuestionMediaUnlocked =
+                                                          exam?.isQuestionMediaUnlocked ==
+                                                              1;
+                                                      if (isExamTest &&
+                                                          exam != null) {
+                                                        if (!isQuestionUnlocked &&
+                                                            !isQuestionMediaUnlocked) {
+                                                          // Show SnackBar if content is locked
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                                content: Text(
+                                                                    'Access restricted: Unlock content to proceed.')),
+                                                          );
+                                                          return;
+                                                        }
+                                                      }
+
+/////
+                                                      if (isPdf || isAudio) {
+                                                        print("Content ID --- " +
+                                                            currentContent
+                                                                .contentId
+                                                                .toString());
+                                                        print("Course ID --- " +
+                                                            widget.courseId
+                                                                .toString());
+                                                        //update last access
                                                         courseContentController
-                                                                .courseContent
-                                                                .value
-                                                                .contents?[
-                                                            currentIndex];
-                                                    final exam = (currentContent
-                                                                    ?.exams !=
-                                                                null &&
-                                                            currentContent!
-                                                                .exams
-                                                                .isNotEmpty)
-                                                        ? currentContent
-                                                            .exams[0]
-                                                        : null;
-
-                                                    // Early exit if currentContent is null
-                                                    if (currentContent ==
-                                                        null) {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        SnackBar(
-                                                            content: Text(
-                                                                'Content not available.')),
-                                                      );
-                                                      return;
-                                                    }
-
-                                                    bool isPdf = (exam !=
-                                                                null &&
-                                                            exam.supportingDocumentName
-                                                                .endsWith(
-                                                                    '.pdf')) ||
-                                                        currentContent
-                                                                .fileType ==
-                                                            'application/pdf' ||
-                                                        currentContent.file
-                                                            .toString()
-                                                            .endsWith('.pdf');
-                                                    bool isAudio = (exam !=
-                                                                null &&
-                                                            exam.fileName
-                                                                .endsWith(
-                                                                    '.mp3')) ||
-                                                        currentContent
-                                                                .fileType ==
-                                                            'audio/mpeg' ||
-                                                        currentContent.file
-                                                            .toString()
-                                                            .endsWith('.mp3');
-                                                    bool isExamTest =
-                                                        currentContent
-                                                                .examTest ==
-                                                            1;
-
-                                                    // Check if exam test is locked
-                                                    bool isQuestionUnlocked =
-                                                        exam?.isQuestionUnlocked ==
-                                                            1;
-                                                    bool
-                                                        isQuestionMediaUnlocked =
-                                                        exam?.isQuestionMediaUnlocked ==
-                                                            1;
-                                                    if (isExamTest &&
-                                                        exam != null) {
-                                                      if (!isQuestionUnlocked &&
-                                                          !isQuestionMediaUnlocked) {
+                                                            .updatelastaccess(
+                                                                currentContent
+                                                                    .contentId
+                                                                    .toString(),
+                                                                widget.courseId
+                                                                    .toString());
+                                                        Get.to(
+                                                            () => PdfViewerPage(
+                                                                  isAnswerKeyUnlocked:
+                                                                      exam?.isAnswerUnlocked ==
+                                                                              1
+                                                                          ? true
+                                                                          : false,
+                                                                  answerPdf:
+                                                                      exam?.answerKeyPath ??
+                                                                          '',
+                                                                  isExamTest:
+                                                                      currentContent.examTest ==
+                                                                              1
+                                                                          ? true
+                                                                          : false,
+                                                                  isFromCourseScreen:
+                                                                      true,
+                                                                  isMediaUnlocked:
+                                                                      exam?.isQuestionMediaUnlocked ==
+                                                                              1
+                                                                          ? true
+                                                                          : false,
+                                                                  isPdfUnLocked:
+                                                                      exam?.isQuestionUnlocked ==
+                                                                              1
+                                                                          ? true
+                                                                          : false,
+                                                                  answerKey: exam
+                                                                              ?.answerKeyPath !=
+                                                                          null
+                                                                      ? '${HttpUrls.imgBaseUrl}${exam!.answerKeyPath}'
+                                                                      : null,
+                                                                  media: exam
+                                                                      ?.mainQuestion,
+                                                                  fileUrl: (exam !=
+                                                                              null &&
+                                                                          exam.supportingDocumentPath
+                                                                              .isNotEmpty)
+                                                                      ? '${HttpUrls.imgBaseUrl}${exam.supportingDocumentPath}'
+                                                                      : '${HttpUrls.imgBaseUrl}${currentContent.file}',
+                                                                ));
+                                                      } else {
                                                         // Show SnackBar if content is locked
                                                         ScaffoldMessenger.of(
                                                                 context)
                                                             .showSnackBar(
                                                           SnackBar(
                                                               content: Text(
-                                                                  'Access restricted: Unlock content to proceed.')),
+                                                                  'No contents to show')),
                                                         );
-                                                        return;
                                                       }
-                                                    }
+                                                    },
+                                                    child: Text(
+                                                      homeController
+                                                                  .selectedCourseCategory
+                                                                  .value ==
+                                                              'application/pdf'
+                                                          ? 'Open PDF'
+                                                          : 'Start Your Test',
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            SizedBox(height: 20.v),
+                                            Container(
+                                              width: 322.h,
+                                              margin:
+                                                  EdgeInsets.only(right: 5.h),
+                                              child: Text(
+                                                homeController.title
+                                                    .value, // controllerCourseDetailsController
+                                                //         .courseDetails?.courseName ??
+                                                //     '',
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: CustomTextStyles
+                                                    .titleMedium18_1
+                                                    .copyWith(
+                                                  height: 1.50,
+                                                ),
+                                              ),
+                                            ),
+//<<<<<<<<<<<<<<<<<<<<<NEW DESIGN>>>>>>>>>>>>>>>>>>>>>>
+                                            SizedBox(height: 16),
+                                            Divider(),
+                                            SizedBox(height: 16),
 
-/////
-                                                    if (isPdf || isAudio) {
-                                                      print("Content ID --- " +
-                                                          currentContent
-                                                              .contentId
-                                                              .toString());
-                                                      print("Course ID --- " +
-                                                          widget.courseId
-                                                              .toString());
-                                                      //update last access
-                                                      courseContentController
-                                                          .updatelastaccess(
-                                                              currentContent
-                                                                  .contentId
-                                                                  .toString(),
-                                                              widget.courseId
-                                                                  .toString());
-                                                      Get.to(
-                                                          () => PdfViewerPage(
-                                                                isAnswerKeyUnlocked:
-                                                                    exam?.isAnswerUnlocked ==
-                                                                            1
-                                                                        ? true
-                                                                        : false,
-                                                                answerPdf:
-                                                                    exam?.answerKeyPath ??
-                                                                        '',
-                                                                isExamTest:
-                                                                    currentContent.examTest ==
-                                                                            1
-                                                                        ? true
-                                                                        : false,
-                                                                isFromCourseScreen:
-                                                                    true,
-                                                                isMediaUnlocked:
-                                                                    exam?.isQuestionMediaUnlocked ==
-                                                                            1
-                                                                        ? true
-                                                                        : false,
-                                                                isPdfUnLocked:
-                                                                    exam?.isQuestionUnlocked ==
-                                                                            1
-                                                                        ? true
-                                                                        : false,
-                                                                answerKey:
-                                                                    exam?.answerKeyPath !=
-                                                                            null
-                                                                        ? '${HttpUrls.imgBaseUrl}${exam!.answerKeyPath}'
-                                                                        : null,
-                                                                media: exam
-                                                                    ?.mainQuestion,
-                                                                fileUrl: (exam !=
-                                                                            null &&
-                                                                        exam.supportingDocumentPath
-                                                                            .isNotEmpty)
-                                                                    ? '${HttpUrls.imgBaseUrl}${exam.supportingDocumentPath}'
-                                                                    : '${HttpUrls.imgBaseUrl}${currentContent.file}',
-                                                              ));
-                                                    } else {
-                                                      // Show SnackBar if content is locked
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        SnackBar(
-                                                            content: Text(
-                                                                'No contents to show')),
-                                                      );
-                                                    }
-                                                  },
-                                                  child: Text(
-                                                    homeController
-                                                                .selectedCourseCategory
-                                                                .value ==
-                                                            'application/pdf'
-                                                        ? 'Open PDF'
-                                                        : 'Start Your Test',
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w700),
+                                            CourseCurriculamWidget(
+                                                toggleVideo:
+                                                    updateActiveContent,
+                                                modules: courseContentController
+                                                    .courseContent
+                                                    .value
+                                                    .contents,
+                                                scrollController:
+                                                    _scrollController,
+                                                controllerCourseDetailsController:
+                                                    homeController),
+
+                                            SizedBox(height: 3.v),
+                                            SizedBox(
+                                              width: 323.h,
+                                              child: Text(
+                                                controllerCourseDetailsController
+                                                        .courseDetails
+                                                        ?.description ??
+                                                    '',
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: CustomTextStyles
+                                                    .bodyMediumBluegray500_1
+                                                    .copyWith(
+                                                  height: 1.43,
+                                                ),
+                                              ),
+                                            ),
+                                            // SizedBox(height: 15.v),
+                                            // _buildCourseRatingRow(),
+                                            // SizedBox(height: 18.v),
+                                            // Divider(),
+                                            // SizedBox(height: 20.v),
+                                            // _buildLearningOutcomesColumn(),
+                                            // SizedBox(height: 17.v),
+                                            // Divider(),
+                                            // SizedBox(height: 18.v),
+                                            // Align(
+                                            //   alignment: Alignment.centerLeft,
+                                            //   child: Text(
+                                            //     "lbl_course_overview".tr,
+                                            //     style: theme.textTheme.titleSmall,
+                                            //   ),
+                                            // ),
+                                            // SizedBox(height: 10.v),
+                                            // _buildCourseOverviewRow(),
+                                            // SizedBox(height: 18.v),
+                                            // Divider(),
+                                            // SizedBox(height: 20.v),
+                                            // Align(
+                                            //   alignment: Alignment.centerLeft,
+                                            //   child: Text(
+                                            //     "lbl_summary".tr,
+                                            //     style: theme.textTheme.titleSmall,
+                                            //   ),
+                                            // ),
+                                            // SizedBox(height: 6.v),
+                                            // _buildChapterColumn3(setState),
+                                            // SizedBox(height: 12.v),
+                                            // Align(
+                                            //   alignment: Alignment.centerLeft,
+                                            //   child: Text(
+                                            //     "lbl_reviews".tr,
+                                            //     style: theme.textTheme.titleSmall,
+                                            //   ),
+                                            // ),
+                                            SizedBox(height: 12.v),
+                                            Column(
+                                              children: List.generate(
+                                                controllerCourseDetailsController
+                                                    .courseReviewList.length,
+                                                (index) => Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 15.v),
+                                                  child: Column(
+                                                    children: [
+                                                      _buildReviewRow(
+                                                          reviewData:
+                                                              controllerCourseDetailsController
+                                                                      .courseReviewList[
+                                                                  index]),
+                                                      SizedBox(height: 17.v),
+                                                      Container(
+                                                        width: 320.h,
+                                                        margin: EdgeInsets.only(
+                                                            right: 6.h),
+                                                        child: Text(
+                                                          controllerCourseDetailsController
+                                                              .courseReviewList[
+                                                                  index]
+                                                              .comments,
+                                                          maxLines: 5,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: theme.textTheme
+                                                              .bodyMedium!
+                                                              .copyWith(
+                                                            height: 1.43,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          SizedBox(height: 20.v),
-                                          Container(
-                                            width: 322.h,
-                                            margin: EdgeInsets.only(right: 5.h),
-                                            child: Text(
-                                              homeController.title
-                                                  .value, // controllerCourseDetailsController
-                                              //         .courseDetails?.courseName ??
-                                              //     '',
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: CustomTextStyles
-                                                  .titleMedium18_1
-                                                  .copyWith(
-                                                height: 1.50,
-                                              ),
-                                            ),
-                                          ),
-//<<<<<<<<<<<<<<<<<<<<<NEW DESIGN>>>>>>>>>>>>>>>>>>>>>>
-                                          SizedBox(height: 16),
-                                          Divider(),
-                                          SizedBox(height: 16),
-
-                                          CourseCurriculamWidget(
-                                              toggleVideo: updateActiveContent,
-                                              modules: courseContentController
-                                                  .courseContent.value.contents,
-                                              scrollController:
-                                                  _scrollController,
-                                              controllerCourseDetailsController:
-                                                  homeController),
-
-                                          SizedBox(height: 3.v),
-                                          SizedBox(
-                                            width: 323.h,
-                                            child: Text(
-                                              controllerCourseDetailsController
-                                                      .courseDetails
-                                                      ?.description ??
-                                                  '',
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: CustomTextStyles
-                                                  .bodyMediumBluegray500_1
-                                                  .copyWith(
-                                                height: 1.43,
-                                              ),
-                                            ),
-                                          ),
-                                          // SizedBox(height: 15.v),
-                                          // _buildCourseRatingRow(),
-                                          // SizedBox(height: 18.v),
-                                          // Divider(),
-                                          // SizedBox(height: 20.v),
-                                          // _buildLearningOutcomesColumn(),
-                                          // SizedBox(height: 17.v),
-                                          // Divider(),
-                                          // SizedBox(height: 18.v),
-                                          // Align(
-                                          //   alignment: Alignment.centerLeft,
-                                          //   child: Text(
-                                          //     "lbl_course_overview".tr,
-                                          //     style: theme.textTheme.titleSmall,
-                                          //   ),
-                                          // ),
-                                          // SizedBox(height: 10.v),
-                                          // _buildCourseOverviewRow(),
-                                          // SizedBox(height: 18.v),
-                                          // Divider(),
-                                          // SizedBox(height: 20.v),
-                                          // Align(
-                                          //   alignment: Alignment.centerLeft,
-                                          //   child: Text(
-                                          //     "lbl_summary".tr,
-                                          //     style: theme.textTheme.titleSmall,
-                                          //   ),
-                                          // ),
-                                          // SizedBox(height: 6.v),
-                                          // _buildChapterColumn3(setState),
-                                          // SizedBox(height: 12.v),
-                                          // Align(
-                                          //   alignment: Alignment.centerLeft,
-                                          //   child: Text(
-                                          //     "lbl_reviews".tr,
-                                          //     style: theme.textTheme.titleSmall,
-                                          //   ),
-                                          // ),
-                                          SizedBox(height: 12.v),
-                                          Column(
-                                            children: List.generate(
-                                              controllerCourseDetailsController
-                                                  .courseReviewList.length,
-                                              (index) => Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 15.v),
-                                                child: Column(
-                                                  children: [
-                                                    _buildReviewRow(
-                                                        reviewData:
-                                                            controllerCourseDetailsController
-                                                                    .courseReviewList[
-                                                                index]),
-                                                    SizedBox(height: 17.v),
-                                                    Container(
-                                                      width: 320.h,
-                                                      margin: EdgeInsets.only(
-                                                          right: 6.h),
-                                                      child: Text(
-                                                        controllerCourseDetailsController
-                                                            .courseReviewList[
-                                                                index]
-                                                            .comments,
-                                                        maxLines: 5,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: theme.textTheme
-                                                            .bodyMedium!
-                                                            .copyWith(
-                                                          height: 1.43,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }),
+                                          ],
+                                        );
+                                      }),
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-        }),
-        // bottomNavigationBar: _buildTotalPriceRow(),
+                                )
+                              ],
+                            ),
+                          );
+          }),
+          // bottomNavigationBar: _buildTotalPriceRow(),
+        ),
       ),
     );
   }

@@ -24,7 +24,7 @@ dependencies:
   flutter_animate: ^4.5.0
   visibility_detector: ^0.4.0+2
   flutter_image_compress: ^2.3.0
-  google_fonts: 
+  google_fonts: ^8.0.2 
   country_code_picker: 
   country_picker: 
   pinput: 
