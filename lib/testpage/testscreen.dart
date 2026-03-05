@@ -195,48 +195,52 @@ class _TestScreenState extends State<TestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Online Test",
-          style: theme.textTheme.titleMedium,
-        ),
-        centerTitle: true,
-        actions: [
-          if (!isLoading && questions.isNotEmpty)
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 16.h),
-              padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.v),
-              decoration: BoxDecoration(
-                color: _timeLeft < 60
-                    ? Colors.red.withOpacity(0.1)
-                    : appTheme.blue50,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _timeLeft < 60 ? Colors.red : appTheme.blue800,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.timer_outlined,
-                    size: 16,
+    return WillPopScope(
+      onWillPop: () async => false, // Prevent going back without submitting
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false, // Remove default back button
+          title: Text(
+            "Online Test",
+            style: theme.textTheme.titleMedium,
+          ),
+          centerTitle: true,
+          actions: [
+            if (!isLoading && questions.isNotEmpty)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.v),
+                decoration: BoxDecoration(
+                  color: _timeLeft < 60
+                      ? Colors.red.withOpacity(0.1)
+                      : appTheme.blue50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
                     color: _timeLeft < 60 ? Colors.red : appTheme.blue800,
                   ),
-                  SizedBox(width: 4.h),
-                  Text(
-                    _formattedTime,
-                    style: theme.textTheme.labelLarge?.copyWith(
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      size: 16,
                       color: _timeLeft < 60 ? Colors.red : appTheme.blue800,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 4.h),
+                    Text(
+                      _formattedTime,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: _timeLeft < 60 ? Colors.red : appTheme.blue800,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
+        body: _buildBody(),
       ),
-      body: _buildBody(),
     );
   }
 

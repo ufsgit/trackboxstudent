@@ -1,9 +1,7 @@
 class HttpUrls {
-  // static String baseUrl = 'http://DESKTOP-IK6ME8M:3520';
-  // static String baseUrl = 'https://happyenglishapi.ufstech.co.in';
-  static String baseUrl = 'https://rw4vb3zj-3515.inc1.devtunnels.ms/';
-  //static String baseUrl = 'https://lmsdemoapi.ufstech.co.in/'; //og
-  // static String baseUrl = 'https://funny-nicely-rodent.ngrok-free.app';
+  static String baseUrl = 'https://happyenglishapi.ufstech.co.in';
+  // static String baseUrl = 'https://rw4vb3zj-3515.inc1.devtunnels.ms/';
+
   static String chatBaseUrl = baseUrl + "/chatbot";
   static String imgBaseUrl =
       'https://pub-11714a99f3bd420ca95f23dda2af714b.r2.dev/';

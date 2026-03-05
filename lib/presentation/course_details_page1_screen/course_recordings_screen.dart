@@ -122,35 +122,36 @@ class _CourseRecordingsScreenState extends State<CourseRecordingsScreen>
   }
 
   Widget _buildSpeedButton() {
-    return PopupMenuButton(
-      color: Colors.white,
-      iconColor: Colors.white,
-      icon: Container(
-        padding: EdgeInsets.all(6),
+    return GestureDetector(
+      onTap: () {
+        double newSpeed = _playbackSpeed == 0.5
+            ? 1.0
+            : (_playbackSpeed == 1.0
+                ? 1.5
+                : (_playbackSpeed == 1.5 ? 2.0 : 0.5));
+        _changePlaybackSpeed(newSpeed);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.black54,
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Icon(Icons.speed, color: Colors.white, size: 20),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.speed, color: Colors.white, size: 16),
+            SizedBox(width: 4),
+            Text(
+              '${_playbackSpeed}x',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13),
+            ),
+          ],
+        ),
       ),
-      itemBuilder: (c) => [
-        PopupMenuItem(
-          onTap: () => _changePlaybackSpeed(0.5),
-          child: Text('0.5x', style: TextStyle(color: Colors.black)),
-        ),
-        PopupMenuItem(
-          onTap: () => _changePlaybackSpeed(1.0),
-          child: Text('1x', style: TextStyle(color: Colors.black)),
-        ),
-        PopupMenuItem(
-          onTap: () => _changePlaybackSpeed(1.5),
-          child: Text('1.5x', style: TextStyle(color: Colors.black)),
-        ),
-        PopupMenuItem(
-          onTap: () => _changePlaybackSpeed(2),
-          child: Text('2x', style: TextStyle(color: Colors.black)),
-        ),
-      ],
     );
   }
 
