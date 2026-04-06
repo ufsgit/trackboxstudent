@@ -17,11 +17,11 @@ class _RulesScreenState extends State<RulesScreen> {
   @override
   void initState() {
     super.initState();
-    _disableSecureScreen();
+    _enableSecureScreen();
   }
 
-  Future<void> _disableSecureScreen() async {
-    await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+  Future<void> _enableSecureScreen() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
   }
 
   @override
@@ -106,16 +106,20 @@ class _RulesScreenState extends State<RulesScreen> {
                     _ruleText(
                         "Each question has multiple options to choose from"),
                     _ruleText("Select only one answer per question"),
+                    _ruleText("Taking screenshots and screen recording is blocked"),
+                    _ruleText("The back button is disabled during the exam"),
                     _ruleText(
                         "You can review and change answers before submitting"),
                     _ruleText("No negative marking - attempt all questions"),
                     _ruleText("Exam will auto-submit when time expires"),
                     _ruleText(
-                        "Taking screenshots is disabled during the exam"),
-                    _ruleText(
                         "Exam will auto-submit if you leave or minimize the app"),
                     _ruleText("Do not close or refresh the app during the exam"),
                     _ruleText("Ensure stable internet connection throughout"),
+                    _ruleText(
+                        "Clicking the home or recent apps button will automatically submit the exam"),
+                    _ruleText(
+                        "Once you click 'Submit', your final score will be displayed immediately"),
                   ],
                 ),
               ),
