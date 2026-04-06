@@ -2,11 +2,27 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 import 'exam_modal.dart';
 import 'testscreen.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
-class RulesScreen extends StatelessWidget {
+class RulesScreen extends StatefulWidget {
   final ExamModel exam;
 
   const RulesScreen({super.key, required this.exam});
+
+  @override
+  State<RulesScreen> createState() => _RulesScreenState();
+}
+
+class _RulesScreenState extends State<RulesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _disableSecureScreen();
+  }
+
+  Future<void> _disableSecureScreen() async {
+    await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +65,12 @@ class RulesScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _infoRow("Total Questions", exam.questions.toString()),
+                    _infoRow("Total Questions", widget.exam.questions.toString()),
                     Divider(height: 20.v),
-                    _infoRow("Duration", "${exam.duration} minutes"),
+                    _infoRow("Duration", "${widget.exam.duration} minutes"),
                     Divider(height: 20.v),
                     _infoRow(
-                        "Passing Score", "${exam.passCount} correct answers"),
+                        "Passing Score", "${widget.exam.passCount} correct answers"),
                   ],
                 ),
               ),
@@ -95,7 +111,10 @@ class RulesScreen extends StatelessWidget {
                     _ruleText("No negative marking - attempt all questions"),
                     _ruleText("Exam will auto-submit when time expires"),
                     _ruleText(
-                        "Do not close or refresh the app during the exam"),
+                        "Taking screenshots is disabled during the exam"),
+                    _ruleText(
+                        "Exam will auto-submit if you leave or minimize the app"),
+                    _ruleText("Do not close or refresh the app during the exam"),
                     _ruleText("Ensure stable internet connection throughout"),
                   ],
                 ),
@@ -156,10 +175,10 @@ class RulesScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => TestScreen(
-                      courseExamId: exam.courseExamId, // ✅ FIXED
-                      duration: exam.duration,
-                      courseId: exam.courseId,
-                      passMark: exam.passCount,
+                      courseExamId: widget.exam.courseExamId, // ✅ FIXED
+                      duration: widget.exam.duration,
+                      courseId: widget.exam.courseId,
+                      passMark: widget.exam.passCount,
                     ),
                   ),
                 );

@@ -6,6 +6,7 @@ import 'resultscreen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/exam_result_controller.dart';
 import 'package:get/get.dart';
 import 'examservieses.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 class TestScreen extends StatefulWidget {
   final int courseExamId; // ✅ FIXED (INT)
@@ -25,7 +26,7 @@ class TestScreen extends StatefulWidget {
   State<TestScreen> createState() => _TestScreenState();
 }
 
-class _TestScreenState extends State<TestScreen> {
+class _TestScreenState extends State<TestScreen> with WidgetsBindingObserver {
   int currentIndex = 0;
   // int selectedAnswer = -1; // Removed in favor of userAnswers
   Map<int, int> userAnswers = {}; // {questionIndex: selectedOptionIndex}
@@ -34,6 +35,7 @@ class _TestScreenState extends State<TestScreen> {
   List<QuestionModel> questions = [];
   bool isLoading = true;
   String? errorMessage;
+  bool _isSubmitting = false;
 
   Timer? _timer;
   int _timeLeft = 0; // in seconds
@@ -43,11 +45,33 @@ class _TestScreenState extends State<TestScreen> {
     super.initState();
     _timeLeft = widget.duration * 60;
     _fetchQuestions();
+    _enableSecureScreen();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<void> _enableSecureScreen() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  Future<void> _disableSecureScreen() async {
+    await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      // If user minimized the app or switched tasks
+      if (!_isSubmitting && !isLoading) {
+        _submitExam();
+      }
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _disableSecureScreen();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -90,6 +114,10 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   Future<void> _submitExam() async {
+    if (_isSubmitting) return;
+    setState(() {
+      _isSubmitting = true;
+    });
     _timer?.cancel();
 
     // Show loading dialog

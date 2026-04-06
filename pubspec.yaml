@@ -36,6 +36,7 @@ dependencies:
   flutter_gemini: ^2.0.4
   flutter_local_notifications: any
   carousel_slider: ^5.0.0
+  flutter_windowmanager: ^0.2.0
   
 
 

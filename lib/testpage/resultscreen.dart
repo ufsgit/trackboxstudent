@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 class ResultScreen extends StatefulWidget {
   final int score;
@@ -22,6 +23,16 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _disableSecureScreen();
+  }
+
+  Future<void> _disableSecureScreen() async {
+    await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
   @override
   Widget build(BuildContext context) {
     final double percentage = (widget.score / widget.total) * 100;
