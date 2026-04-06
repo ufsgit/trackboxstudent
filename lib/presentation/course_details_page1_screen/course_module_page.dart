@@ -102,14 +102,14 @@
 // }
 
 import 'package:anandhu_s_application4/core/colors_res.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/mock_test_module_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/course_details_page1_controller.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/module_widget.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/day_by_module_screen.dart';
-import 'package:anandhu_s_application4/presentation/course_details_page1_screen/course_recordings_screen.dart';
-import 'package:lottie/lottie.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/course_enrol_controller.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/models/batch_day_model.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/widgets/grid_view_day_widget.dart';
+import 'package:anandhu_s_application4/presentation/course_details_page1_screen/day_category_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CourseModulePage extends StatefulWidget {
   final List<String> badgeIcons;
@@ -133,6 +133,7 @@ class CourseModulePage extends StatefulWidget {
 
 class _CourseModulePageState extends State<CourseModulePage> {
   final CourseModuleController controller = Get.put(CourseModuleController());
+  final CourseEnrolController enrolController = Get.find();
   int? selectedIndex;
 
   @override
@@ -141,7 +142,33 @@ class _CourseModulePageState extends State<CourseModulePage> {
     controller.getCoursesModules(courseId: widget.courseId.toString());
   }
 
-//on module tap function
+
+  //on day tap function
+  void _onDayTap(BuildContext context, BatchWithDaysModel day,
+      {required String courseId, required String moduleId}) {
+    final isLocked = widget.IsEnrollCourse == 0;
+
+    if (isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please purchase the course to see full contents.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      Get.to(() => DayCategoryScreen(
+            isTab: false,
+            isExam: false,
+            isLibrary: widget.isLibrary,
+            dayId: day.daysId.toString(),
+            courseId: courseId,
+            moduleId: moduleId,
+            title: day.dayName,
+          ));
+    }
+  }
+
+/*
   void _onModuleTap(BuildContext context, int index,
       {required String courseId,
       required String moduleId,
@@ -149,77 +176,68 @@ class _CourseModulePageState extends State<CourseModulePage> {
     setState(() {
       selectedIndex = index;
     });
-    // final filteredModules = !widget.isLibrary
-    //     ? controller.courseModulesList
-    //         .where((module) => module.moduleName != 'Running Materials')
-    //         .toList()
-    //     : controller.courseModulesList
-    //         .where((module) =>
-    //             module.moduleName != 'Advance' &&
-    //             module.moduleName != 'Exam' &&
-    //             module.moduleName != 'Mock Exam')
-    // .toList();
+    
     if (index < controller.courseModulesList.length) {
-      final module = controller.courseModulesList[index];
-      final isLocked =
-          widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
+      // final module = controller.courseModulesList[index];
+      // final isLocked =
+      //     widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
 
-      if (isLocked) {
-        if (module.isStudentModuleLocked == 1) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('This module is locked'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Please purchase the course to see full contents.'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      } else {
-        Get.to(() => DayByModuleScreen(
-              courseId: courseId,
-              moduleId: moduleId,
-              appBarTitle: title,
-              isLibrary: widget.isLibrary,
-            ));
-      }
-    } else if (index == controller.courseModulesList.length) {
-      if (widget.indexx == 1) {
-        if (widget.IsEnrollCourse == 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Please purchase the course to see full contents.'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        } else {
-          Get.to(() =>
-              CourseRecordingsScreen(courseId: widget.courseId.toString()));
-        }
-      } else if (widget.indexx == 0) {
-        final isLocked = widget.IsEnrollCourse == 0;
-        if (isLocked) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Please purchase the course to see full contents.'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        } else {
-          Get.to(() => MockTestModuleScreen(
+      // if (isLocked) {
+      //   if (module.isStudentModuleLocked == 1) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('This module is locked'),
+      //         duration: Duration(seconds: 2),
+      //       ),
+      //     );
+      //   } else {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text('Please purchase the course to see full contents.'),
+      //         duration: Duration(seconds: 2),
+      //       ),
+      //     );
+      //   }
+      // } else {
+      //   Get.to(() => DayByModuleScreen(
+      //         courseId: courseId,
+      //         moduleId: moduleId,
+      //         appBarTitle: title,
+      //         isLibrary: widget.isLibrary,
+      //       ));
+      // }
+    } else {
+       // Logic for Recordings/Mock Test
+       if (widget.indexx == 1) {
+          if (widget.IsEnrollCourse == 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please purchase the course to see full contents.'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          } else {
+            Get.to(() => CourseRecordingsScreen(courseId: widget.courseId.toString()));
+          }
+       } else if (widget.indexx == 0) {
+          if (widget.IsEnrollCourse == 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please purchase the course to see full contents.'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          } else {
+            Get.to(() => MockTestModuleScreen(
                 badgeIcons: widget.badgeIcons,
                 courseId: widget.courseId,
                 IsEnrollCourse: widget.IsEnrollCourse,
               ));
-        }
-      }
+          }
+       }
     }
   }
+*/
 
   Widget build(BuildContext context) {
     return Obx(() {
@@ -230,80 +248,81 @@ class _CourseModulePageState extends State<CourseModulePage> {
           ),
         );
       }
-      // final filteredModules = widget.isLibrary
-      //     ? controller.courseModulesList
-      //         .where((module) => module.moduleName != 'Running Materials')
-      //         .toList()
-      //     : controller.courseModulesList
-      //         .where((module) =>
-      //             module.moduleName != 'Advance' &&
-      //             module.moduleName != 'Exam' &&
-      //             module.moduleName != 'Mock Exam')
-      //         .toList();
 
-      final totalItemCount = controller.courseModulesList.length + 1;
+/*
+      // Old Module Grid Logic (Commented Out)
+      // final totalItemCount = controller.courseModulesList.length + 1;
+      // return GridView.builder(
+      //   physics: NeverScrollableScrollPhysics(),
+      //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //     crossAxisCount: 2,
+      //     crossAxisSpacing: 8.0,
+      //     mainAxisSpacing: 8.0,
+      //     mainAxisExtent: 120,
+      //   ),
+      //   itemCount: totalItemCount,
+      //   itemBuilder: (context, index) {
+      //     if (index < controller.courseModulesList.length) {
+      //       final badgeIcon = index < widget.badgeIcons.length
+      //           ? widget.badgeIcons[index]
+      //           : 'assets/images/Bronze.png';
 
-      return GridView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-          mainAxisExtent: 120,
+      //       final module = controller.courseModulesList[index];
+      //       final isLocked =
+      //           widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
+      //       final isSelected = selectedIndex == index;
+
+      //       return ModuleWidget(
+      //         isLocked: isLocked,
+      //         isSelected: isSelected,
+      //         onTap: () => _onModuleTap(context, index,
+      //             moduleId: module.moduleId.toString(),
+      //             courseId: widget.courseId.toString(),
+      //             title: module.moduleName),
+      //         badgeIcon: badgeIcon,
+      //         moduleName: module.moduleName,
+      //       );
+      //     }
+      //     return SizedBox.shrink();
+      //   },
+      // );
+*/
+
+      final moduleId = controller.courseModulesList[0].moduleId.toString();
+      
+      // Auto-fetch days if list is empty for the first module
+      if (enrolController.batchDaysList.isEmpty && !enrolController.isLoading.value) {
+        enrolController.getBatchWithDays(widget.courseId.toString(), moduleId);
+      }
+
+      if (enrolController.isLoading.value) {
+        return Center(
+          child: CircularProgressIndicator(
+            color: ColorResources.colorBlue500,
+          ),
+        );
+      }
+
+      if (enrolController.batchDaysList.isEmpty) {
+         return Center(
+           child: Text(
+             'No days available',
+             style: GoogleFonts.plusJakartaSans(
+               fontSize: 16,
+               fontWeight: FontWeight.w500,
+             ),
+           ),
+         );
+      }
+
+      return RefreshIndicator(
+        onRefresh: () => enrolController.getBatchWithDays(widget.courseId.toString(), moduleId),
+        child: GridViewDayWidget(
+          batchDays: enrolController.batchDaysList,
+          onDayTapped: (day) => _onDayTap(context, day,
+              courseId: widget.courseId.toString(),
+              moduleId: moduleId),
         ),
-        itemCount: totalItemCount,
-        itemBuilder: (context, index) {
-          if (index < controller.courseModulesList.length) {
-            final badgeIcon = index < widget.badgeIcons.length
-                ? widget.badgeIcons[index]
-                : 'assets/images/Bronze.png';
-
-            final module = controller.courseModulesList[index];
-            final isLocked =
-                widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
-            final isSelected = selectedIndex == index;
-
-            return ModuleWidget(
-              isLocked: isLocked,
-              isSelected: isSelected,
-              onTap: () => _onModuleTap(context, index,
-                  moduleId: module.moduleId.toString(),
-                  courseId: widget.courseId.toString(),
-                  title: module.moduleName),
-              badgeIcon: badgeIcon,
-              moduleName: module.moduleName,
-            );
-          } else if (index == controller.courseModulesList.length) {
-            final isSelected = selectedIndex == index;
-            final isLocked = widget.IsEnrollCourse == 0;
-
-            // if (widget.indexx == 1) {
-            //   return ModuleWidget(
-            //     isLocked: isLocked,
-            //     isSelected: isSelected,
-            //     onTap: () => _onModuleTap(context, index,
-            //         moduleId: '',
-            //         courseId: widget.courseId.toString(),
-            //         title: 'Recordings'),
-            //     badgeIcon: 'assets/images/time_loader.png',
-            //     moduleName: 'Recordings',
-            //   );
-            // } else if (widget.indexx == 0) {
-            //   return SizedBox();
-            //   // return ModuleWidget(
-            //   //   isLocked: isLocked,
-            //   //   isSelected: isSelected,
-            //   //   onTap: () => _onModuleTap(context, index,
-            //   //       moduleId: '',
-            //   //       courseId: widget.courseId.toString(),
-            //   //       title: 'Mock Test'),
-            //   //   badgeIcon: 'assets/images/EmptyState (1).png',
-            //   //   moduleName: 'Mock Test',
-            //   // );
-            // }
-          }
-          return SizedBox.shrink();
-        },
       );
     });
   }
