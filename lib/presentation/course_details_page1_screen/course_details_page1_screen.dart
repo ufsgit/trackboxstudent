@@ -214,32 +214,35 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
     super.dispose();
   }
 
-  /// Track which seconds of video have been watched
+  /// Track which seconds of video have been watched (skip-resistant)
   void _trackVideoProgress() {
     final videoPlayerController =
         flickManager.flickVideoManager?.videoPlayerController;
     if (videoPlayerController == null ||
         !videoPlayerController.value.isInitialized) return;
 
+    final totalDuration = videoPlayerController.value.duration;
+    // Guard: skip if duration is not yet known
+    if (totalDuration.inSeconds == 0) return;
+
     final currentPosition = videoPlayerController.value.position;
     final currentSecond = currentPosition.inSeconds;
+    final diff = (currentPosition - _lastPosition).inSeconds.abs();
 
-    // Only track forward progress (not seeking backward)
-    if (currentPosition >= _lastPosition) {
+    // Only count as real watch time if the position advanced naturally
+    // (not a large seek jump — threshold: 3 seconds)
+    if (currentPosition >= _lastPosition && diff <= 3) {
       _watchedSegments.add(currentSecond);
     }
 
     _lastPosition = currentPosition;
 
-    // Check if video ended or played enough
-    if (currentPosition >=
-        videoPlayerController.value.duration - Duration(seconds: 1)) {
+    // Submit when video finishes or periodically every 5 real seconds
+    final nearEnd = currentPosition >= totalDuration - const Duration(seconds: 2);
+    if (nearEnd) {
       _submitAttendanceIfNeeded();
-    } else {
-      // Check periodically (every 5 seconds of play time roughly)
-      if (_watchedSegments.length % 5 == 0) {
-        _submitAttendanceIfNeeded();
-      }
+    } else if (_watchedSegments.length % 5 == 0 && _watchedSegments.isNotEmpty) {
+      _submitAttendanceIfNeeded();
     }
   }
 
@@ -254,33 +257,47 @@ class _CourseDetailsPage1ScreenState extends State<CourseDetailsPage1Screen>
         !videoPlayerController.value.isInitialized) return;
 
     final totalDuration = videoPlayerController.value.duration.inSeconds;
+    // Guard against division by zero
     if (totalDuration == 0) return;
 
     final watchedDuration = _watchedSegments.length;
     final watchPercentage = (watchedDuration / totalDuration) * 100;
 
+    print('🎥 Watch progress: ${watchPercentage.toStringAsFixed(1)}% '
+        '($watchedDuration/$totalDuration seconds)');
+
     if (watchPercentage >= ATTENDANCE_THRESHOLD) {
       _hasSubmittedAttendance = true;
+      print('✅ Attendance threshold met — submitting...');
 
-      // We need to ensure VideoAttendanceController is available
-      final attendanceController = Get.find<VideoAttendanceController>();
-      final success = await attendanceController.saveVideoAttendance(
-        courseId: int.parse(widget.courseId!),
-        contentId: _currentContentId!,
-        contentTitle: _currentContentTitle ?? 'Video Content',
-        watchDurationSeconds: watchedDuration,
-        totalDurationSeconds: totalDuration,
-      );
+      try {
+        final attendanceCtrl = Get.find<VideoAttendanceController>();
+        final success = await attendanceCtrl.saveVideoAttendance(
+          courseId: int.parse(widget.courseId!),
+          contentId: _currentContentId!,
+          contentTitle: _currentContentTitle ?? 'Video Content',
+          watchDurationSeconds: watchedDuration,
+          totalDurationSeconds: totalDuration,
+        );
 
-      if (success) {
-        // Get.snackbar(
-        //   'Attendance Marked',
-        //   'Attendance recorded for "${_currentContentTitle}"',
-        //   snackPosition: SnackPosition.BOTTOM,
-        //   backgroundColor: Colors.green.withOpacity(0.8),
-        //   colorText: Colors.white,
-        //   duration: Duration(seconds: 3),
-        // );
+        if (success) {
+          print('✅ Attendance marked successfully!');
+          if (Get.context != null) {
+            ScaffoldMessenger.of(Get.context!).showSnackBar(
+              const SnackBar(
+                content: Text('Attendance marked ✓'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } else {
+          print('❌ Attendance API returned failure — will retry');
+          _hasSubmittedAttendance = false;
+        }
+      } catch (e) {
+        print('❌ Exception while submitting attendance: $e');
+        _hasSubmittedAttendance = false;
       }
     }
   }

@@ -28,7 +28,8 @@ class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
   Set<int> _watchedSegments = {};
   Duration _lastPosition = Duration.zero;
   bool _hasSubmittedAttendance = false;
-  static const double ATTENDANCE_THRESHOLD = 1.0; // Mark immediate attendance
+  /// Attendance fires after watching at least 1% of the video
+  static const double ATTENDANCE_THRESHOLD = 1.0;
 
   @override
   void initState() {
@@ -39,27 +40,35 @@ class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
   @override
   void dispose() {
     widget.controller.removeListener(_trackVideoProgress);
-    _submitAttendanceIfNeeded(); // Submit on exit
+    // NOTE: Do NOT await async calls in dispose — attendance is handled
+    // via video-end listener to ensure the HTTP call completes properly.
     super.dispose();
   }
 
-  /// Track which seconds of video have been watched
+  /// Track which seconds of video have been watched (skip-resistant)
   void _trackVideoProgress() {
     if (!widget.controller.value.isInitialized) return;
 
     final currentPosition = widget.controller.value.position;
-    final currentSecond = currentPosition.inSeconds;
+    final totalDuration = widget.controller.value.duration;
 
-    // Only track forward progress (not seeking backward)
-    if (currentPosition >= _lastPosition) {
+    // Guard: skip if duration is not yet known
+    if (totalDuration.inSeconds == 0) return;
+
+    final currentSecond = currentPosition.inSeconds;
+    final diff = (currentPosition - _lastPosition).inSeconds.abs();
+
+    // Only count as real watch time if the position advanced naturally
+    // (not a large seek jump — threshold: 3 seconds)
+    if (currentPosition >= _lastPosition && diff <= 3) {
       _watchedSegments.add(currentSecond);
     }
 
     _lastPosition = currentPosition;
 
-    // Check if video ended
-    if (currentPosition >=
-        widget.controller.value.duration - Duration(seconds: 1)) {
+    // Submit when video finishes (within last 2 seconds)
+    final nearEnd = currentPosition >= totalDuration - const Duration(seconds: 2);
+    if (nearEnd || !widget.controller.value.isPlaying && currentSecond > 0) {
       _submitAttendanceIfNeeded();
     }
   }
@@ -70,28 +79,49 @@ class _PlayingCourseScreenState extends State<PlayingCourseScreen> {
     if (widget.courseId == null || widget.contentId == null) return;
 
     final totalDuration = widget.controller.value.duration.inSeconds;
+
+    // Guard against division by zero
+    if (totalDuration == 0) return;
+
     final watchedDuration = _watchedSegments.length;
     final watchPercentage = (watchedDuration / totalDuration) * 100;
 
+    print('🎥 Watch progress: ${watchPercentage.toStringAsFixed(1)}% '
+        '($watchedDuration/$totalDuration seconds)');
+
     if (watchPercentage >= ATTENDANCE_THRESHOLD) {
       _hasSubmittedAttendance = true;
+      print('✅ Attendance threshold met — submitting attendance...');
 
-      final controller = Get.find<VideoAttendanceController>();
-      final success = await controller.saveVideoAttendance(
-        courseId: widget.courseId!,
-        contentId: widget.contentId!,
-        contentTitle: widget.contentTitle ?? 'Video Content',
-        watchDurationSeconds: watchedDuration,
-        totalDurationSeconds: totalDuration,
-      );
+      try {
+        final attendanceController = Get.find<VideoAttendanceController>();
+        final success = await attendanceController.saveVideoAttendance(
+          courseId: widget.courseId!,
+          contentId: widget.contentId!,
+          contentTitle: widget.contentTitle ?? 'Video Content',
+          watchDurationSeconds: watchedDuration,
+          totalDurationSeconds: totalDuration,
+        );
 
-      if (success) {
-        // Get.snackbar(
-        //   'Attendance Marked',
-        //   'Attendance recorded for this video',
-        //   snackPosition: SnackPosition.BOTTOM,
-        //   duration: Duration(seconds: 3),
-        // );
+        if (success) {
+          print('✅ Attendance marked successfully!');
+          if (Get.context != null) {
+            ScaffoldMessenger.of(Get.context!).showSnackBar(
+              const SnackBar(
+                content: Text('Attendance marked ✓'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } else {
+          print('❌ Attendance API returned failure');
+          // Reset so it retries on next trigger
+          _hasSubmittedAttendance = false;
+        }
+      } catch (e) {
+        print('❌ Exception while submitting attendance: $e');
+        _hasSubmittedAttendance = false;
       }
     }
   }

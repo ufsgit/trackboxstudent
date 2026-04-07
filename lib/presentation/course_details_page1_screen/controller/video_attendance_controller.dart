@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class VideoAttendanceController extends GetxController {
   var videoAttendanceList = <VideoAttendanceModel>[].obs;
+  var _allAttendanceList = <VideoAttendanceModel>[];  // full unfiltered cache
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
@@ -56,6 +57,21 @@ class VideoAttendanceController extends GetxController {
       print("Error saving video attendance: $e");
       return false;
     }
+  }
+
+  /// Filter the displayed list by year + month (client-side)
+  /// watchedDate is stored as a String (ISO 8601), so we parse it first.
+  void filterByMonth(int year, int month) {
+    videoAttendanceList.value = _allAttendanceList.where((item) {
+      final rawDate = item.watchedDate;
+      if (rawDate == null) return false;
+      final date = DateTime.tryParse(rawDate);
+      if (date == null) return false;
+      return date.year == year && date.month == month;
+    }).toList();
+    print('📅 Filtered attendance: ${videoAttendanceList.length} records '
+        'for $year-${month.toString().padLeft(2, '0')}');
+    update();
   }
 
   /// Get video attendance for a student
@@ -115,8 +131,10 @@ class VideoAttendanceController extends GetxController {
             videoAttendanceList.value = dataList
                 .map((item) => VideoAttendanceModel.fromJson(item))
                 .toList();
+            // Cache the full list for client-side filtering
+            _allAttendanceList = List.from(videoAttendanceList);
 
-            print("📜 Fetched Attendance Records:");
+            print("📜 Fetched Attendance Records (total: ${videoAttendanceList.length}):");
             for (var record in videoAttendanceList) {
               print(
                   "- ID: ${record.videoAttendanceId}, Content: ${record.contentName}, Date: ${record.watchedDate}, Status: ${record.status}");

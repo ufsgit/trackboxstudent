@@ -25,9 +25,10 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
   /// Load attendance data for selected month
   Future<void> _loadAttendance() async {
     final studentId = int.parse(PrefUtils().getStudentId());
-    final monthStr =
-        '${selectedMonth.year}-${selectedMonth.month.toString().padLeft(2, '0')}';
-    await _controller.getVideoAttendanceByStudentId(studentId, month: monthStr);
+    // Fetch all records, then filter client-side by selected month
+    // (backend ignores the Month query param and returns all records)
+    await _controller.getVideoAttendanceByStudentId(studentId);
+    _controller.filterByMonth(selectedMonth.year, selectedMonth.month);
   }
 
   /// Month picker
@@ -44,7 +45,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
       setState(() {
         selectedMonth = DateTime(picked.year, picked.month);
       });
-      _loadAttendance();
+      // Just re-filter the already-fetched data, no need for another API call
+      _controller.filterByMonth(selectedMonth.year, selectedMonth.month);
     }
   }
 

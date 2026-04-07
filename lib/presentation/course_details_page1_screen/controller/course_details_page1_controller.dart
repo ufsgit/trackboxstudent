@@ -22,6 +22,8 @@ class CourseModuleController extends GetxController {
   var courseInfo = <CourseInfoModel>[].obs;
   var mockModules = <MockTestModuleModel>[].obs;
   RxBool isCourseLoading = false.obs;
+  RxBool isModulesLoading = false.obs;
+  RxBool isModulesError = false.obs;
 
   var contentVideoUrl =
       'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
@@ -62,32 +64,36 @@ class CourseModuleController extends GetxController {
   // }
 
   void getCoursesModules({required String courseId}) async {
-    await HttpRequest.httpGetRequest(
-      endPoint: '${HttpUrls.getCoursesModules}/$courseId',
-    ).then((response) {
-      if (response!.statusCode == 200) {
-        final responseData = response.data;
+    try {
+      isModulesLoading.value = true;
+      isModulesError.value = false;
+      courseModulesList.clear();
+
+      final response = await HttpRequest.httpGetRequest(
+        endPoint: '${HttpUrls.getCoursesModules}/$courseId',
+      );
+
+      if (response?.statusCode == 200) {
+        final responseData = response!.data;
         if (responseData is List<dynamic>) {
-          final courseModules = responseData;
-          courseModulesList.value = courseModules
+          courseModulesList.value = responseData
               .map((result) => CourseModulesModel.fromJson(result))
               .toList();
         } else if (responseData is Map<String, dynamic>) {
-          final courseModules = [responseData];
-          courseModulesList.value = courseModules
-              .map((result) => CourseModulesModel.fromJson(result))
-              .toList();
+          courseModulesList.value = [CourseModulesModel.fromJson(responseData)];
         } else {
           throw Exception('Unexpected response data format');
         }
       } else {
-        throw Exception('Failed to load  data: ${response.statusCode}');
+        throw Exception('Failed to load data: ${response?.statusCode}');
       }
-    }).catchError((error) {
-      print('Error fetching data: $error');
-    });
-
-    update();
+    } catch (error) {
+      print('Error fetching modules: $error');
+      isModulesError.value = true;
+    } finally {
+      isModulesLoading.value = false;
+      update();
+    }
   }
 
   void getModulesofMockTests({required String courseId}) async {

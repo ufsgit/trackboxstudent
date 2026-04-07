@@ -139,9 +139,10 @@ class _CourseModulePageState extends State<CourseModulePage> {
   @override
   void initState() {
     super.initState();
+    // Clear stale data from previous course before fetching fresh data
+    enrolController.batchDaysList.clear();
     controller.getCoursesModules(courseId: widget.courseId.toString());
   }
-
 
   //on day tap function
   void _onDayTap(BuildContext context, BatchWithDaysModel day,
@@ -241,7 +242,8 @@ class _CourseModulePageState extends State<CourseModulePage> {
 
   Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.courseModulesList.isEmpty) {
+      // Step 1: Show loader while fetching modules
+      if (controller.isModulesLoading.value) {
         return Center(
           child: CircularProgressIndicator(
             color: ColorResources.colorBlue500,
@@ -249,49 +251,50 @@ class _CourseModulePageState extends State<CourseModulePage> {
         );
       }
 
-/*
-      // Old Module Grid Logic (Commented Out)
-      // final totalItemCount = controller.courseModulesList.length + 1;
-      // return GridView.builder(
-      //   physics: NeverScrollableScrollPhysics(),
-      //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      //     crossAxisCount: 2,
-      //     crossAxisSpacing: 8.0,
-      //     mainAxisSpacing: 8.0,
-      //     mainAxisExtent: 120,
-      //   ),
-      //   itemCount: totalItemCount,
-      //   itemBuilder: (context, index) {
-      //     if (index < controller.courseModulesList.length) {
-      //       final badgeIcon = index < widget.badgeIcons.length
-      //           ? widget.badgeIcons[index]
-      //           : 'assets/images/Bronze.png';
+      // Step 2: Show error if modules fetch failed
+      if (controller.isModulesError.value) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, color: Colors.red, size: 48),
+              SizedBox(height: 12),
+              Text(
+                'Failed to load modules',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => controller.getCoursesModules(
+                    courseId: widget.courseId.toString()),
+                child: Text('Retry'),
+              ),
+            ],
+          ),
+        );
+      }
 
-      //       final module = controller.courseModulesList[index];
-      //       final isLocked =
-      //           widget.IsEnrollCourse == 0 || module.isStudentModuleLocked == 1;
-      //       final isSelected = selectedIndex == index;
-
-      //       return ModuleWidget(
-      //         isLocked: isLocked,
-      //         isSelected: isSelected,
-      //         onTap: () => _onModuleTap(context, index,
-      //             moduleId: module.moduleId.toString(),
-      //             courseId: widget.courseId.toString(),
-      //             title: module.moduleName),
-      //         badgeIcon: badgeIcon,
-      //         moduleName: module.moduleName,
-      //       );
-      //     }
-      //     return SizedBox.shrink();
-      //   },
-      // );
-*/
+      // Step 3: show empty state if no modules returned
+      if (controller.courseModulesList.isEmpty) {
+        return Center(
+          child: Text(
+            'No modules available',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      }
 
       final moduleId = controller.courseModulesList[0].moduleId.toString();
-      
+
       // Auto-fetch days if list is empty for the first module
-      if (enrolController.batchDaysList.isEmpty && !enrolController.isLoading.value) {
+      if (enrolController.batchDaysList.isEmpty &&
+          !enrolController.isLoading.value) {
         enrolController.getBatchWithDays(widget.courseId.toString(), moduleId);
       }
 
@@ -304,24 +307,24 @@ class _CourseModulePageState extends State<CourseModulePage> {
       }
 
       if (enrolController.batchDaysList.isEmpty) {
-         return Center(
-           child: Text(
-             'No days available',
-             style: GoogleFonts.plusJakartaSans(
-               fontSize: 16,
-               fontWeight: FontWeight.w500,
-             ),
-           ),
-         );
+        return Center(
+          child: Text(
+            'No days available',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
       }
 
       return RefreshIndicator(
-        onRefresh: () => enrolController.getBatchWithDays(widget.courseId.toString(), moduleId),
+        onRefresh: () =>
+            enrolController.getBatchWithDays(widget.courseId.toString(), moduleId),
         child: GridViewDayWidget(
           batchDays: enrolController.batchDaysList,
           onDayTapped: (day) => _onDayTap(context, day,
-              courseId: widget.courseId.toString(),
-              moduleId: moduleId),
+              courseId: widget.courseId.toString(), moduleId: moduleId),
         ),
       );
     });
