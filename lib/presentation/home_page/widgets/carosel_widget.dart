@@ -34,24 +34,57 @@ class CaroselWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               child: Stack(
                 children: [
-                  items[index].isAsset
-                      ? Image.asset(
-                          items[index].imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        )
-                      : CachedNetworkImage(
-                          imageUrl: items[index].imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                          placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            backgroundColor: Colors.transparent,
+                            insetPadding: EdgeInsets.all(10),
+                            child: GestureDetector(
+                              onTap: () => Navigator.of(context).pop(),
+                              child: InteractiveViewer(
+                                panEnabled: true,
+                                minScale: 0.5,
+                                maxScale: 4,
+                                child: items[index].isAsset
+                                    ? Image.asset(items[index].imageUrl)
+                                    : CachedNetworkImage(
+                                        imageUrl: items[index].imageUrl,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error,
+                                                color: Colors.white),
+                                      ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: items[index].isAsset
+                        ? Image.asset(
+                            items[index].imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: items[index].imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                        ),
+                  ),
 
                   // Container(
                   //   decoration: BoxDecoration(
@@ -74,13 +107,13 @@ class CaroselWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 8),
-                        Text(
-                          items[index].description,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
+                        // Text(
+                        //   items[index].description,
+                        //   style: TextStyle(
+                        //     color: Colors.white,
+                        //     fontSize: 14,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -120,13 +153,13 @@ class CaroselWidget extends StatelessWidget {
 class CarouselItem {
   final String imageUrl;
 
-  final String description;
+  //final String description;
   final bool isAsset;
   final VoidCallback? onTap;
 
   CarouselItem({
     required this.imageUrl,
-    required this.description,
+    // required this.description,
     this.isAsset = true,
     this.onTap,
   });

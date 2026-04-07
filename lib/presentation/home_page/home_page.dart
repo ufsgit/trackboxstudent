@@ -301,15 +301,15 @@ class _HomePageState extends State<HomePage> {
                                 return CaroselWidget(
                                   height: 135,
                                   items: [
-                                    CarouselItem(
-                                        imageUrl: 'assets/images/carosel_1.png',
-                                        description: ''),
-                                    CarouselItem(
-                                        imageUrl: 'assets/images/carosel_2.png',
-                                        description: ''),
-                                    CarouselItem(
-                                        imageUrl: 'assets/images/carosel_3.png',
-                                        description: ''),
+                                    // CarouselItem(
+                                    //     imageUrl: 'assets/images/carosel_1.png',
+                                    //     description: ''),
+                                    // CarouselItem(
+                                    //     imageUrl: 'assets/images/carosel_2.png',
+                                    //     description: ''),
+                                    // CarouselItem(
+                                    //     imageUrl: 'assets/images/carosel_3.png',
+                                    //     description: ''),
                                   ],
                                 );
                               }
@@ -319,9 +319,6 @@ class _HomePageState extends State<HomePage> {
                                   return CarouselItem(
                                     imageUrl:
                                         HttpUrls.imgBaseUrl + poster.imagePath,
-
-                                    description:
-                                        '', // or use poster.description if it existed
                                     isAsset: false,
                                   );
                                 }).toList(),
