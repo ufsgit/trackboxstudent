@@ -296,23 +296,37 @@ class _HomePageState extends State<HomePage> {
                             // ),
                             SizedBox(height: 16.v),
                             // _buildExploreCoursesStack(),
-                            CaroselWidget(
-                              height: 135,
-                              items: [
-                                CarouselItem(
-                                    imageUrl: 'assets/images/carosel_1.png',
-                                    title: '',
-                                    description: ''),
-                                CarouselItem(
-                                    imageUrl: 'assets/images/carosel_2.png',
-                                    title: '',
-                                    description: ''),
-                                CarouselItem(
-                                    imageUrl: 'assets/images/carosel_3.png',
-                                    title: '',
-                                    description: ''),
-                              ],
-                            ),
+                            Obx(() {
+                              if (controller.appPosters.isEmpty) {
+                                return CaroselWidget(
+                                  height: 135,
+                                  items: [
+                                    CarouselItem(
+                                        imageUrl: 'assets/images/carosel_1.png',
+                                        description: ''),
+                                    CarouselItem(
+                                        imageUrl: 'assets/images/carosel_2.png',
+                                        description: ''),
+                                    CarouselItem(
+                                        imageUrl: 'assets/images/carosel_3.png',
+                                        description: ''),
+                                  ],
+                                );
+                              }
+                              return CaroselWidget(
+                                height: 135,
+                                items: controller.appPosters.map((poster) {
+                                  return CarouselItem(
+                                    imageUrl:
+                                        HttpUrls.imgBaseUrl + poster.imagePath,
+
+                                    description:
+                                        '', // or use poster.description if it existed
+                                    isAsset: false,
+                                  );
+                                }).toList(),
+                              );
+                            }),
                             // SizedBox(height: 17.v),
                             // _buildMockTestsColumn(),
                             SizedBox(height: 19.v),

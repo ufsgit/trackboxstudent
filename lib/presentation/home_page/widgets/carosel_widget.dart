@@ -1,4 +1,5 @@
 import 'package:anandhu_s_application4/core/colors_res.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -33,12 +34,24 @@ class CaroselWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               child: Stack(
                 children: [
-                  Image.asset(
-                    items[index].imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
+                  items[index].isAsset
+                      ? Image.asset(
+                          items[index].imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: items[index].imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
 
                   // Container(
                   //   decoration: BoxDecoration(
@@ -60,14 +73,6 @@ class CaroselWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          items[index].title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                         SizedBox(height: 8),
                         Text(
                           items[index].description,
@@ -114,14 +119,15 @@ class CaroselWidget extends StatelessWidget {
 
 class CarouselItem {
   final String imageUrl;
-  final String title;
+
   final String description;
+  final bool isAsset;
   final VoidCallback? onTap;
 
   CarouselItem({
     required this.imageUrl,
-    required this.title,
     required this.description,
+    this.isAsset = true,
     this.onTap,
   });
 }

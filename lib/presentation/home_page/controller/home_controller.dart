@@ -20,6 +20,7 @@ import '../../course_details_page1_screen/models/course_review_model.dart';
 import '../../course_details_page_screen/models/course_content_model.dart';
 import '../../course_details_page_screen/models/course_details_page_model.dart';
 import '../../onboarding/onboard_controller.dart';
+import '../models/app_posters_model.dart';
 import '../models/home_model.dart';
 
 /// A controller class for the HomePage.
@@ -49,6 +50,7 @@ class HomeController extends GetxController {
   var hodList = <TeacherModel>[].obs;
   var timeSlotList = <TimeSlotModel>[].obs;
   var errorMessage = ''.obs;
+  var appPosters = <AppPostersModel>[].obs;
   RxInt selectedIndex = 0.obs;
   RxString title = ''.obs;
   RxString selectedCourseCategory = ''.obs;
@@ -85,6 +87,7 @@ class HomeController extends GetxController {
   initFn() async {
     await onboardingController.getCourseDropdownValue(courseName: '');
     await profileController.getProfileStudent();
+    getAppPosters();
     final studentName = await PrefUtils().getStudentName();
     log("////////name$studentName");
     log("////////name$studentName");
@@ -525,5 +528,26 @@ class HomeController extends GetxController {
       }
     });
     update();
+  }
+
+  getAppPosters() async {
+    try {
+      final response = await HttpRequest.httpGetRequest(
+        endPoint: HttpUrls.getAppPosters,
+      );
+
+      if (response != null && response.statusCode == 200) {
+        if (response.data is List<dynamic>) {
+          final responseData = response.data as List<dynamic>;
+          appPosters.value = responseData
+              .map((item) => AppPostersModel.fromJson(item))
+              .where((poster) => poster.isActive == 1)
+              .toList();
+          print('App posters loaded (active): ${appPosters.length}');
+        }
+      }
+    } catch (e) {
+      print('Error in getAppPosters: $e');
+    }
   }
 }
