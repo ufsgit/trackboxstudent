@@ -24,6 +24,30 @@ subprojects {
 }
 
 subprojects {
+    def configureAndroid = { p ->
+        if (p.hasProperty('android')) {
+            p.android {
+                if (namespace == null) {
+                    namespace p.group
+                }
+                compileSdkVersion 36
+                defaultConfig {
+                    targetSdkVersion 34
+                }
+            }
+        }
+    }
+
+    if (project.state.executed) {
+        configureAndroid(project)
+    } else {
+        project.afterEvaluate { p ->
+            configureAndroid(p)
+        }
+    }
+}
+
+subprojects {
     project.evaluationDependsOn(':app')
 }
 
