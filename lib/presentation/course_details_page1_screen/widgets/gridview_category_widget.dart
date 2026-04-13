@@ -37,10 +37,13 @@ class GridviewCategoryWidget extends StatelessWidget {
 
     return Obx(
       () {
+        final filteredSections = sectionByCourse
+            .where((s) => s.sectionName.trim().isNotEmpty)
+            .toList();
+
         return GridView.builder(
           physics: NeverScrollableScrollPhysics(),
-          itemCount:
-              isTab ? sectionByCourse.length + 1 : sectionByCourse.length,
+          itemCount: filteredSections.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 10.0,
@@ -48,16 +51,11 @@ class GridviewCategoryWidget extends StatelessWidget {
             mainAxisExtent: 85,
           ),
           itemBuilder: (context, index) {
-            final isRecordingGrid = isTab && index == sectionByCourse.length;
             final isSelected = selectedIndex == index;
 
             return GestureDetector(
               onTap: () {
-                if (isRecordingGrid) {
-                  onRecordingTapped?.call();
-                } else {
-                  onDayTapped(sectionByCourse[index]);
-                }
+                onDayTapped(filteredSections[index]);
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -93,9 +91,7 @@ class GridviewCategoryWidget extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        isRecordingGrid
-                            ? "Recordings"
-                            : sectionByCourse[index].sectionName,
+                        filteredSections[index].sectionName,
                         style: GoogleFonts.plusJakartaSans(
                           color: ColorResources.colorgrey700,
                           fontSize: 14,

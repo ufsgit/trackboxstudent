@@ -314,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                                 );
                               }
                               return CaroselWidget(
-                                height: 135,
+                                height: 155,
                                 items: controller.appPosters.map((poster) {
                                   return CarouselItem(
                                     imageUrl:
