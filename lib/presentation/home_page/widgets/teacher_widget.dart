@@ -100,16 +100,16 @@ class TeacherWidget extends StatelessWidget {
                   softWrap: true, // Allows the text to wrap
                   overflow: TextOverflow.visible, // Ensures no clipping
                 ),
-                subtitle: Text(
-                  timeSlots,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: ColorResources.colorgrey600,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  softWrap: true,
-                  overflow: TextOverflow.visible,
-                ),
+                // subtitle: Text(
+                //   timeSlots,
+                //   style: GoogleFonts.plusJakartaSans(
+                //     color: ColorResources.colorgrey600,
+                //     fontSize: 12,
+                //     fontWeight: FontWeight.w500,
+                //   ),
+                //   softWrap: true,
+                //   overflow: TextOverflow.visible,
+                // ),
                 // trailing: Row(
                 //   mainAxisSize: MainAxisSize.min,
                 //   children: [

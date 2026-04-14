@@ -322,36 +322,31 @@ class _HomePageContainerScreenState extends State<HomePageContainerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // Zego mic toggle removed
-                            InkWell(
-                              onTap: () {
-                                // Zego restore logic removed
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.call,
-                                      color: Colors.green,
-                                    ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.call,
+                                    color: Colors.green,
                                   ),
-                                  Text(
-                                    callandChatController.currentCallModel.value
-                                            .callerName! +
-                                        "   " +
-                                        callandChatController
-                                            .audioCallFormatedTime.value,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: Colors.green,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  callandChatController.currentCallModel.value
+                                          .callerName! +
+                                      "   " +
+                                      callandChatController
+                                          .audioCallFormatedTime.value,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: Colors.green,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                             InkWell(
                               onTap: () async {
