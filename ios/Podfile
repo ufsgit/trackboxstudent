@@ -11,7 +11,11 @@ project 'Runner', {
 }
 
 def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  generated_xcode_build_settings_path = File.expand_path(
+    File.join('..', 'Flutter', 'Generated.xcconfig'),
+    __FILE__
+  )
+
   unless File.exist?(generated_xcode_build_settings_path)
     raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
   end
@@ -20,15 +24,19 @@ def flutter_root
     matches = line.match(/FLUTTER_ROOT\=(.*)/)
     return matches[1].strip if matches
   end
+
   raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
 end
 
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+require File.expand_path(
+  File.join('packages', 'flutter_tools', 'bin', 'podhelper'),
+  flutter_root
+)
 
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
@@ -37,31 +45,28 @@ end
 post_install do |installer|
   fuse_path = "./Pods/HyperSDK/Fuse.rb"
   clean_assets = true
+
   if File.exist?(fuse_path)
-    if system("ruby", fuse_path.to_s, clean_assets.to_s)
-    end
+    system("ruby", fuse_path.to_s, clean_assets.to_s)
   end
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
     target.build_configurations.each do |config|
-       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-                 config.build_settings["ONLY_ACTIVE_ARCH"] = "YES"
-                 config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
-                      '$(inherited)',
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+      config.build_settings["ONLY_ACTIVE_ARCH"] = "YES"
 
-                      ## dart: PermissionGroup.camera
-                      'PERMISSION_CAMERA=1',
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
 
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
 
-
-                      ## dart: PermissionGroup.photos
-                      'PERMISSION_PHOTOS=1',
-
-                      ## dart: PermissionGroup.mediaLibrary
-                      'PERMISSION_MEDIA_LIBRARY=1',
-
-                    ]
-      end
+        'PERMISSION_CAMERA=1',
+        'PERMISSION_PHOTOS=1',
+        'PERMISSION_MEDIA_LIBRARY=1',
+      ]
+    end
   end
 end

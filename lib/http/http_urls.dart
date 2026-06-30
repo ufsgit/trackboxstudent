@@ -1,6 +1,6 @@
 class HttpUrls {
-  //static String baseUrl = 'https://happyenglishapi.ufstech.co.in';
-  static String baseUrl = 'https://1hm3rdfr-3515.inc1.devtunnels.ms/';
+  static String baseUrl = 'https://happyenglishapi.ufstech.co.in';
+  //static String baseUrl = 'https://1hm3rdfr-3515.inc1.devtunnels.ms/';
 
   static String chatBaseUrl = baseUrl + "/chatbot";
   static String imgBaseUrl =
