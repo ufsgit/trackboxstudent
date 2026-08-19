@@ -470,7 +470,7 @@
 				DEVELOPMENT_TEAM = TTQJFNQ5M8;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Happy English";
+				INFOPLIST_KEY_CFBundleDisplayName = "Happy English Learning App";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -658,7 +658,7 @@
 				DEVELOPMENT_TEAM = TTQJFNQ5M8;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Happy English";
+				INFOPLIST_KEY_CFBundleDisplayName = "Happy English Learning App";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -689,7 +689,7 @@
 				DEVELOPMENT_TEAM = TTQJFNQ5M8;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Happy English";
+				INFOPLIST_KEY_CFBundleDisplayName = "Happy English Learning App";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

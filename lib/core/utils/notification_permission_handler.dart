@@ -50,29 +50,6 @@ class _NotificationPermissionHandlerState
 
   @override
   Widget build(BuildContext context) {
-    return _isPermissionGranted
-        ? widget.child
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Notification permission is required',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _requestNotificationPermission,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text(
-                      'Grant Permission',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+    return widget.child;
   }
 }

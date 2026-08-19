@@ -84,15 +84,19 @@ class _SplashScreenState extends State<SplashScreen>
               // Text with pop-up animation
               Positioned(
                 bottom: 320 + _textAnimation.value * 100,
-                left: MediaQuery.of(context).size.width / 2.7,
+                left: 0,
+                right: 0,
                 child: Opacity(
-                  opacity: _textAnimation.value + 1.0,
-                  child: Text(
-                    'Trackbox',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: ColorResources.colorwhite,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
+                  opacity: (_textAnimation.value + 1.0).clamp(0.0, 1.0),
+                  child: Center(
+                    child: Text(
+                      'Happy English Learning App',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: ColorResources.colorwhite,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),

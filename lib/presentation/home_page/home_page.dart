@@ -12,7 +12,6 @@ import 'package:anandhu_s_application4/presentation/android_large_5_page/models/
 import 'package:anandhu_s_application4/presentation/breff_screen/controller/breff_controller.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/certificate_download_page.dart';
 import 'package:anandhu_s_application4/presentation/explore_courses/controller/explore_course_controller.dart';
-import 'package:anandhu_s_application4/core/utils/notification_permission_handler.dart';
 import 'package:anandhu_s_application4/presentation/home_page/teacher_list_page.dart';
 import 'package:anandhu_s_application4/presentation/home_page/widgets/carosel_widget.dart';
 import 'package:anandhu_s_application4/presentation/home_page/widgets/dummy_image_list.dart';
@@ -247,15 +246,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: NotificationPermissionHandler(
-          onPermissionChanged: (isGranted) {
-            setState(() {});
-          },
-          child: Container(
-            width: double.maxFinite,
-            decoration: AppDecoration.fillGray,
-            child: Obx(
-              () => ShimmerLoading(
+        body: Container(
+          width: double.maxFinite,
+          decoration: AppDecoration.fillGray,
+          child: Obx(
+            () => ShimmerLoading(
                 isLoading: obController.isCourseLoading.value ||
                     profileController.isLoading.value,
                 child: Column(
@@ -398,14 +393,13 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
             ),
           ),
         ),
-      ),
     );
   }
 

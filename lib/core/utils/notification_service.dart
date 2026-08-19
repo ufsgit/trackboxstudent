@@ -268,12 +268,16 @@ class NotificationService {
   static const String replyActionId = 'REPLY_ACTION';
 
   Future<void> initialize() async {
-    await _requestPermission();
-    await _initializeLocalNotifications();
-    _configureForegroundOptions();
-    _listenToForegroundMessages();
-    _setupInteractedMessage();
-    await syncTokenAndTopics();
+    try {
+      await _requestPermission();
+      await _initializeLocalNotifications();
+      _configureForegroundOptions();
+      _listenToForegroundMessages();
+      _setupInteractedMessage();
+      await syncTokenAndTopics();
+    } catch (e) {
+      log("Error during NotificationService initialize: $e");
+    }
   }
 
   Future<void> syncTokenAndTopics() async {
@@ -294,23 +298,28 @@ class NotificationService {
   }
 
   Future<void> _requestPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-    log('User granted permission: ${settings.authorizationStatus}');
+    try {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+      log('User granted permission: ${settings.authorizationStatus}');
 
-    if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      await androidImplementation?.requestNotificationsPermission();
+      if (Platform.isAndroid) {
+        final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+            flutterLocalNotificationsPlugin
+                .resolvePlatformSpecificImplementation<
+                    AndroidFlutterLocalNotificationsPlugin>();
+        await androidImplementation?.requestNotificationsPermission();
+      }
+    } catch (e) {
+      log('Error in _requestPermission: $e');
     }
   }
 

@@ -68,8 +68,12 @@ void main() async {
     };
   }
   //--Initialize Notification Services
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await NotificationService().initialize();
+  try {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    await NotificationService().initialize();
+  } catch (e) {
+    print('Notification initialization error: $e');
+  }
   // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
   //   alert: true,
   //   badge: true,
@@ -150,19 +154,23 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> requestNotificationPermission() async {
-    final settings = await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    try {
+      final settings = await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
-    } else {
-      print('User denied permission');
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        print('User granted permission');
+      } else if (settings.authorizationStatus ==
+          AuthorizationStatus.provisional) {
+        print('User granted provisional permission');
+      } else {
+        print('User denied permission');
+      }
+    } catch (e) {
+      print('Error requesting notification permission: $e');
     }
   }
 
@@ -179,7 +187,7 @@ class _MyAppState extends State<MyApp> {
         builder: (BuildContext context, Widget? child) {
           return child!;
         },
-        title: 'Happy English',
+        title: 'Happy English Learning App',
         initialRoute: AppRoutes.initialRoute,
         getPages: AppRoutes.pages,
       );
