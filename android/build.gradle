@@ -32,7 +32,7 @@ subprojects {
                 }
                 compileSdkVersion 36
                 defaultConfig {
-                    targetSdkVersion 34
+                    targetSdkVersion 36
                 }
             }
         }

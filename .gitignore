@@ -6,3 +6,8 @@ build/app/intermediates/assets/release/flutter_assets/assets/lottie/record.json
 build/app/intermediates/flutter/release/flutter_assets/assets/lottie/record.json
 
 .env
+
+# Keystore files
+android/key.properties
+*.jks
+**/*.jks
