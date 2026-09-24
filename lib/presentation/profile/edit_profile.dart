@@ -27,7 +27,7 @@ class EditProfileScreen extends StatefulWidget {
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> with AutomaticKeepAliveClientMixin {
   final ProfileController pController = Get.find<ProfileController>();
   final BreffController bController = Get.put(BreffController());
   final LoginController _loginController = Get.put(LoginController());
@@ -36,16 +36,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _picker = ImagePicker();
 
   @override
-  void initState() {
-    // initFn();
-    pController.firstNameController.text = pController.profileData!.firstName;
-    pController.lastNameController.text = pController.profileData!.lastName;
-    // pController.dobController.text = pController.profileData!.;
-    pController.emailController.text = pController.profileData!.email;
-    pController.phoneController.text = pController.profileData!.phoneNumber;
-    pController.gmeetController.text = pController.profileData!.gmeetLink;
+  bool get wantKeepAlive => true;
 
+  @override
+  void initState() {
     super.initState();
+    // Only initialize if the fields are empty to prevent wiping user input when returning from Camera intent
+    if (pController.firstNameController.text.isEmpty) {
+      pController.firstNameController.text = pController.profileData?.firstName ?? '';
+    }
+    if (pController.lastNameController.text.isEmpty) {
+      pController.lastNameController.text = pController.profileData?.lastName ?? '';
+    }
+    if (pController.emailController.text.isEmpty) {
+      pController.emailController.text = pController.profileData?.email ?? '';
+    }
+    if (pController.phoneController.text.isEmpty) {
+      pController.phoneController.text = pController.profileData?.phoneNumber ?? '';
+    }
+    if (pController.gmeetController.text.isEmpty) {
+      pController.gmeetController.text = pController.profileData?.gmeetLink ?? '';
+    }
   }
 
   // initFn() async {
@@ -82,6 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: ColorResources.colorgrey200,
@@ -227,46 +239,63 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: EdgeInsets.symmetric(horizontal: 16.v, vertical: 16.h),
           child: CustomOutlinedButton(
             onPressed: () async {
-              Loader.showLoader();
-              // await exController.getAllExploreCourses();
-              String imagePath = '';
-              if (image != null) {
-                imagePath = await AwsUpload.uploadToAws(image!) ?? '';
-                // var img = await AwsUpload.uploadToAws(image!) ?? '';
-                // if (img != '') {
-                //   imagePath = Uri.parse(img).path.replaceFirst('/', '');
-                // }
+              String firstName = pController.firstNameController.text.trim();
+              String email = pController.emailController.text.trim();
+              
+              if (firstName.isEmpty) {
+                Get.showSnackbar(const GetSnackBar(
+                  message: 'First Name is required',
+                  duration: Duration(milliseconds: 1500),
+                ));
+                return;
+              }
+              
+              if (email.isNotEmpty && !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email)) {
+                Get.showSnackbar(const GetSnackBar(
+                  message: 'Please enter a valid email address',
+                  duration: Duration(milliseconds: 1500),
+                ));
+                return;
               }
 
-              SharedPreferences preferences =
-                  await SharedPreferences.getInstance();
-              int studentId = int.parse(
-                  preferences.getString('breffini_student_id') ?? '0');
-              StudentProfileModel studentProfile = StudentProfileModel(
-                gMeetLink: pController.gmeetController.text,
-                countryCodeId: _loginController.selectedCountryCode.value,
-                countryCodeName: _loginController.selectedCountryCode.value,
-                studentId: studentId,
-                firstName: pController.firstNameController.text.trim(),
-                lastName: pController.lastNameController.text.trim(),
-                email: pController.emailController.text.trim(),
-                profilePhotoPath: image == null
-                    ? pController.profileData!.profilePhotoPath
-                    : imagePath,
-                profilePhotoName: '',
-                phoneNumber: pController.phoneController.text.trim(),
-                deleteStatus: 0,
-                socialProvider: "",
-                socialID: "",
-                avatar:
-                    bController.selectedIndex.value == 0 ? 'Male' : 'Female',
-              );
-              await pController.saveStudentProfile(studentProfile);
-              Loader.stopLoader();
-              Get.showSnackbar(GetSnackBar(
-                message: 'Profile edited successfully',
-                duration: Duration(milliseconds: 1500),
-              ));
+              Loader.showLoader();
+              try {
+                String imagePath = '';
+                if (image != null) {
+                  imagePath = await AwsUpload.uploadToAws(image!) ?? '';
+                }
+
+                SharedPreferences preferences =
+                    await SharedPreferences.getInstance();
+                int studentId = int.parse(
+                    preferences.getString('breffini_student_id') ?? '0');
+                StudentProfileModel studentProfile = StudentProfileModel(
+                  gMeetLink: pController.gmeetController.text,
+                  countryCodeId: _loginController.selectedCountryCode.value,
+                  countryCodeName: _loginController.selectedCountryCode.value,
+                  studentId: studentId,
+                  firstName: firstName,
+                  lastName: pController.lastNameController.text.trim(),
+                  email: email,
+                  profilePhotoPath: image == null
+                      ? (pController.profileData?.profilePhotoPath ?? '')
+                      : imagePath,
+                  profilePhotoName: '',
+                  phoneNumber: pController.phoneController.text.trim(),
+                  deleteStatus: 0,
+                  socialProvider: "",
+                  socialID: "",
+                  avatar:
+                      bController.selectedIndex.value == 0 ? 'Male' : 'Female',
+                );
+                await pController.saveStudentProfile(studentProfile);
+                Get.showSnackbar(const GetSnackBar(
+                  message: 'Profile edited successfully',
+                  duration: Duration(milliseconds: 1500),
+                ));
+              } finally {
+                Loader.stopLoader();
+              }
             },
             text: 'Save',
             margin: EdgeInsets.symmetric(horizontal: 16.h),

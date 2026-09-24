@@ -8,6 +8,7 @@ import 'package:anandhu_s_application4/presentation/home_page/models/time_slot_m
 import 'package:anandhu_s_application4/presentation/profile/controller/profile_controller.dart';
 import 'package:anandhu_s_application4/presentation/splash_screen/splashscreen.dart';
 import 'package:anandhu_s_application4/presentation/splash_screen/splashscreen1.dart';
+import 'package:anandhu_s_application4/presentation/profile/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hypersdkflutter/hypersdkflutter.dart';
@@ -91,21 +92,21 @@ class HomeController extends GetxController {
     final studentName = await PrefUtils().getStudentName();
     log("////////name$studentName");
     log("////////name$studentName");
-    if (studentName.isEmpty || studentName == '' || studentName == 'NA') {
+    if (studentName.isEmpty || studentName == 'NA') {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String id = prefs.getString('breffini_student_id') ?? 'Unknown';
       Get.defaultDialog(
-          title: "Profile Error",
+          title: "Profile Incomplete",
           middleText:
-              "Failed to load Profile Name.\nStudent ID: $id\nName: $studentName",
-          textConfirm: "Retry",
+              "Your profile name is missing.\nPlease update your profile.",
+          textConfirm: "Edit Profile",
           onConfirm: () {
             Get.back();
-            initFn();
+            Get.to(() => const EditProfileScreen());
           },
-          textCancel: "Logout",
+          textCancel: "Continue",
           onCancel: () {
-            Get.find<LoginController>().logout();
+            PrefUtils().setStudentName("User");
           });
       return;
     }

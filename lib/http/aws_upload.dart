@@ -45,7 +45,7 @@ class AwsUpload {
         compressedFile.openRead().cast<Uint8List>(),
         size: compressedSize,
         metadata: {'Content-Type': 'image/jpeg'},
-      );
+      ).timeout(const Duration(seconds: 30));
 
       print('<<<<<<<<<<<<<<Cloudflare R2 result: Success>>>>>>>>>>>>>>');
 
@@ -86,7 +86,7 @@ class AwsUpload {
         fileToUpload.openRead().cast<Uint8List>(),
         size: finalSize,
         metadata: {'Content-Type': _getContentType(fileType)},
-      );
+      ).timeout(const Duration(seconds: 30));
 
       return uploadKey;
     } catch (e) {
