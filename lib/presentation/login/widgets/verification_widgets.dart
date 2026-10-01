@@ -97,53 +97,43 @@ Widget textFieldWidget({
   required String? labelText,
   String? Function(String?)? validator,
 }) {
-  return SizedBox(
-    height: 54,
-    child: TextFormField(
-      validator: validator ??
-          (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter an email address';
-            }
-
-            final emailRegex = RegExp(
-              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-            );
-            if (!emailRegex.hasMatch(value)) {
-              return 'Please enter a valid email address';
-            }
-            return null;
-          },
-      controller: controller,
-      keyboardType: TextInputType.emailAddress,
-      style: GoogleFonts.plusJakartaSans(
-        color: ColorResources.colorBlack,
+  return TextFormField(
+    validator: validator ??
+        (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter username or email';
+          }
+          return null;
+        },
+    controller: controller,
+    keyboardType: TextInputType.emailAddress,
+    style: GoogleFonts.plusJakartaSans(
+      color: ColorResources.colorBlack,
+      fontSize: 15,
+      fontWeight: FontWeight.w400,
+    ),
+    decoration: InputDecoration(
+      labelText: labelText,
+      labelStyle: GoogleFonts.plusJakartaSans(
+        color: ColorResources.colorgrey600,
         fontSize: 15,
         fontWeight: FontWeight.w400,
       ),
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: GoogleFonts.plusJakartaSans(
-          color: ColorResources.colorgrey600,
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        fillColor: ColorResources.colorwhite,
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: ColorResources.colorBlack),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: ColorResources.colorgrey300),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: ColorResources.colorgrey200),
-        ),
+      contentPadding:
+          const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      fillColor: ColorResources.colorwhite,
+      filled: true,
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ColorResources.colorBlack),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ColorResources.colorgrey300),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ColorResources.colorgrey200),
       ),
     ),
   );
@@ -157,60 +147,54 @@ Widget passwordTextFieldWidget({
   bool obscureText = true;
   return StatefulBuilder(
     builder: (context, setState) {
-      return SizedBox(
-        height: 54,
-        child: TextFormField(
-          validator: validator ??
-              (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a password';
-                }
-                if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
-                }
-                return null;
-              },
-          controller: controller,
-          obscureText: obscureText,
-          style: GoogleFonts.plusJakartaSans(
-            color: ColorResources.colorBlack,
+      return TextFormField(
+        validator: validator ??
+            (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a password';
+              }
+              return null;
+            },
+        controller: controller,
+        obscureText: obscureText,
+        style: GoogleFonts.plusJakartaSans(
+          color: ColorResources.colorBlack,
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+        ),
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: GoogleFonts.plusJakartaSans(
+            color: ColorResources.colorgrey600,
             fontSize: 15,
             fontWeight: FontWeight.w400,
           ),
-          decoration: InputDecoration(
-            labelText: labelText,
-            labelStyle: GoogleFonts.plusJakartaSans(
+          suffixIcon: IconButton(
+            icon: Icon(
+              obscureText ? Icons.visibility_off : Icons.visibility,
               color: ColorResources.colorgrey600,
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
             ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                obscureText ? Icons.visibility_off : Icons.visibility,
-                color: ColorResources.colorgrey600,
-              ),
-              onPressed: () {
-                setState(() {
-                  obscureText = !obscureText;
-                });
-              },
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            fillColor: ColorResources.colorwhite,
-            filled: true,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: ColorResources.colorBlack),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: ColorResources.colorgrey300),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: ColorResources.colorgrey200),
-            ),
+            onPressed: () {
+              setState(() {
+                obscureText = !obscureText;
+              });
+            },
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          fillColor: ColorResources.colorwhite,
+          filled: true,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: ColorResources.colorBlack),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: ColorResources.colorgrey300),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: ColorResources.colorgrey200),
           ),
         ),
       );

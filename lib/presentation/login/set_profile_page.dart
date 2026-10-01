@@ -7,6 +7,7 @@ import 'package:anandhu_s_application4/presentation/login/login_controller.dart'
 import 'package:anandhu_s_application4/presentation/login/model/student_profile_model.dart';
 import 'package:anandhu_s_application4/presentation/login/widgets/common_widgets.dart';
 import 'package:anandhu_s_application4/presentation/login/widgets/verification_widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -202,25 +203,37 @@ class _SetProfilePageState extends State<SetProfilePage> {
 
   //from gallery
   Future<void> pickImageFromGallery() async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      setState(() {
-        image = File(pickedImage.path);
-        Get.back();
-      });
+    Get.back();
+    try {
+      final XFile? pickedImage =
+          await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage != null) {
+        setState(() {
+          image = File(pickedImage.path);
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error picking image from gallery: $e');
+      }
     }
   }
 
   //from camera
   Future<void> pickImageFromCamera() async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.camera);
-    if (pickedImage != null) {
-      setState(() {
-        image = File(pickedImage.path);
-        Get.back();
-      });
+    Get.back();
+    try {
+      final XFile? pickedImage =
+          await _picker.pickImage(source: ImageSource.camera);
+      if (pickedImage != null) {
+        setState(() {
+          image = File(pickedImage.path);
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error picking image from camera: $e');
+      }
     }
   }
 

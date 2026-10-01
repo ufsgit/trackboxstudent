@@ -231,6 +231,7 @@ class LoginController extends GetxController {
   Future<void> signin({
     required Map<String, dynamic> bodyData,
     required bool isEmail,
+    BuildContext? context,
   }) async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -246,7 +247,11 @@ class LoginController extends GetxController {
         return;
       }
 
-      Map<String, dynamic> data = response.data as Map<String, dynamic>;
+      Map<String, dynamic> data = response.data is Map<String, dynamic>
+          ? response.data as Map<String, dynamic>
+          : (response.data is List && (response.data as List).isNotEmpty
+              ? (response.data as List)[0] as Map<String, dynamic>
+              : {});
 
       if (data.containsKey('token') && data['token'] != null) {
         // Handle password login (direct token response)
@@ -317,7 +322,7 @@ class LoginController extends GetxController {
         if (kDebugMode) {
           Get.showSnackbar(GetSnackBar(
             message: 'OTP ${data['otp']}',
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ));
         }
 
@@ -326,16 +331,52 @@ class LoginController extends GetxController {
               isEmail: isEmail,
             ));
       } else {
-        throw Exception('Invalid response: OTP or Token missing');
+        isOtpSending.value = false;
+        String errorMessage = data['message']?.toString() ??
+            data['error']?.toString() ??
+            'Invalid username or password';
+
+        final targetContext = context ?? Get.context;
+        if (targetContext != null) {
+          ScaffoldMessenger.of(targetContext).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.redAccent,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        } else {
+          Get.showSnackbar(GetSnackBar(
+            message: errorMessage,
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.redAccent,
+          ));
+        }
       }
     } catch (error) {
       isOtpSending.value = false;
 
-      Get.showSnackbar(GetSnackBar(
-        message: error.toString(),
-        duration: Duration(seconds: 2),
-        backgroundColor: ColorResources.colorgrey700,
-      ));
+      String errorMsg = error.toString();
+      if (errorMsg.startsWith('Exception: ')) {
+        errorMsg = errorMsg.substring(11);
+      }
+
+      final targetContext = context ?? Get.context;
+      if (targetContext != null) {
+        ScaffoldMessenger.of(targetContext).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: Colors.redAccent,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else {
+        Get.showSnackbar(GetSnackBar(
+          message: errorMsg,
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.redAccent,
+        ));
+      }
 
       print('Login error: $error');
     }
@@ -416,33 +457,48 @@ class LoginController extends GetxController {
   }
 
   saveStudentProfile(StudentProfileModel studentProfile) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
+    try {
+      final value = await HttpRequest.httpPostBodyRequest(
+        endPoint: HttpUrls.saveProfile,
+        bodyData: studentProfile.toJson(),
+      );
+      print('login saveProfile value: $value');
 
-    String studentId = preferences.getString('breffini_student_id') ?? '';
-    String newUser = preferences.getString('breffini_new_user') ?? '';
+      if (value != null && (value.statusCode == 200 || value.statusCode == 201)) {
+        var data = value.data;
+        bool isSuccess = false;
+        if (data is Map) {
+          isSuccess = data['status'] != false && data['status'] != 0 && data['error'] == null;
+        } else if (data is List) {
+          isSuccess = data.isNotEmpty;
+        } else {
+          isSuccess = true;
+        }
 
-    await HttpRequest.httpPostBodyRequest(
-      endPoint: HttpUrls.saveProfile,
-      bodyData: studentProfile.toJson(),
-    ).then((value) {
-      print('login value $value');
-
-      if (value != null) {
-        if (value.data[0] != null) {
-          Get.showSnackbar(GetSnackBar(
+        if (isSuccess) {
+          Get.showSnackbar(const GetSnackBar(
             message: 'Profile added successfully',
             duration: Duration(milliseconds: 1000),
           ));
 
           Get.to(() => OccupationScreen());
+          return;
         }
-      } else {
-        Get.showSnackbar(GetSnackBar(
-          message: 'invalid request',
-          duration: Duration(milliseconds: 800),
-        ));
       }
-    });
+
+      Get.showSnackbar(const GetSnackBar(
+        message: 'Invalid request or failed to save profile',
+        duration: Duration(milliseconds: 800),
+      ));
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error in login saveStudentProfile: $e');
+      }
+      Get.showSnackbar(GetSnackBar(
+        message: 'Error saving profile: $e',
+        duration: const Duration(milliseconds: 800),
+      ));
+    }
   }
 
   Future<void> logout() async {

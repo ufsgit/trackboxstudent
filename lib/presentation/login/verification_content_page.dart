@@ -32,9 +32,7 @@ class _VerificationContentPageState extends State<VerificationContentPage>
   @override
   void initState() {
     super.initState();
-    _loginController.emailController.clear();
-    _loginController.phoneController.clear();
-    _loginController.passwordController.clear();
+    // Do not auto clear username/email and password controllers
 
     _entryAnimationController = AnimationController(
       vsync: this,
@@ -139,13 +137,14 @@ class _VerificationContentPageState extends State<VerificationContentPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Email",
+                              "Username / Email",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: ColorResources.colorBlack,
                               ),
                             ),
+                            const SizedBox(height: 6),
                             textFieldWidget(
                               controller: _loginController.emailController,
                               labelText: '',
@@ -169,6 +168,7 @@ class _VerificationContentPageState extends State<VerificationContentPage>
                                 color: ColorResources.colorBlack,
                               ),
                             ),
+                            const SizedBox(height: 6),
                             passwordTextFieldWidget(
                                 controller: _loginController.passwordController,
                                 labelText: '',
@@ -176,7 +176,6 @@ class _VerificationContentPageState extends State<VerificationContentPage>
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter a password';
                                   }
-
                                   return null;
                                 }),
                           ],
@@ -216,17 +215,58 @@ class _VerificationContentPageState extends State<VerificationContentPage>
                       borderRadius: BorderRadius.circular(100),
                       onTap: () {
                         if (isLoading) return;
-                        if (!formKey.currentState!.validate()) {
+
+                        String emailOrUser =
+                            _loginController.emailController.text.trim();
+                        String password =
+                            _loginController.passwordController.text;
+
+                        if (emailOrUser.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please enter your username or email'),
+                              backgroundColor: Colors.redAccent,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
                           return;
                         }
-                        _loginController.signin(bodyData: {
-                          "email": _loginController.emailController.text,
-                          "password": _loginController.passwordController.text,
-                          // "isGoogleSign": false,
-                          "Device_ID": _loginController.fcmToken,
-                          "country_code": "",
-                          "country_code_name": ""
-                        }, isEmail: true);
+
+                        if (password.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter your password'),
+                              backgroundColor: Colors.redAccent,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (!formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Please check your username/email and password'),
+                              backgroundColor: Colors.redAccent,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                          return;
+                        }
+
+                        _loginController.signin(
+                          bodyData: {
+                            "email": emailOrUser,
+                            "password": password,
+                            "Device_ID": _loginController.fcmToken,
+                            "country_code": "",
+                            "country_code_name": ""
+                          },
+                          isEmail: true,
+                          context: context,
+                        );
                       },
                       child: Center(
                         child: isLoading

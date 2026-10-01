@@ -119,18 +119,25 @@ class FileUtils {
 
   }
   static Future<File> compressImage(File file) async {
-    final filePath = file.absolute.path;
-    final lastIndex = filePath.lastIndexOf(RegExp(r'.jpg|.jpeg|.png'));
-    final splitted = filePath.substring(0, lastIndex);
-    final outPath = "${splitted}_compressed.jpg";
-    var result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      outPath,
-      quality: 70,
-      minWidth: 1024,
-      minHeight: 1024,
-    );
-    return File(result!.path);
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final outPath =
+          "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_compressed.jpg";
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        outPath,
+        quality: 70,
+        minWidth: 1024,
+        minHeight: 1024,
+      );
+      if (result != null) {
+        return File(result.path);
+      }
+      return file;
+    } catch (e) {
+      print("Error compressing image: $e");
+      return file;
+    }
   }
 }
 
