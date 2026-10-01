@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:anandhu_s_application4/core/app_export.dart';
 import 'package:anandhu_s_application4/http/aws_upload.dart';
+import 'package:anandhu_s_application4/http/loader.dart';
 import 'package:anandhu_s_application4/presentation/breff_screen/controller/breff_controller.dart';
 import 'package:anandhu_s_application4/presentation/login/login_controller.dart';
 import 'package:anandhu_s_application4/presentation/login/model/student_profile_model.dart';
@@ -170,35 +171,49 @@ class _SetProfilePageState extends State<SetProfilePage> {
   }
 
   Future<void> handleValidSubmission() async {
-    String imagePath = '';
-    if (image != null) {
-      log('%%%%%%%%%%%%%%%%%% ${image.toString()}');
-      imagePath = await AwsUpload.uploadToAws(image!) ?? '';
+    Loader.showLoader(dismissible: false);
+    try {
+      String imagePath = '';
+      if (image != null) {
+        log('%%%%%%%%%%%%%%%%%% ${image.toString()}');
+        final uploaded = await AwsUpload.uploadToAws(image!);
+        if (uploaded == null || uploaded.isEmpty) {
+          Loader.stopLoader();
+          Get.showSnackbar(const GetSnackBar(
+            message: 'Failed to upload profile picture. Please try again.',
+            duration: Duration(seconds: 2),
+          ));
+          return;
+        }
+        imagePath = uploaded;
+      }
+
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      int studentId =
+          int.parse(preferences.getString('breffini_student_id') ?? '0');
+
+      StudentProfileModel studentProfile = StudentProfileModel(
+        gMeetLink: _loginController.gmeetController.text,
+        studentId: studentId,
+        firstName: _loginController.firstNameController.text.trim(),
+        lastName: _loginController.lastNameController.text.trim(),
+        email: _loginController.emailController.text.trim(),
+        profilePhotoPath: image == null ? '' : imagePath,
+        profilePhotoName: '',
+        phoneNumber: _loginController.phoneController.text.trim(),
+        deleteStatus: 0,
+        socialProvider: "",
+        socialID: "",
+        avatar: breffController.selectedIndex.value == 0 ? 'Male' : 'Female',
+        countryCodeId: _loginController.selectedCountryCode.value,
+        countryCodeName: _loginController.selectedCountryCodeName.value,
+        password: _loginController.profilePasswordController.text.trim(),
+      );
+
+      await _loginController.saveStudentProfile(studentProfile);
+    } finally {
+      Loader.stopLoader();
     }
-
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    int studentId =
-        int.parse(preferences.getString('breffini_student_id') ?? '0');
-
-    StudentProfileModel studentProfile = StudentProfileModel(
-      gMeetLink: _loginController.gmeetController.text,
-      studentId: studentId,
-      firstName: _loginController.firstNameController.text.trim(),
-      lastName: _loginController.lastNameController.text.trim(),
-      email: _loginController.emailController.text.trim(),
-      profilePhotoPath: image == null ? '' : imagePath,
-      profilePhotoName: '',
-      phoneNumber: _loginController.phoneController.text.trim(),
-      deleteStatus: 0,
-      socialProvider: "",
-      socialID: "",
-      avatar: breffController.selectedIndex.value == 0 ? 'Male' : 'Female',
-      countryCodeId: _loginController.selectedCountryCode.value,
-      countryCodeName: _loginController.selectedCountryCodeName.value,
-      password: _loginController.profilePasswordController.text.trim(),
-    );
-
-    await _loginController.saveStudentProfile(studentProfile);
   }
 
   //from gallery

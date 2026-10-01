@@ -68,26 +68,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> with AutomaticKee
 
   //from gallery
   Future<void> pickImageFromGallery() async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      setState(() {
-        image = File(pickedImage.path);
+    Get.back();
+    try {
+      final XFile? pickedImage =
+          await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage != null) {
+        setState(() {
+          image = File(pickedImage.path);
+        });
         log('%%%%%%%%%%%%%%%%%% ${image.toString()}');
-        Get.back();
-      });
+      }
+    } catch (e) {
+      log('Error picking image from gallery: $e');
     }
   }
 
   //from camera
   Future<void> pickImageFromCamera() async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.camera);
-    if (pickedImage != null) {
-      setState(() {
-        image = File(pickedImage.path);
-        Get.back();
-      });
+    Get.back();
+    try {
+      final XFile? pickedImage =
+          await _picker.pickImage(source: ImageSource.camera);
+      if (pickedImage != null) {
+        setState(() {
+          image = File(pickedImage.path);
+        });
+        log('%%%%%%%%%%%%%%%%%% ${image.toString()}');
+      }
+    } catch (e) {
+      log('Error picking image from camera: $e');
     }
   }
 
@@ -258,43 +267,71 @@ class _EditProfileScreenState extends State<EditProfileScreen> with AutomaticKee
                 return;
               }
 
-              Loader.showLoader();
+              Loader.showLoader(dismissible: false);
               try {
-                String imagePath = '';
+                String? imagePath;
                 if (image != null) {
-                  imagePath = await AwsUpload.uploadToAws(image!) ?? '';
+                  imagePath = await AwsUpload.uploadToAws(image!);
+                  if (imagePath == null || imagePath.isEmpty) {
+                    Loader.stopLoader();
+                    Get.showSnackbar(const GetSnackBar(
+                      message: 'Failed to upload image. Please try again.',
+                      duration: Duration(milliseconds: 2000),
+                    ));
+                    return;
+                  }
                 }
 
                 SharedPreferences preferences =
                     await SharedPreferences.getInstance();
                 int studentId = int.parse(
                     preferences.getString('breffini_student_id') ?? '0');
+                
+                final String finalPhotoPath = imagePath ??
+                    (pController.profileData?.profilePhotoPath ?? '');
+
                 StudentProfileModel studentProfile = StudentProfileModel(
-                  gMeetLink: pController.gmeetController.text,
+                  gMeetLink: pController.gmeetController.text.trim(),
                   countryCodeId: _loginController.selectedCountryCode.value,
-                  countryCodeName: _loginController.selectedCountryCode.value,
+                  countryCodeName: _loginController.selectedCountryCodeName.value,
                   studentId: studentId,
                   firstName: firstName,
                   lastName: pController.lastNameController.text.trim(),
                   email: email,
-                  profilePhotoPath: image == null
-                      ? (pController.profileData?.profilePhotoPath ?? '')
-                      : imagePath,
+                  profilePhotoPath: finalPhotoPath,
                   profilePhotoName: '',
                   phoneNumber: pController.phoneController.text.trim(),
                   deleteStatus: 0,
-                  socialProvider: "",
-                  socialID: "",
+                  socialProvider: pController.profileData?.socialProvider ?? "",
+                  socialID: pController.profileData?.socialId ?? "",
                   avatar:
                       bController.selectedIndex.value == 0 ? 'Male' : 'Female',
                 );
-                await pController.saveStudentProfile(studentProfile);
-                Get.showSnackbar(const GetSnackBar(
-                  message: 'Profile edited successfully',
-                  duration: Duration(milliseconds: 1500),
-                ));
-              } finally {
+                
+                bool isSaved = await pController.saveStudentProfile(studentProfile);
                 Loader.stopLoader();
+
+                if (isSaved) {
+                  setState(() {
+                    image = null;
+                  });
+                  Get.back();
+                  Get.showSnackbar(const GetSnackBar(
+                    message: 'Profile edited successfully',
+                    duration: Duration(milliseconds: 1500),
+                  ));
+                } else {
+                  Get.showSnackbar(const GetSnackBar(
+                    message: 'Failed to save profile. Please try again.',
+                    duration: Duration(milliseconds: 2000),
+                  ));
+                }
+              } catch (e) {
+                Loader.stopLoader();
+                Get.showSnackbar(GetSnackBar(
+                  message: 'An error occurred: $e',
+                  duration: const Duration(milliseconds: 2000),
+                ));
               }
             },
             text: 'Save',
@@ -309,6 +346,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> with AutomaticKee
   }
 
   Widget profileImageStackWidget(BuildContext context) {
+    final photoPath = pController.profileData?.profilePhotoPath;
+    final bool hasNetworkPhoto = photoPath != null && photoPath.trim().isNotEmpty;
+
     return Stack(
       children: [
         Container(
@@ -319,57 +359,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> with AutomaticKee
               shape: BoxShape.circle,
               border: Border.all(color: ColorResources.colorgrey500)),
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(50.h),
-              child: image != null
-                  ? Image.file(
-                      image!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (BuildContext context, Object error,
-                          StackTrace? stackTrace) {
-                        return Center(
-                          child: Icon(
-                            Icons.person_rounded,
-                            color: ColorResources.colorBlue300,
-                            size: 18.v,
-                          ),
-                        );
-                      },
-                    )
-                  : CachedNetworkImage(
-                      imageUrl:
-                          '${HttpUrls.imgBaseUrl}${pController.profileData?.profilePhotoPath}',
-                      height: 10.v,
-                      width: 10.v,
-                      fit: BoxFit.cover,
-                      placeholder: (BuildContext context, String url) {
-                        return Center(
-                          child: Transform.scale(
-                              scale: 0.6,
-                              child: CircularProgressIndicator(
-                                color: ColorResources.colorBlue500,
-                              )),
-                        );
-                      },
-                      errorWidget:
-                          (BuildContext context, String url, dynamic error) {
-                        return Center(
-                          child: Icon(
-                            Icons.person_rounded,
-                            color: ColorResources.colorBlack.withOpacity(.5),
-                            size: 35.v,
-                          ),
-                        );
-                      },
-                    )
-              // child: Image.network(
-              //   'https://images.vexels.com/media/users/3/145908/raw/52eabf633ca6414e60a7677b0b917d92-male-avatar-maker.jpg',
-              //   fit: BoxFit.fill,
-              // ),
-              ),
-          //  CircleAvatar(
-          //   backgroundImage: NetworkImage(
-          //       'https://images.vexels.com/media/users/3/145908/raw/52eabf633ca6414e60a7677b0b917d92-male-avatar-maker.jpg'),
-          // ),
+            borderRadius: BorderRadius.circular(50.h),
+            child: image != null
+                ? Image.file(
+                    image!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) {
+                      return Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          color: ColorResources.colorBlue300,
+                          size: 35.v,
+                        ),
+                      );
+                    },
+                  )
+                : hasNetworkPhoto
+                    ? CachedNetworkImage(
+                        imageUrl: '${HttpUrls.imgBaseUrl}$photoPath',
+                        fit: BoxFit.cover,
+                        placeholder: (BuildContext context, String url) {
+                          return Center(
+                            child: Transform.scale(
+                                scale: 0.6,
+                                child: CircularProgressIndicator(
+                                  color: ColorResources.colorBlue500,
+                                )),
+                          );
+                        },
+                        errorWidget:
+                            (BuildContext context, String url, dynamic error) {
+                          return Center(
+                            child: Icon(
+                              Icons.person_rounded,
+                              color: ColorResources.colorBlack.withOpacity(.5),
+                              size: 35.v,
+                            ),
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          color: ColorResources.colorBlack.withOpacity(.5),
+                          size: 35.v,
+                        ),
+                      ),
+          ),
         ),
         Positioned(
           bottom: 0,

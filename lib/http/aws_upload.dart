@@ -9,18 +9,34 @@ import 'package:minio/minio.dart';
 import 'package:dio/dio.dart' as dio;
 
 class AwsUpload {
+  static String _cleanEndPoint(String? rawEndPoint) {
+    if (rawEndPoint == null || rawEndPoint.isEmpty) return '';
+    String cleaned = rawEndPoint.trim();
+    if (cleaned.startsWith('https://')) {
+      cleaned = cleaned.substring('https://'.length);
+    } else if (cleaned.startsWith('http://')) {
+      cleaned = cleaned.substring('http://'.length);
+    }
+    if (cleaned.endsWith('/')) {
+      cleaned = cleaned.substring(0, cleaned.length - 1);
+    }
+    return cleaned;
+  }
+
   static final Minio minio = Minio(
-    endPoint: dotenv.env['CLOUDFLARE_R2_ENDPOINT'] ?? '',
-    accessKey: dotenv.env['CLOUDFLARE_R2_ACCESS_KEY_ID'] ?? '',
-    secretKey: dotenv.env['CLOUDFLARE_R2_SECRET_ACCESS_KEY'] ?? '',
+    endPoint: _cleanEndPoint(dotenv.env['CLOUDFLARE_R2_ENDPOINT']),
+    accessKey: (dotenv.env['CLOUDFLARE_R2_ACCESS_KEY_ID'] ?? '').trim(),
+    secretKey: (dotenv.env['CLOUDFLARE_R2_SECRET_ACCESS_KEY'] ?? '').trim(),
     useSSL: true,
   );
 
   static final String bucket =
       dotenv.env['CLOUDFLARE_R2_BUCKET_NAME'] ?? 'trackbox';
 
-  static Future<String?> uploadToAws(File result) async {
-    LoaderChat.showLoader();
+  static Future<String?> uploadToAws(File result, {bool showLoader = false}) async {
+    if (showLoader) {
+      LoaderChat.showLoader();
+    }
     try {
       // Print original file size
       int originalSize = await result.length();
@@ -49,14 +65,18 @@ class AwsUpload {
 
       print('<<<<<<<<<<<<<<Cloudflare R2 result: Success>>>>>>>>>>>>>>');
 
-      LoaderChat.stopLoader();
+      if (showLoader) {
+        LoaderChat.stopLoader();
+      }
 
       final publicUrl = '${HttpUrls.imgBaseUrl}$uploadKey';
       print('Public URL: $publicUrl');
       print('Profile URL: $uploadKey');
       return uploadKey;
     } catch (e) {
-      LoaderChat.stopLoader();
+      if (showLoader) {
+        LoaderChat.stopLoader();
+      }
       print('Error uploading to Cloudflare R2: $e');
       return null;
     }

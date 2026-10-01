@@ -129,13 +129,9 @@ class _StudentProfileScreenState extends State<StudentProfileScreen> {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(50.h),
-                                      child: profController.profileData
-                                                  ?.profilePhotoPath !=
-                                              null
-                                          ?
-
-// Your image widget
-                                          CachedNetworkImage(
+                                      child: (profController.profileData?.profilePhotoPath != null &&
+                                              profController.profileData!.profilePhotoPath.trim().isNotEmpty)
+                                          ? CachedNetworkImage(
                                               imageUrl:
                                                   '${HttpUrls.imgBaseUrl}${profController.profileData?.profilePhotoPath}',
                                               fit: BoxFit.cover,
