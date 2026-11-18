@@ -86,12 +86,14 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to take photos for updating your profile picture and capturing images to submit in assignments and chat.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Need microphone access for record and upload audio</string>
+	<string>This app requires microphone access to record and send voice messages in chat, practice spoken English lessons, and submit audio assessments.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app requires access to save images to the photo library.</string>
+	<string>This app requires permission to save downloaded certificates, study notes, and educational materials directly to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library so users can select images.</string>
+	<string>This app requires access to your photo library to select and upload images for your profile picture, assignments, and chat discussions.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
