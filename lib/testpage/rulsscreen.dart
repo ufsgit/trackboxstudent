@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 import 'exam_modal.dart';
 import 'testscreen.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 
 class RulesScreen extends StatefulWidget {
   final ExamModel exam;
@@ -21,7 +21,7 @@ class _RulesScreenState extends State<RulesScreen> {
   }
 
   Future<void> _enableSecureScreen() async {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    await FlutterWindowManagerPlus.addFlags(FlutterWindowManagerPlus.FLAG_SECURE);
   }
 
   @override

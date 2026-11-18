@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/app_export.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 
 class ResultScreen extends StatefulWidget {
   final int score;
@@ -30,7 +30,7 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   Future<void> _disableSecureScreen() async {
-    await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    await FlutterWindowManagerPlus.clearFlags(FlutterWindowManagerPlus.FLAG_SECURE);
   }
 
   @override

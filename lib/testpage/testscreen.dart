@@ -6,7 +6,7 @@ import 'resultscreen.dart';
 import 'package:anandhu_s_application4/presentation/course_details_page1_screen/controller/exam_result_controller.dart';
 import 'package:get/get.dart';
 import 'examservieses.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 
 class TestScreen extends StatefulWidget {
   final int courseExamId; // ✅ FIXED (INT)
@@ -50,11 +50,11 @@ class _TestScreenState extends State<TestScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _enableSecureScreen() async {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    await FlutterWindowManagerPlus.addFlags(FlutterWindowManagerPlus.FLAG_SECURE);
   }
 
   Future<void> _disableSecureScreen() async {
-    await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    await FlutterWindowManagerPlus.clearFlags(FlutterWindowManagerPlus.FLAG_SECURE);
   }
 
   @override

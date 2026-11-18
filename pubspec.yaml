@@ -36,7 +36,6 @@ dependencies:
   flutter_gemini: ^2.0.4
   flutter_local_notifications: any
   carousel_slider: ^5.0.0
-  flutter_windowmanager: ^0.2.0
   
 
 
@@ -94,6 +93,7 @@ dependencies:
  #hdfcpayment
   hypersdkflutter: ^4.0.25
   flutter_dotenv: ^6.0.0
+  flutter_windowmanager_plus: ^1.1.1
 
 dependency_overrides:
   floating: any
