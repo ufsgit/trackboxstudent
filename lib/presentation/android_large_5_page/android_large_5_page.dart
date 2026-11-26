@@ -98,8 +98,13 @@ class _AndroidLarge5ScreenState extends State<AndroidLarge5Screen> {
                             IconButton(
                                 onPressed: () {
                                   if (Get.currentRoute ==
-                                      "/home_page_container_screen") {
-                                    Get.back();
+                                          "/home_page_container_screen" ||
+                                      Get.currentRoute ==
+                                          AppRoutes.homePageContainerScreen) {
+                                    controllers
+                                        .setTemporaryPage(AppRoutes.homePage);
+                                  } else if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
                                   } else {
                                     controllers
                                         .setTemporaryPage(AppRoutes.homePage);

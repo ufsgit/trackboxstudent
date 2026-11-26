@@ -132,7 +132,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> with AutomaticKee
                 Row(
                   children: [
                     InkWell(
-                      onTap: () => Get.back(),
+                      onTap: () {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        } else {
+                          Get.back();
+                        }
+                      },
                       child: CircleAvatar(
                         backgroundColor: ColorResources.colorBlue100,
                         radius: 14.v,
