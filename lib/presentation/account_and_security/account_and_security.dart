@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AccountAndSecurityView extends StatelessWidget {
   AccountAndSecurityView({super.key});
-  final LoginController profileController = Get.find<LoginController>();
+  final LoginController profileController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {

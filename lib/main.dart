@@ -12,6 +12,7 @@ import 'package:anandhu_s_application4/presentation/explore_courses/controller/c
 import 'package:anandhu_s_application4/presentation/home_page/controller/home_controller.dart';
 import 'package:anandhu_s_application4/presentation/home_page/models/home_model.dart';
 import 'package:anandhu_s_application4/presentation/home_page_container_screen/controller/home_page_container_controller.dart';
+import 'package:anandhu_s_application4/presentation/login/login_controller.dart';
 import 'package:anandhu_s_application4/presentation/profile/controller/profile_controller.dart';
 import 'package:anandhu_s_application4/widgets/animated_container_widget.dart';
 // import 'package:awesome_notifications/awesome_notifications.dart';
@@ -107,6 +108,7 @@ void main() async {
   await ChatSocket.initSocket();
 
   print('Socket initialized');
+  Get.put(LoginController(), permanent: true);
   Get.put(CourseAccessController(), permanent: true);
   Get.put(ProfileController());
   Get.put(ChatHistoryController(), permanent: true);
