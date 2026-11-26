@@ -244,6 +244,23 @@ class LoginController extends GetxController {
 
       if (response == null || response.data == null) {
         isOtpSending.value = false;
+        const msg = 'Invalid username or password';
+        final targetContext = context ?? Get.context;
+        if (targetContext != null) {
+          ScaffoldMessenger.of(targetContext).showSnackBar(
+            const SnackBar(
+              content: Text(msg),
+              backgroundColor: Colors.redAccent,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        } else {
+          Get.showSnackbar(const GetSnackBar(
+            message: msg,
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.redAccent,
+          ));
+        }
         return;
       }
 
@@ -332,9 +349,14 @@ class LoginController extends GetxController {
             ));
       } else {
         isOtpSending.value = false;
-        String errorMessage = data['message']?.toString() ??
-            data['error']?.toString() ??
-            'Invalid username or password';
+        String errorMessage = 'Invalid username or password';
+        if (data['error'] is Map && data['error']['message'] != null) {
+          errorMessage = data['error']['message'].toString();
+        } else if (data['message'] != null) {
+          errorMessage = data['message'].toString();
+        } else if (data['error'] != null) {
+          errorMessage = data['error'].toString();
+        }
 
         final targetContext = context ?? Get.context;
         if (targetContext != null) {

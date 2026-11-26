@@ -117,4 +117,7 @@ class HttpUrls {
   static String saveVideoAttendance = '/course/Save_VideoAttendance';
   static String getVideoAttendance = '/course/Get_VideoAttendance';
   static String getAppPosters = '/Get_AppPosters';
+
+  //Block user
+  static String blockuser = '/user/Update_User_Block_Status';
 }

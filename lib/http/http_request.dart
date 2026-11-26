@@ -17,6 +17,50 @@ class HttpRequest {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final BreffController avatarController = getx.Get.put(BreffController());
 
+  static Dio _getDio() {
+    final Dio dio = Dio();
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          debugPrint('\n🌐 [API REQUEST] =============================================');
+          debugPrint('➡️ ${options.method.toUpperCase()} ${options.uri}');
+          if (options.headers.isNotEmpty) {
+            debugPrint('➡️ Headers: ${options.headers}');
+          }
+          if (options.queryParameters.isNotEmpty) {
+            debugPrint('➡️ Query Parameters: ${options.queryParameters}');
+          }
+          if (options.data != null) {
+            debugPrint('➡️ Request Body: ${options.data}');
+          }
+          debugPrint('==============================================================');
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          debugPrint('\n✅ [API RESPONSE] ============================================');
+          debugPrint('⬅️ Status: ${response.statusCode} (${response.statusMessage ?? "OK"})');
+          debugPrint('⬅️ URL   : ${response.requestOptions.uri}');
+          debugPrint('⬅️ Data  : ${response.data}');
+          debugPrint('==============================================================');
+          return handler.next(response);
+        },
+        onError: (DioException err, handler) {
+          debugPrint('\n❌ [API ERROR] ===============================================');
+          debugPrint('⛔ Method & URL : ${err.requestOptions.method.toUpperCase()} ${err.requestOptions.uri}');
+          debugPrint('⛔ Status Code  : ${err.response?.statusCode}');
+          debugPrint('⛔ Error Type   : ${err.type}');
+          debugPrint('⛔ Error Message: ${err.message}');
+          if (err.response?.data != null) {
+            debugPrint('⛔ Server Data  : ${err.response?.data}');
+          }
+          debugPrint('==============================================================\n');
+          return handler.next(err);
+        },
+      ),
+    );
+    return dio;
+  }
+
   static Future<Response?> httpGetRequest(
       {Map<String, dynamic>? bodyData,
       String endPoint = '',
@@ -28,14 +72,9 @@ class HttpRequest {
       Loader.showLoader();
     }
 
-    if (kDebugMode) {
-      print('get request ====> $endPoint $bodyData ');
-    }
-
-    final Dio dio = Dio();
+    final Dio dio = _getDio();
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('breffini_token') ?? "";
-    print(token);
 
     try {
       final Response response = await dio.get(
@@ -48,10 +87,6 @@ class HttpRequest {
         queryParameters: bodyData,
       );
 
-      if (kDebugMode) {
-        print('get result ====> ${response.data}  ');
-      }
-
       // Only stop loader if it was shown
       if (showLoader) {
         Loader.stopLoader();
@@ -59,6 +94,11 @@ class HttpRequest {
 
       return response;
     } catch (ex) {
+      debugPrint('❌ [HttpGetRequest Error] $endPoint: $ex');
+      if (ex is DioException && ex.response != null) {
+        debugPrint('❌ [Response Status]: ${ex.response?.statusCode}');
+        debugPrint('❌ [Response Data]: ${ex.response?.data}');
+      }
       if (ex.toString().contains('401')) {
         print('CRITICAL: 401 Error. Token: $token');
         if (ex is DioException) {
@@ -107,11 +147,8 @@ class HttpRequest {
       {Map<String, dynamic>? bodyData, String endPoint = ''}) async {
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     final BreffController avatarController = getx.Get.put(BreffController());
-    //  Loader.showLoader();
-    if (kDebugMode) {
-      print('post request ====> $endPoint $bodyData ');
-    }
-    final Dio dio = Dio();
+
+    final Dio dio = _getDio();
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('breffini_token') ?? "";
     try {
@@ -124,31 +161,24 @@ class HttpRequest {
         }),
         queryParameters: bodyData,
       );
-      if (kDebugMode) {
-        print('post result ====> ${response.data}  ');
-      }
-
-      //  Loader.stopLoader();
 
       return response;
     } catch (ex) {
+      debugPrint('❌ [HttpPostRequest Error] $endPoint: $ex');
+      if (ex is DioException && ex.response != null) {
+        debugPrint('❌ [Response Status]: ${ex.response?.statusCode}');
+        debugPrint('❌ [Response Data]: ${ex.response?.data}');
+      }
+
+      if (endPoint == HttpUrls.userLogin &&
+          ex is DioException &&
+          ex.response != null) {
+        return ex.response;
+      }
+
       if (ex.toString().contains('401')) {
         getx.Get.find<LoginController>().logout();
 
-        // print('401 Error detected: ${ex.toString()}');
-        // FirebaseMessaging.instance
-        //     .unsubscribeFromTopic("STD-" + PrefUtils().getStudentId());
-        //
-        //
-        // SharedPreferences preferences = await SharedPreferences.getInstance();
-        // await preferences.clear();
-        // await _googleSignIn.signOut();
-        // // await FirebaseMessaging.instance.deleteToken();
-        // // await _auth.signOut();
-        // // isLoggedIn.value = false;
-        // avatarController.isLogin.value = false;
-        //
-        // getx.Get.offAll(() => SplashScreen1());
         getx.Get.snackbar(
           '',
           '',
@@ -183,7 +213,6 @@ class HttpRequest {
         );
       }
 
-      //  Loader.stopLoader();
       return null;
     }
   }
@@ -194,18 +223,15 @@ class HttpRequest {
       bool showLoader = false,
       bool dismissible = true}) async {
     final BreffController avatarController = getx.Get.put(BreffController());
-    //  Loader.showLoader();
+
     if (showLoader) {
       Loader.showLoader(dismissible: dismissible);
     }
-    if (kDebugMode) {
-      print('post request ====> $endPoint $bodyData ');
-    }
-    final Dio dio = Dio();
+
+    final Dio dio = _getDio();
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('breffini_token') ?? "";
 
-    print('post token $token');
     try {
       final Response response = await dio.post(
         '${HttpUrls.baseUrl}$endPoint',
@@ -216,9 +242,7 @@ class HttpRequest {
         }),
         data: bodyData,
       );
-      if (kDebugMode) {
-        print('post result ====> ${response.data}  ');
-      }
+
       if (showLoader) {
         Loader.stopLoader();
       }
@@ -227,22 +251,21 @@ class HttpRequest {
       if (showLoader) {
         Loader.stopLoader();
       }
+      debugPrint('❌ [HttpPostBodyRequest Error] $endPoint: $ex');
+      if (ex is DioException && ex.response != null) {
+        debugPrint('❌ [Response Status]: ${ex.response?.statusCode}');
+        debugPrint('❌ [Response Data]: ${ex.response?.data}');
+      }
+
+      if (endPoint == HttpUrls.userLogin &&
+          ex is DioException &&
+          ex.response != null) {
+        return ex.response;
+      }
+
       if (ex.toString().contains('401')) {
         getx.Get.find<LoginController>().logout();
 
-        // print('401 Error detected: ${ex.toString()}');
-        // FirebaseMessaging.instance
-        //     .unsubscribeFromTopic("STD-" + PrefUtils().getStudentId());
-        //
-        // SharedPreferences preferences = await SharedPreferences.getInstance();
-        // await preferences.clear();
-        // final GoogleSignIn _googleSignIn = GoogleSignIn();
-        //
-        // await _googleSignIn.signOut();
-        // // await FirebaseMessaging.instance.deleteToken();
-        // // await _auth.signOut();
-        // // isLoggedIn.value = false;
-        // avatarController.isLogin.value = false;
         getx.Get.snackbar(
           '',
           '',
@@ -255,7 +278,6 @@ class HttpRequest {
               style: TextStyle(color: ColorResources.colorwhite)),
           snackPosition: getx.SnackPosition.BOTTOM,
         );
-        // await getx.Get.offAll(() => SplashScreen1());
       } else {
         String errorMessage = ex.toString();
         if (ex is DioException &&
